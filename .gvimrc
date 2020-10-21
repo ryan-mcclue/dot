@@ -91,6 +91,7 @@ augroup CommentRegions
   autocmd BufNewFile *.c,*.h,*.cpp normal i// SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.bash,.gitignore,.gitattributes,*.yml normal i# SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.bat normal i:: SPDX-License-Identifier: zlib-acknowledgement
+  autocmd BufNewFile *.md normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->
 
   autocmd Syntax * syntax match License +\("\|//\|#\|::\) SPDX-License-Identifier: zlib-acknowledgement+
 

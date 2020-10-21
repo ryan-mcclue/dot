@@ -5,6 +5,8 @@
 !.gitignore
 !.gitattributes
 
+!README.md
+
 !windows-env-setup.bat
 !ubuntu-env-setup.bash
 !.gvimrc
