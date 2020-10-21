@@ -24,6 +24,14 @@ set foldlevelstart=0
 syntax on
 set number
 
+if has("gui_gtk3")
+  set guifont=Inconsolata\ 14
+elseif has("gui_macvim")
+  set guifont=Menlo\ Regular:h14
+else
+  set guifont=Consolas:h11:cANSI
+endif
+
 set showmatch
 set backspace=indent,eol,start
 set laststatus=2
@@ -36,6 +44,18 @@ compiler gcc
 
 set background=light
 colorscheme solarized
+
+if !exists('g:os')
+  if has('win64') || has('win32')
+    let g:os = 'Windows'
+    autocmd GUIEnter * simalt ~x
+  else
+    let g:os = substitute(system('uname'), '\n', '', '')
+    if g:os ==# 'Linux'
+      autocmd GUIEnter * call system('wmctrl -i -b add,maximized_vert,maximized_horz -r ' . v:windowid)
+    endif
+  endif
+endif
 
 if g:os ==# 'Windows'
   let &makeprg="call C:" . findfile("windows-build.bat", ".;")
@@ -71,6 +91,7 @@ augroup CommentRegions
   autocmd BufNewFile *.c,*.h,*.cpp normal i// SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.bash,.gitignore,.gitattributes,*.yml normal i# SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.bat normal i:: SPDX-License-Identifier: zlib-acknowledgement
+  autocmd BufNewFile *.md normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->
 
   autocmd Syntax * syntax match License +\("\|//\|#\|::\) SPDX-License-Identifier: zlib-acknowledgement+
 

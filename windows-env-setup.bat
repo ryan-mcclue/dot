@@ -34,12 +34,12 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo %underline%%bright_green%INSTALLING CHOCOLATEY PACKAGES%clear_style%
 
-set "general_use=firefox vim cmdermini vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl"
-set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install cmake git gpg4win zeal"
+set "general_use=firefox vim cmdermini vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl python"
+set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install git gpg4win zeal"
+set "cmake_install=cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
 
 choco install %general_use% %cpp_toolchain% -y
-
-:: TODO(Ryan): cmake isn't added to the %PATH%. Investigate why this is happening $
+choco install %cmake_install% -y
 
 refreshenv
 
@@ -70,14 +70,12 @@ for /f %%a in ('gpg --list-keys') do (
 )
 git config --global user.signingkey %gpg_keyid%
 
-for /f "delims=" %%a in ('where gpg') do set "gpg_loc=%%~dpa"
-:: NOTE(Ryan): Remove the last '\' so it does not escape the final " $
-git config --global gpg.program "%gpg_loc:~0,-1%"
+for /f "delims=" %%a in ('where gpg') do set "gpg_loc=%%a"
+git config --global gpg.program "%gpg_loc%"
 
 git config --global commit.gpgsign true
 
 
-:begin
 
 echo %underline%%bright_green%INSTALLING GOOGLETEST%clear_style%
 
@@ -87,23 +85,23 @@ git clone "https://github.com/google/googletest" C:\Users\%USERNAME%\prog\librar
 
 mkdir C:\Users\%USERNAME%\prog\libraries\googletest\build
 pushd C:\Users\%USERNAME%\prog\libraries\googletest\build
-cmake .. && cmake --build . --target install --config Release -- -j %NUMBER_OF_PROCESSORS%
+:: TODO(Ryan): Currently installs to "Program Files (x86)\googletest-distribution"
+::             Install to directory already recognised by linker or make linker recognise this directory. $
+cmake .. && cmake --build . --target install --config Release --parallel %NUMBER_OF_PROCESSORS%
 popd
-rmdir /s C:\Users\%USERNAME%\prog\libraries\googletest\build
-
-goto eof
+rmdir /s /q C:\Users\%USERNAME%\prog\libraries\googletest\build
 
 
+:begin
 
 echo %underline%%bright_green%CONFIGURING GVIM%clear_style%
 
-powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/ryan-mcclue/cas/main/.gvimrc -OutFile .gvimrc"
 powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/ryan-mcclue/cas/main/.vimrc -OutFile .vimrc"
-for /f "delims=" %%a in ('where gvim') do set "gvim_loc=%%~dpa"
-move .gvimrc "%gvim_loc%\_gvimrc"
-move .vimrc "%gvim_loc%\_vimrc"
+move .vimrc C:\Users\%USERNAME%\_gvimrc
+move .vimrc C:\Users\%USERNAME%\_vimrc
 
+:: NOTE(Ryan): Chocolatey puts gvim.bat on PATH which calls gvim.exe, so we look for .exe explicitly. $
+for /f "delims=" %%a in ('where /r C:\tools gvim') do set "gvim_loc=%%~dpa"
 powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim -OutFile solarized.vim"
-move solarized.vim "%gvim_loc%\vimfiles\colors"
+move solarized.vim "%gvim_loc%colors"
 
-:eof
