@@ -93,16 +93,16 @@ augroup CommentRegions
   autocmd BufNewFile *.bat normal i:: SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.md normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->
 
-  autocmd Syntax * syntax match License +\("\|//\|#\|::\|<!--\) SPDX-License-Identifier: zlib-acknowledgement\( -->\)\?+
+  autocmd Syntax * syntax match License +\("\|//\|\#\|::\|<!--\) SPDX-License-Identifier: zlib-acknowledgement\( -->\)\?+
 
-  autocmd Syntax * syntax region TodoRegion start=+\("\|//\|#\|::\)\s*TODO+ end=+\$+
-  autocmd Syntax * syntax match TodoRegionWord +\("\|//\|#\|::\)\s*\zsTODO+ containedin=TodoRegion contained 
+  autocmd Syntax * syntax region TodoRegion start=+\("\|//\|\#\|::\)\s*TODO+ end=+\$+
+  autocmd Syntax * syntax match TodoRegionWord +\("\|//\|\#\|::\)\s*\zsTODO+ containedin=TodoRegion contained 
 
-  autocmd Syntax * syntax region ImportantRegion start=+\("\|//\|#\|::\)\s*IMPORTANT+ end=+\$+
-  autocmd Syntax * syntax match ImportantRegionWord +\("\|//\|#\|::\)\s*\zsIMPORTANT+ containedin=ImportantRegion contained 
+  autocmd Syntax * syntax region ImportantRegion start=+\("\|//\|\#\|::\)\s*IMPORTANT+ end=+\$+
+  autocmd Syntax * syntax match ImportantRegionWord +\("\|//\|\#\|::\)\s*\zsIMPORTANT+ containedin=ImportantRegion contained 
 
-  autocmd Syntax * syntax region NoteRegion start=+\("\|//\|#\|::\)\s*NOTE+ end=+\$+
-  autocmd Syntax * syntax match NoteRegionWord +\("\|//\|#\|::\)\s*\zsNOTE+ containedin=NoteRegion contained 
+  autocmd Syntax * syntax region NoteRegion start=+\("\|//\|\#\|::\)\s*NOTE+ end=+\$+
+  autocmd Syntax * syntax match NoteRegionWord +\("\|//\|\#\|::\)\s*\zsNOTE+ containedin=NoteRegion contained 
 augroup END
 
 if !exists('g:solarized_base1')
