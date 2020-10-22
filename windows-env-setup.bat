@@ -16,7 +16,6 @@ if %ERRORLEVEL% NEQ 0 (
   exit /b 1
 )
 
-goto begin
 
 where choco > NUL 2>&1
 if %ERRORLEVEL% NEQ 0 (
@@ -76,7 +75,6 @@ git config --global gpg.program "%gpg_loc%"
 git config --global commit.gpgsign true
 
 
-
 echo %underline%%bright_green%INSTALLING GOOGLETEST%clear_style%
 
 mkdir C:\Users\%USERNAME%\prog\libraries
@@ -85,14 +83,19 @@ git clone "https://github.com/google/googletest" C:\Users\%USERNAME%\prog\librar
 
 mkdir C:\Users\%USERNAME%\prog\libraries\googletest\build
 pushd C:\Users\%USERNAME%\prog\libraries\googletest\build
-:: TODO(Ryan): Currently installs to "Program Files (x86)\googletest-distribution"
-::             Install to directory already recognised by linker or make linker recognise this directory. $
-cmake .. && cmake --build . --target install --config Release --parallel %NUMBER_OF_PROCESSORS%
+:: TODO(Ryan): Avoid having to know the installation directory of llvm.
+::             Perhaps query chocolately? $
+for /f "tokens=3" %%a in ('clang --version') do (
+  set llvm_version=%%a
+  goto out
+)
+:out
+set "llvm_dir=C:\Program Files\LLVM\lib\clang\%llvm_version%\"
+cmake .. -DCMAKE_INSTALL_PREFIX="%llvm_dir%"
+cmake --build . --target install --config Release --parallel %NUMBER_OF_PROCESSORS%
+
 popd
 rmdir /s /q C:\Users\%USERNAME%\prog\libraries\googletest\build
-
-
-:begin
 
 echo %underline%%bright_green%CONFIGURING GVIM%clear_style%
 
@@ -100,8 +103,10 @@ powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/ryan-mcclue/c
 move .vimrc C:\Users\%USERNAME%\_gvimrc
 move .vimrc C:\Users\%USERNAME%\_vimrc
 
-:: NOTE(Ryan): Chocolatey puts gvim.bat on PATH which calls gvim.exe, so we look for .exe explicitly. $
+:: TODO(Ryan): Avoid having to know the installation directory of gvim.exe.
+::             Perhaps query chocolately? $
 for /f "delims=" %%a in ('where /r C:\tools gvim') do set "gvim_loc=%%~dpa"
 powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim -OutFile solarized.vim"
 move solarized.vim "%gvim_loc%colors"
 
+refreshenv
