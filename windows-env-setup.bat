@@ -47,6 +47,8 @@ refreshenv
 
 echo %underline%%bright_green%CONFIGURING GIT%clear_style%
 
+:: NOTE(Ryan): We only have to check for private key, as gpg will store public key information within it. 
+::             This is because gpg uses single keyring for both public and private keys. $
 if not exist private-key.asc (
   echo %underline%%bright_red%Require private-key.asc to be in %CD%%clear_style%
   exit /b 1
