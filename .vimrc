@@ -15,6 +15,8 @@ filetype plugin indent on
 
 set mouse=a
 
+set diffopt+=vertical
+
 set incsearch hlsearch 
 
 set foldenable
@@ -42,6 +44,8 @@ set nowrap
 " NOTE(Ryan): This will work for clang also. $
 compiler gcc
 
+" TODO(Ryan): Fix colour discrepencies when using vim in terminal emulator Cmder 
+"             which has Solarized Light colourscheme enabled. $
 set background=light
 colorscheme solarized
 

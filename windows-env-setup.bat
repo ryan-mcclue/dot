@@ -75,6 +75,9 @@ for /f "delims=" %%a in ('where gpg') do set "gpg_loc=%%a"
 git config --global gpg.program "%gpg_loc%"
 
 git config --global commit.gpgsign true
+:: TODO(Ryan): Make the git diff less obtrusive $
+git config --global diff.tool vimdiff
+
 
 
 echo %underline%%bright_green%INSTALLING GOOGLETEST%clear_style%
