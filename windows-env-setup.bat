@@ -33,8 +33,28 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo %underline%%bright_green%INSTALLING CHOCOLATEY PACKAGES%clear_style%
 
-set "general_use=firefox vim cmdermini vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl python"
-set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install git gpg4win zeal"
+:: install WSL as it gives a better terminal --> follow msdn instructions. enable virtualisation in bios. install from windows store.
+:: where mintty gives this directory
+:: C:\ProgramData\chocolatey\lib\wsltty\tools\wslttyinstall\install.bat
+:: launch from WSL Terminal shortcut
+:: 
+:: CursorType=block
+:: solarized colour information
+:: %APPDATA%/wsltty/config
+:: 
+:: files in windows accessed via mnt\c\....
+:: add visual studio solarized also?
+:: 
+:: .vim/colors
+:: 
+:: git and gpg inside WSL
+:: 
+:: setup dircolors
+:: remove block cursor
+
+
+set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl python mintty"
+set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install zeal"
 set "cmake_install=cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
 
 choco install %general_use% %cpp_toolchain% -y

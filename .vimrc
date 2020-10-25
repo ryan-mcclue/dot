@@ -44,8 +44,12 @@ set nowrap
 " NOTE(Ryan): This will work for clang also. $
 compiler gcc
 
-" TODO(Ryan): Fix colour discrepencies when using vim in terminal emulator Cmder 
-"             which has Solarized Light colourscheme enabled. $
+" TODO(Ryan): Holding shift and a letter to capitalise results in a deletion
+" of characters in terminal instances of vim. Fix this $
+let &t_ti.="\e[1 q"
+let &t_SI.="\e[5 q"
+let &t_EI.="\e[1 q"
+let &t_te.="\e[0 q"
 set background=light
 colorscheme solarized
 
@@ -125,7 +129,8 @@ if !exists('g:solarized_yellow')
   let g:solarized_yellow = '#b58900'
 endif
 
-execute "highlight License gui=italic guibg=" . g:solarized_base2 . " guifg=" . g:solarized_base1
+" TODO(Ryan): Get highlighting to work on terminal vim instances. $
+execute "highlight License gui=italic guibg=" . g:solarized_base2 " guifg=" . g:solarized_base1 
 
 execute "highlight TodoRegion gui=italic guifg=" . g:solarized_red 
 execute "highlight TodoRegionWord gui=italic,bold,underline guifg=" . g:solarized_red 
