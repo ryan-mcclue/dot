@@ -19,6 +19,7 @@ set diffopt+=vertical
 if &diff
   set noreadonly
 endif
+nnoremap <C-E> :qa!<CR>
 
 set incsearch hlsearch 
 

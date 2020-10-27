@@ -2,6 +2,7 @@ Transparency=off
 CursorType=block
 Font=Consolas
 FontHeight=11
+Window=max
 
 ForegroundColour=101, 123, 131
 BackgroundColour=253, 246, 227
