@@ -16,10 +16,13 @@ filetype plugin indent on
 set mouse=a
 
 set diffopt+=vertical
-if &diff
-  set noreadonly
-endif
-nnoremap <C-E> :qa!<CR>
+
+nnoremap <silent> <expr> Q &diff ? ":cquit!\<CR>" : Q
+nnoremap <silent> <expr> q &diff ? ":qall!\<CR>" : q
+nnoremap <silent> <expr> t &diff ? ":windo diffoff \<bar> wincmd h\<CR>" : t
+nnoremap <silent> <expr> e &diff ? "\<C-W>\<C-O>" : e
+
+command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
 set incsearch hlsearch 
 
