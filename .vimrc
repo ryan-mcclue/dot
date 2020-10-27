@@ -16,6 +16,9 @@ filetype plugin indent on
 set mouse=a
 
 set diffopt+=vertical
+if &diff
+  set noreadonly
+endif
 
 set incsearch hlsearch 
 

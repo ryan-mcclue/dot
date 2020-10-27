@@ -2,14 +2,14 @@
 
 #! /usr/bin/bash
 
-readonly underline='\e[4m'
-readonly bright_red='\e[91m'
-readonly bright_green='\e[92m'
+readonly red='\033[31m'
+readonly green='\033[32m'
+readonly reset='\033[0m'
 
-printf "${underline}${bright_green}CONFIGURING GIT\n"
+printf "${green}CONFIGURING GIT\n${reset}"
 
 if [[ ! -f private-key.asc ]]; then
-  printf "${underline}${bright_red}Require private-key.asc to be in $(cwd)\n"
+  printf "${red}Require private-key.asc to be in $(cwd)\n${reset}"
   exit 1
 fi
 
@@ -20,22 +20,22 @@ git config --global user.email "re.mcclue@protonmail.com"
 # TODO(Ryan): Use SSH to communicate with git. $
 git config --global credential.helper store
 
-readonly gpg_keyid=$(gpg --list-keys | sed -n 3p)
+readonly gpg_keyid=$(gpg --list-keys | sed -n 4p)
 git config --global user.signingkey ${gpg_keyid}
 
-readonly gpg_loc=$(type -a gpg | sed -n 1q)
+readonly gpg_loc=$(which gpg)
 git config --global gpg.program ${gpg_loc}
 
 git config --global commit.gpgsign true
 # TODO(Ryan): Make the git diff less obtrusive $
 git config --global diff.tool vimdiff
 
-printf "${underline}${bright_green}CONFIGURING VIM\n"
+printf "${green}CONFIGURING VIM\n${reset}"
 wget https://raw.githubusercontent.com/ryan-mcclue/cas/main/.vimrc -O $HOME/.vimrc
 mkdir -p $HOME/.vim/colors
 wget https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim \
   -O $HOME/.vim/colors/solarized.vim
 
 
-printf "${underline}${bright_green}CONFIGURING BASH\n"
+printf "${green}CONFIGURING BASH\n${reset}"
 echo cd /mnt/c/Users/Ryan >> $HOME/.bashrc
