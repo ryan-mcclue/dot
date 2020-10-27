@@ -35,6 +35,13 @@ git config --global difftool.vimdiff.cmd 'vim -f -d -c "wincmd h" -c '\''cd "$GI
 git config --global difftool.trustExitCode true
 git config --global difftool.prompt false
 
+mkdir $HOME/.bash
+wget -O $HOME/.bash/git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh 
+echo source $HOME/.bash/git-prompt.sh >> $HOME/.bashrc
+echo export GIT_PS1_SHOWDIRTYSTATE=1 >> $HOME/.bashrc
+echo export GIT_PS1_SHOWCOLORHINTS=true >> $HOME/.bashrc
+echo export PROMPT_COMMAND='__git_ps1 "\u@\h:\w" "\\\$ "' >> $HOME/.bashrc
+
 printf "${green}CONFIGURING VIM\n${reset}"
 wget https://raw.githubusercontent.com/ryan-mcclue/cas/main/.vimrc -O $HOME/.vimrc
 mkdir -p $HOME/.vim/colors
@@ -43,6 +50,7 @@ wget https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/c
 
 
 printf "${green}CONFIGURING BASH\n${reset}"
-echo cd /mnt/c/Users/Ryan >> $HOME/.bashrc
+wget -O $HOME/.dircolors https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-light 
 # NOTE(Ryan): This is necessary to direct gpg to ask for password confirmation of key in the terminal. $
 echo export GPG_TTY="$(tty)" >> $HOME/.bashrc
+echo cd /mnt/c/Users/Ryan >> $HOME/.bashrc
