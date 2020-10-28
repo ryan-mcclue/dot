@@ -39,7 +39,8 @@ if %ERRORLEVEL% NEQ 0 (
 echo %underline%%bright_green%INSTALLING CHOCOLATEY PACKAGES%clear_style%
 
 
-set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl python wsltty"
+:: IMPORTANT(Ryan): Consider installing pycharm and configuring it to use python3 WSL interpreter. $
+set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl wsltty"
 set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install zeal"
 set "cmake_install=cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
 

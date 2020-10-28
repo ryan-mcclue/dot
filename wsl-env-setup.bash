@@ -13,6 +13,8 @@ if [[ ! -f private-key.asc ]]; then
   exit 1
 fi
 
+
+# TODO(Ryan): Setup gpg-agent to use password caching and to use as SSH keys. $
 gpg --import private-key.asc
 
 git config --global user.name "Ryan McClue"
@@ -27,7 +29,6 @@ readonly gpg_loc=$(which gpg)
 git config --global gpg.program ${gpg_loc}
 
 git config --global commit.gpgsign true
-# TODO(Ryan): Make the git diff less obtrusive $
 git config --global diff.tool vimdiff
 # NOTE(Ryan): This reorders the default vimdiff windows, i.e. the staged file is on the left. $
 git config --global difftool.vimdiff.cmd 'vim -f -d -c "wincmd h" -c '\''cd "$GIT_PREFIX"'\'' "$REMOTE" "$LOCAL"'
