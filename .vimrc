@@ -49,6 +49,8 @@ set showmode
 set scrolloff=5
 set nowrap
 
+set guioptions+=!
+
 " NOTE(Ryan): This will work for clang also. $
 compiler gcc
 
@@ -107,6 +109,7 @@ function! BraceIndentOrEnter()
         return "\<CR>"
     endif
 endfunction
+inoremap <expr> } getline('.')[col('.')-2] == "{" ? "}\<C-G>U\<Left>" : "}"
 
 inoremap <expr> <Esc> pumvisible() ? "\<C-E>" : "\<Esc>"
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
