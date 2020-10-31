@@ -12,6 +12,7 @@ set shiftround
 set autowrite
 
 filetype plugin indent on
+set autoindent
 
 set mouse=a
 
@@ -73,11 +74,11 @@ if !exists('g:os')
 endif
 
 if g:os ==# 'Windows'
-  let &makeprg="call C:" . findfile("windows-build.bat", ".;")
+  let &makeprg="call windows-build.bat"
 elseif g:os ==# 'Linux'
-  let &makeprg="bash " . findfile("ubuntu-build.bash", ".;")
+  let &makeprg="bash ubuntu-build.bash"
 else
-  let &makeprg="bash " . findfile("macos-build.bash", ".;")
+  let &makeprg="bash macos-build.bash"
 endif
 
 nnoremap <silent> <C-B> :make! <bar> copen <bar> redraw<CR>
@@ -93,12 +94,31 @@ function! TabSelectOrPopupOrIndent()
   endif
 endfunction
 inoremap <expr> <Tab> TabSelectOrPopupOrIndent()
-inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
+
+inoremap <expr> <CR> BraceIndentOrEnter()
+function! BraceIndentOrEnter()
+    if pumvisible()
+        return "\<C-Y>"
+    elseif strcharpart(getline('.'),getpos('.')[2]-1,1) == '}'
+        return "\<CR>\<Esc>O"
+    elseif strcharpart(getline('.'),getpos('.')[2]-1,2) == '</'
+        return "\<CR>\<Esc>O"
+    else
+        return "\<CR>"
+    endif
+endfunction
+
 inoremap <expr> <Esc> pumvisible() ? "\<C-E>" : "\<Esc>"
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
+
+augroup IndentSettings
+  autocmd!
+  
+  autocmd FileType c,cpp setlocal shiftwidth=2 tabstop=2 
+augroup end
 
 augroup CommentRegions
   autocmd!

@@ -44,6 +44,8 @@ set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl
 set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install zeal"
 set "cmake_install=cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
 
+:: TODO(Ryan): Add devenv.exe to %PATH% $
+
 choco install %general_use% %cpp_toolchain% -y
 choco install %cmake_install% -y
 
