@@ -27,6 +27,8 @@ command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd 
 
 set incsearch hlsearch 
 
+nnoremap <Esc><Esc> :silent! nohls<CR> 
+
 set foldenable
 set foldmethod=manual
 set foldlevelstart=0
