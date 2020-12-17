@@ -112,7 +112,7 @@ function! BraceIndentOrEnter()
 endfunction
 inoremap <expr> } getline('.')[col('.')-2] == "{" ? "}\<C-G>U\<Left>" : "}"
 
-inoremap <expr> <Esc> pumvisible() ? "\<C-E>" : "\<Esc>"
+inoremap <expr> q pumvisible() ? "\<C-E>" : "\<Esc>"
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
