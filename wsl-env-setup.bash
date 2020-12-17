@@ -55,3 +55,6 @@ wget -O $HOME/.dircolors https://raw.githubusercontent.com/seebi/dircolors-solar
 # NOTE(Ryan): This is necessary to direct gpg to ask for password confirmation of key in the terminal. $
 echo export GPG_TTY="$(tty)" >> $HOME/.bashrc
 echo cd /mnt/c/Users/Ryan >> $HOME/.bashrc
+echo export DISPLAY="$(sed -n 's/nameserver //p' /etc/resolv.conf):0" >> $HOME/.bashrc
+
+# sudo apt install nasm libx11-dev
