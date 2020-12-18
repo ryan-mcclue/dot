@@ -55,12 +55,6 @@ set guioptions+=!
 " NOTE(Ryan): This will work for clang also.
 compiler gcc
 
-" TODO(Ryan): Holding shift and a letter to capitalise results in a deletion
-" of characters in terminal instances of vim. Fix this
-let &t_ti.="\e[1 q"
-let &t_SI.="\e[5 q"
-let &t_EI.="\e[1 q"
-let &t_te.="\e[0 q"
 set background=light
 colorscheme solarized
 
@@ -112,6 +106,7 @@ function! BraceIndentOrEnter()
 endfunction
 inoremap <expr> } getline('.')[col('.')-2] == "{" ? "}\<C-G>U\<Left>" : "}"
 
+" IMPORTANT(Ryan): Mapping <Esc> causes issues in terminal Vim 
 inoremap <expr> q pumvisible() ? "\<C-E>" : "\<Esc>"
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
@@ -139,25 +134,42 @@ augroup CommentRegions
   autocmd Syntax * syntax keyword ImportantMarker IMPORTANT containedin=.*Comment,vimCommentTitle,cCommentL
 augroup END
 
-if !exists('g:solarized_base1')
-  let g:solarized_base1= '#93a1a1'
+if !exists('g:solarized_gui_base1')
+  let g:solarized_gui_base1= '#93a1a1'
 endif
-if !exists('g:solarized_base2')
-  let g:solarized_base2= '#eee8d5'
+if !exists('g:solarized_gui_base2')
+  let g:solarized_gui_base2= '#eee8d5'
 endif
-if !exists('g:solarized_red')
-  let g:solarized_red = '#dc322f'
+if !exists('g:solarized_gui_red')
+  let g:solarized_gui_red = '#dc322f'
 endif
-if !exists('g:solarized_green')
-  let g:solarized_green = '#859900'
+if !exists('g:solarized_gui_green')
+  let g:solarized_gui_green = '#859900'
 endif
-if !exists('g:solarized_yellow')
-  let g:solarized_yellow = '#b58900'
+if !exists('g:solarized_gui_yellow')
+  let g:solarized_gui_yellow = '#b58900'
 endif
+execute "highlight License gui=italic guibg=" . g:solarized_gui_base2 . " guifg=" . g:solarized_gui_base1 
+execute "highlight TodoMarker gui=italic,underline guifg=" . g:solarized_gui_red 
+execute "highlight ImportantMarker gui=italic,underline guifg=" . g:solarized_gui_yellow
+execute "highlight NoteMarker gui=italic,underline guifg=" . g:solarized_gui_green
 
-" TODO(Ryan): Get highlighting to work on terminal vim instances.
-execute "highlight License gui=italic guibg=" . g:solarized_base2 " guifg=" . g:solarized_base1 
-
-execute "highlight TodoMarker gui=italic,bold,underline guifg=" . g:solarized_red 
-execute "highlight ImportantMarker gui=italic,bold,underline guifg=" . g:solarized_yellow
-execute "highlight NoteMarker gui=italic,bold,underline guifg=" . g:solarized_green
+if !exists('g:solarized_term_base1')
+  let g:solarized_term_base1= '14'
+endif
+if !exists('g:solarized_term_base2')
+  let g:solarized_term_base2= '7'
+endif
+if !exists('g:solarized_term_red')
+  let g:solarized_term_red = '124'
+endif
+if !exists('g:solarized_term_green')
+  let g:solarized_term_green = '64'
+endif
+if !exists('g:solarized_term_yellow')
+  let g:solarized_term_yellow = '136'
+endif
+execute "highlight License cterm=italic ctermbg=" . g:solarized_term_base2 . " ctermfg=" . g:solarized_term_base1 
+execute "highlight TodoMarker cterm=italic,underline ctermfg=" . g:solarized_term_red 
+execute "highlight ImportantMarker cterm=italic,underline ctermfg=" . g:solarized_term_yellow
+execute "highlight NoteMarker cterm=italic,underline ctermfg=" . g:solarized_term_green
