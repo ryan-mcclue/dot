@@ -57,4 +57,4 @@ echo export GPG_TTY="$(tty)" >> $HOME/.bashrc
 echo cd /mnt/c/Users/Ryan >> $HOME/.bashrc
 echo export DISPLAY="$(sed -n 's/nameserver //p' /etc/resolv.conf):0" >> $HOME/.bashrc
 
-# sudo apt install nasm libx11-dev
+# sudo apt install nasm libx11-dev gdb gcc universal-ctags

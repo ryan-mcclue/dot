@@ -78,7 +78,7 @@ else
   let &makeprg="bash macos-build.bash"
 endif
 
-nnoremap <silent> <C-B> :make! <bar> copen <bar> redraw<CR>
+nnoremap <silent> <C-B> :make! <bar> copen <bar> redraw<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
@@ -112,11 +112,14 @@ inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
+set tags+=/usr/include/**/tags
+" :h include-search?
+" :h definition-search?
 
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp setlocal shiftwidth=2 tabstop=2 
+  autocmd FileType c,cpp,html setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 augroup CommentRegions

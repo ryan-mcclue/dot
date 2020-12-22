@@ -41,8 +41,9 @@ echo %underline%%bright_green%INSTALLING CHOCOLATEY PACKAGES%clear_style%
 
 :: IMPORTANT(Ryan): Consider installing pycharm and configuring it to use python3 WSL interpreter. $
 :: IMPORTANT(Ryan): Install vcXsrv
-set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl wsltty nmap hxd"
+set "general_use=firefox vim vlc gimp bitwarden 7zip veracrypt ffmpeg youtube-dl wsltty nmap hxd putty python"
 set "cpp_toolchain=llvm visualstudio2019community visualstudio2019-workload-nativedesktop doxygen.install zeal"
+:: IMPORTANT(Ryan): Install linux c++ workload for ssh debug capabilities
 set "cmake_install=cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
 
 :: TODO(Ryan): Add devenv.exe to %PATH% $
@@ -52,7 +53,6 @@ choco install %cmake_install% -y
 
 refreshenv
 
-:: TODO(Ryan): Fix vim processing keys incorrectly, e.g. slash goes to 'o', shift-letter goes to delete etc. $
 powershell -c "Invoke-WebRequest https://raw.githubusercontent.com/ryan-mcclue/cas/main/wsltty/config -OutFile config"
 move config %APPDATA%\wsltty
 
