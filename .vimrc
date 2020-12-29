@@ -107,7 +107,7 @@ endfunction
 inoremap <expr> } getline('.')[col('.')-2] == "{" ? "}\<C-G>U\<Left>" : "}"
 
 " IMPORTANT(Ryan): Mapping <Esc> causes issues in terminal Vim 
-inoremap <expr> q pumvisible() ? "\<C-E>" : "\<Esc>"
+inoremap <expr> q pumvisible() ? "\<C-E>" : 'q'
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
