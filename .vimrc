@@ -113,22 +113,31 @@ inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
 set tags+=/usr/include/**/tags
-" :h include-search?
-" :h definition-search?
 
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
+
+function! StartBashFile()
+  normal i#! /usr/bin/env bash
+  normal o# SPDX-License-Identifier: zlib-acknowledgement
+endfunction
+function! StartPythonFile()
+  normal i#! /usr/bin/env python3
+  normal o# SPDX-License-Identifier: zlib-acknowledgement
+endfunction
 
 augroup CommentRegions
   autocmd!
 
-  autocmd BufNewFile *.c,*.h,*.cpp normal i// SPDX-License-Identifier: zlib-acknowledgement
-  autocmd BufNewFile *.bash,.gitignore,.gitattributes,*.yml normal i# SPDX-License-Identifier: zlib-acknowledgement
+  autocmd BufNewFile *.c,*.h,*.cpp,*.js normal i// SPDX-License-Identifier: zlib-acknowledgement
+  autocmd BufNewFile .gitignore,.gitattributes,*.yml normal i# SPDX-License-Identifier: zlib-acknowledgement
+  autocmd BufNewFile *.bash :call StartBashFile()
+  autocmd BufNewFile *.py :call StartPythonFile()
   autocmd BufNewFile *.bat normal i:: SPDX-License-Identifier: zlib-acknowledgement
-  autocmd BufNewFile *.md normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->
+  autocmd BufNewFile *.md,*.html normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->
 
   autocmd Syntax * syntax match License +\("\|//\|\#\|::\|<!--\) SPDX-License-Identifier: zlib-acknowledgement\( -->\)\?+
 
