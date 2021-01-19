@@ -7,6 +7,9 @@ set noswapfile noundofile nobackup
 " NOTE(Ryan): Utilise spellcheck with z=
 set spell spelllang=en_au
 
+set encoding=utf-8
+set termencoding=utf-8
+
 set expandtab
 set shiftround 
 set autowrite
