@@ -9,9 +9,7 @@
 
 !README.md
 
-!windows-env-setup.bat
-!wsl-env-setup.bash
-!wsltty/config
+!.bashrc
 
 !ubuntu-env-setup.bash
 

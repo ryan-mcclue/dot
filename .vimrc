@@ -4,7 +4,6 @@ set nocompatible
 
 set noswapfile noundofile nobackup
 
-" NOTE(Ryan): Utilise spellcheck with z=
 set spell spelllang=en_au
 
 set encoding=utf-8
@@ -55,7 +54,6 @@ set nowrap
 
 set guioptions+=!
 
-" NOTE(Ryan): This will work for clang also.
 compiler gcc
 
 set background=light
@@ -120,7 +118,7 @@ set tags+=/usr/include/**/tags
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript,css setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartBashFile()
