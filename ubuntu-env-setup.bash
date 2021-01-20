@@ -27,7 +27,7 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install ./google-chrome-stable_current_amd64.deb
 rm google-chrome-stable_current_amd64.deb
 
-sudo apt install gvim wmctrl veracrypt gcc git dconf-cli 
+sudo apt install gvim wmctrl gcc git dconf-cli 
 
 exec bash
 
