@@ -22,11 +22,12 @@ if [[ ! -f .ssh/id_rsa || ! -f .ssh/id_rsa.pub ]]; then
 fi
 
 printf "${green}INSTALLING APPLICATIONS\n${reset}"
+sudo apt update
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install ./google-chrome-stable_current_amd64.deb
 rm google-chrome-stable_current_amd64.deb
 
-sudo apt install gvim veracrypt gcc git dconf-cli
+sudo apt install gvim wmctrl veracrypt gcc git dconf-cli 
 
 exec bash
 
@@ -40,6 +41,8 @@ mkdir ~/.bash
 wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -O ~/.bash/git-prompt.sh
 
 cp .bashrc ~/.bashrc
+
+mkdir -p ~/prog/personal
 
 exec bash
 
