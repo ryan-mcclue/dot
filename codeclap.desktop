@@ -6,4 +6,4 @@ Terminal=false
 Exec=/home/ryan/prog/apps/codeclap/codeclap
 Name=Codeclap
 Comment=debugger
-Icon=codeclap-icon.png
+Icon=/home/ryan/.local/share/icons/codeclap-icon.png
