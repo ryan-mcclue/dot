@@ -11,12 +11,12 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 if [[ ! -f private-key.asc ]]; then
-  printf "${red}REQUIRE GPG PRIVATE-KEY.ASC TO BE IN $(cwd)\n${reset}"
+  printf "${red}REQUIRE GPG PRIVATE-KEY.ASC TO BE IN $(pwd)\n${reset}"
   exit 2
 fi
 
 if [[ ! -f .ssh/id_rsa || ! -f .ssh/id_rsa.pub ]]; then
-  printf "${red}REQUIRE .SSH FOLDER TO BE POPULATED IN $(cwd)\n${reset}"
+  printf "${red}REQUIRE .SSH FOLDER TO BE POPULATED IN $(pwd)\n${reset}"
   exit 3
 fi
 
