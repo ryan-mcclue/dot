@@ -23,12 +23,14 @@ fi
 printf "${green}CONFIGURING GNOME TERMINAL AND BASH\n${reset}"
 git clone https://github.com/aruhier/gnome-terminal-colors-solarized.git
 pushd gnome-terminal-colors-solarized
-./install.sh
+./install.sh 
 popd
 rm -rf gnome-terminal-colors-solarized
 
+# TODO(Ryan): Get dircolors to work with git prompt.
 wget https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-light -O ~/.dircolors
 
+# TODO(Ryan): Investigate only copying to desktop, as this where you enable launching. 
 cp codeclap.desktop ~/.local/share/applications/
 mkdir -p ~/.local/share/icons
 cp codeclap-icon.png ~/.local/share/icons/
