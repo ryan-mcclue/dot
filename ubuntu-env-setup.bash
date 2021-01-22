@@ -23,9 +23,11 @@ fi
 printf "${green}CONFIGURING GNOME TERMINAL AND BASH\n${reset}"
 git clone https://github.com/aruhier/gnome-terminal-colors-solarized.git
 pushd gnome-terminal-colors-solarized
-./install.sh --install-dircolors
+./install.sh
 popd
 rm -rf gnome-terminal-colors-solarized
+
+wget https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-light -O ~/.dircolors
 
 cp codeclap.desktop ~/.local/share/applications/
 mkdir -p ~/.local/share/icons
