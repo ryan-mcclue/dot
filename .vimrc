@@ -39,10 +39,6 @@ set number
 
 if has("gui_gtk3")
   set guifont=Inconsolata\ 14
-elseif has("gui_macvim")
-  set guifont=Menlo\ Regular:h14
-else
-  set guifont=Consolas:h11:cANSI
 endif
 
 set showmatch
@@ -59,25 +55,9 @@ compiler gcc
 set background=light
 colorscheme solarized
 
-if !exists('g:os')
-  if has('win64') || has('win32')
-    let g:os = 'Windows'
-    autocmd GUIEnter * simalt ~x
-  else
-    let g:os = substitute(system('uname'), '\n', '', '')
-    if g:os ==# 'Linux'
-      autocmd GUIEnter * call system('wmctrl -i -b add,maximized_vert,maximized_horz -r ' . v:windowid)
-    endif
-  endif
-endif
-
-if g:os ==# 'Windows'
-  let &makeprg="call windows-build.bat"
-elseif g:os ==# 'Linux'
-  let &makeprg="bash ubuntu-build.bash"
-else
-  let &makeprg="bash macos-build.bash"
-endif
+" IMPORTANT(Ryan): This is a proxy to a system-specific build file
+" Must be in particular prog root directory for quickfix to correctly populate
+let &makeprg="bash build.bash"
 
 nnoremap <silent> <C-B> :make! <bar> copen <bar> redraw<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
