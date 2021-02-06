@@ -55,11 +55,17 @@ compiler gcc
 set background=light
 colorscheme solarized
 
-" IMPORTANT(Ryan): This is a proxy to a system-specific build file
-" Must be in particular prog root directory for quickfix to correctly populate
-let &makeprg="bash build.bash"
+cnoremap w!! w !sudo tee %
 
-nnoremap <silent> <C-B> :make! <bar> copen <bar> redraw<CR><CR>
+function! Make(script)
+  let &makeprg="bash " . a:script
+  make! 
+  copen
+  redraw
+endfunction
+
+nnoremap <silent> <C-B> :call Make("build.bash")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint.bash")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>

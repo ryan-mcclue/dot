@@ -15,3 +15,5 @@ colour_reset='\e[m'
 export PROMPT_COMMAND='__git_ps1 "${dark_green}\u@\h${colour_reset}${dark_blue}:\w" "\\\$ ${colour_reset}"'
 
 cd ~/prog/personal
+
+export PATH="$PATH:~/prog/apps/codeclap:~/prog/apps/pc-lint:~/prog/apps/cdt"
