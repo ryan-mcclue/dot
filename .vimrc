@@ -116,6 +116,14 @@ function! StartPythonFile()
   normal o# SPDX-License-Identifier: zlib-acknowledgement
 endfunction
 
+" NOTE(Ryan): Saved to &viewdir
+augroup AutoSaveFolds
+  autocmd!
+
+  autocmd BufWinLeave * mkview
+  autocmd BufWinEnter * silent loadview
+augroup END
+
 augroup CommentRegions
   autocmd!
 
