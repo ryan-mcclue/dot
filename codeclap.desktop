@@ -1,9 +1,0 @@
-#!/usr/bin/env xdg-open
-[Desktop Entry]
-Version=1.0
-Type=Application
-Terminal=false
-Exec=/home/ryan/prog/apps/codeclap/codeclap
-Name=Codeclap
-Comment=debugger
-Icon=/home/ryan/.local/share/icons/codeclap-icon.png

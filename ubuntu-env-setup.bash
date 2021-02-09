@@ -27,10 +27,10 @@ pushd gnome-terminal-colors-solarized
 popd
 rm -rf gnome-terminal-colors-solarized
 
-# TODO(Ryan): Investigate only copying to desktop, as this where you enable launching. 
-cp codeclap.desktop ~/.local/share/applications/
-mkdir -p ~/.local/share/icons
-cp codeclap-icon.png ~/.local/share/icons/
+# IMPORTANT(Ryan): Must manually right-click and 'Allow Launching' for next step to work
+cp cdt.desktop ~/Desktop
+# NOTE(Ryan): Copy here for shortcut to appear in search so it can be pinned to favourites
+cp cdt.desktop ~/.local/share/applications/
 
 
 mkdir ~/.bash

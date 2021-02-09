@@ -120,8 +120,8 @@ endfunction
 augroup AutoSaveFolds
   autocmd!
 
-  autocmd BufWinLeave * mkview
-  autocmd BufWinEnter * silent loadview
+  autocmd BufWinLeave *.c,*.h mkview
+  autocmd BufWinEnter *.c,*.h silent loadview
 augroup END
 
 augroup CommentRegions
