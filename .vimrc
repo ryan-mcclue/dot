@@ -39,6 +39,7 @@ set number
 
 if has("gui_gtk3")
   set guifont=Inconsolata\ 14
+  cd ~/prog/personal/
 endif
 
 set showmatch
@@ -99,6 +100,7 @@ inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
+" NOTE(Ryan): ctags --C-kinds=+p -R *
 set tags+=/usr/include/**/tags
 
 augroup IndentSettings
