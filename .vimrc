@@ -51,22 +51,21 @@ set nowrap
 
 set guioptions+=!
 
-compiler gcc
-
 set background=light
 colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
-function! Make(script)
-  let &makeprg="bash " . a:script
+function! Make(interpreter, script)
+  let &makeprg=a:interpreter . " " . a:script
   make! 
   copen
   redraw
 endfunction
 
-nnoremap <silent> <C-B> :call Make("build.bash")<CR><CR>
-nnoremap <silent> <C-L> :call Make("misc/lint.bash")<CR><CR>
+nnoremap <silent> <C-T> :compiler pyunit <bar> call Make("python", "tests.py")<CR><CR>
+nnoremap <silent> <C-B> :compiler gcc <bar> call Make("bash", "build.bash")<CR><CR>
+nnoremap <silent> <C-L> :compiler gcc <bar> call Make("bash", "misc/lint.bash")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
