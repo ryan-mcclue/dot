@@ -56,16 +56,25 @@ colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
-function! Make(interpreter, script)
-  let &makeprg=a:interpreter . " " . a:script
+function! Make(script)
+  if &ft ==# "python"
+    compiler pyunit
+  elif &ft ==# "c" || &ft ==# "cpp"
+    compiler gcc
+  else
+    return 0
+  endif
+
+  let &makeprg="bash " . a:script
+
   make! 
   copen
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :compiler pyunit <bar> call Make("python", "tests.py")<CR><CR>
-nnoremap <silent> <C-B> :compiler gcc <bar> call Make("bash", "build.bash")<CR><CR>
-nnoremap <silent> <C-L> :compiler gcc <bar> call Make("bash", "misc/lint.bash")<CR><CR>
+nnoremap <silent> <C-T> :call Make("build-tests.bash")<CR><CR>
+nnoremap <silent> <C-B> :call Make("build.bash")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint.bash")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
