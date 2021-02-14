@@ -59,7 +59,7 @@ cnoremap w!! w !sudo tee %
 function! Make(script)
   if &ft ==# "python"
     compiler pyunit
-  elif &ft ==# "c" || &ft ==# "cpp"
+  else if &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
   else
     return 0
