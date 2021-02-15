@@ -27,19 +27,16 @@ pushd gnome-terminal-colors-solarized
 popd
 rm -rf gnome-terminal-colors-solarized
 
-# IMPORTANT(Ryan): Must manually right-click and 'Allow Launching' for next step to work
-cp cdt.desktop ~/Desktop
-# NOTE(Ryan): Copy here for shortcut to appear in search so it can be pinned to favourites
-cp cdt.desktop ~/.local/share/applications/
-
-
 mkdir ~/.bash
 wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -O ~/.bash/git-prompt.sh
 
 cp .bashrc ~/.bashrc
 
-mkdir -p ~/prog/{personal,apps}
+echo ~/.local/share/applications ~/Desktop | xargs cp cdt.desktop
+echo ~/.local/share/applications ~/Desktop | xargs cp pycharm.desktop
+echo ~/.local/share/applications ~/Desktop | xargs cp sourcetrail.desktop
 
+mkdir -p ~/prog/{personal,apps,sources}
 
 printf "${green}CONFIGURING GPG AND SSH\n${reset}"
 gpg --import private-key.asc

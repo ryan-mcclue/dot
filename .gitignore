@@ -12,7 +12,8 @@
 !.bashrc
 
 !ubuntu-env-setup.bash
-!codeclap.desktop
-!codeclap-icon.png
+!sourcetrail.desktop
+!cdt.desktop
+!pycharm.desktop
 
 !.vimrc
