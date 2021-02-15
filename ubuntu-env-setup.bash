@@ -32,9 +32,9 @@ wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-pro
 
 cp .bashrc ~/.bashrc
 
-echo ~/.local/share/applications ~/Desktop | xargs cp cdt.desktop
-echo ~/.local/share/applications ~/Desktop | xargs cp pycharm.desktop
-echo ~/.local/share/applications ~/Desktop | xargs cp sourcetrail.desktop
+echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp cdt.desktop
+echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp pycharm.desktop
+echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp sourcetrail.desktop
 
 mkdir -p ~/prog/{personal,apps,sources}
 
