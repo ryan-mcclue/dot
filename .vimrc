@@ -58,7 +58,11 @@ cnoremap w!! w !sudo tee %
 
 function! Make(script)
   if &ft ==# "python"
-    compiler pyunit
+    if a:script ==# "build-tests.bash"
+      compiler pyunit
+    else
+      compiler gcc
+    endif
   elseif &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
   else
