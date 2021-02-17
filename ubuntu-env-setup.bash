@@ -71,3 +71,9 @@ git config --global difftool.vimdiff.cmd 'vim -f -d -c "wincmd h" -c '\''cd "$GI
 # NOTE(Ryan): This allows the use of :cquit to exit the entire diff process. $
 git config --global difftool.trustExitCode true
 git config --global difftool.prompt false
+git config --global push.default simple
+git config --global pull.rebase true
+git config --global alias.adog "log --all --decorate --oneline --graph" 
+git config --global merge.tool vimdiff
+git config --global merge.conflictstyle diff3
+git config --global mergetool.prompt false

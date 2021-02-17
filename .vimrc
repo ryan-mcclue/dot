@@ -24,6 +24,7 @@ nnoremap <silent> <expr> Q &diff ? ":cquit!\<CR>" : Q
 nnoremap <silent> <expr> q &diff ? ":qall!\<CR>" : q
 nnoremap <silent> <expr> t &diff ? ":windo diffoff \<bar> wincmd h\<CR>" : t
 nnoremap <silent> <expr> e &diff ? "\<C-W>\<C-O>" : e
+nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <C-N>
 
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
@@ -59,7 +60,8 @@ cnoremap w!! w !sudo tee %
 function! Make(script)
   if &ft ==# "python"
     if a:script ==# "build-tests.bash"
-      compiler pyunit
+      " NOTE(Ryan): compiler pyunit if wanting to change
+      compiler gcc
     else
       compiler gcc
     endif
