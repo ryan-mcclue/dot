@@ -60,7 +60,7 @@ cnoremap w!! w !sudo tee %
 function! Make(script)
   if &ft ==# "python"
     if a:script ==# "build-tests.bash"
-      " NOTE(Ryan): compiler pyunit if wanting to change
+      " NOTE(Ryan): compiler pyunit if wanting to change from pytest
       compiler gcc
     else
       compiler gcc
@@ -114,7 +114,8 @@ inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
-" NOTE(Ryan): ctags --C-kinds=+p -R *
+" NOTE(Ryan): ctags --list-kinds=c++
+" ctags --c-kinds=+lpx -R *
 set tags+=/usr/include/**/tags
 
 augroup IndentSettings
