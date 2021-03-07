@@ -137,7 +137,7 @@ augroup AutoSaveFolds
   autocmd!
 
   autocmd BufWinLeave *.c,*.cpp,*.h,*.py,*.html,*.css,*.js mkview
-  autocmd BufWinEnter *.c,*.cpp,*.h,*.py,*.html,*.css,*.js silent loadview
+  autocmd BufWinEnter *.c,*.cpp,*.h,*.py,*.html,*.css,*.js silent loadview | set foldmethod=manual
 augroup END
 
 augroup CommentRegions
