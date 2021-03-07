@@ -38,7 +38,7 @@ set foldlevelstart=0
 syntax on
 set number
 
-if has("gui_gtk3")
+if has("gui_running")
   set guifont=Inconsolata\ 14
   cd ~/prog/personal/
 endif
