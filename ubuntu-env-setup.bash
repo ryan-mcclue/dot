@@ -32,6 +32,8 @@ wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-pro
 
 cp .bashrc ~/.bashrc
 
+cp .gdbinit ~/.gdbinit
+
 echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp cdt.desktop
 echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp pycharm.desktop
 echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp sourcetrail.desktop
