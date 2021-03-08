@@ -28,6 +28,8 @@ nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <
 
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
+command! Tabnew tabnew | tcd ~/prog/personal 
+
 set incsearch hlsearch 
 
 nnoremap <silent> <Esc><Esc> :silent! nohls<CR> 
@@ -40,7 +42,8 @@ set number
 
 if has("gui_running")
   set guifont=Inconsolata\ 14
-  cd ~/prog/personal/
+  " IMPORTANT(Ryan): Always use tcd over cd!
+  tcd ~/prog/personal/
 endif
 
 set showmatch
@@ -114,8 +117,8 @@ inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
-" NOTE(Ryan): ctags --list-kinds=c++
-" ctags --c-kinds=+lpx -R *
+" NOTE(Ryan): ctags --list-kinds=c
+" ctags --c++-kinds=+lpx --fields=+iaS --extra=+q -R *
 set tags+=/usr/include/**/tags
 
 augroup IndentSettings
