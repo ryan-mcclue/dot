@@ -116,15 +116,24 @@ inoremap <expr> q pumvisible() ? "\<C-E>" : 'q'
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
-nnoremap <S-F> :vimgrep //gj **/*.c **/*.cpp **/*.h <bar> copen<C-Left><C-Left><C-Left><C-Left><C-Left><Right>
+nnoremap <S-F> :vimgrep //gj **/* <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right>
+nnoremap <C-F> :call ReplaceAcrossAllFiles(
+function! ReplaceAcrossAllFiles(search, replace)
+  silent! execute "vimgrep /" . a:search . "/gj **/* | copen"
+  silent! execute  "cfdo %s/" . a:search . "/" . a:replace . "/gc"
+  silent! cfdo update
+endfunction
+
 " NOTE(Ryan): ctags --list-kinds=c
 " ctags --c++-kinds=+lpx --fields=+iaS --extra=+q -R *
 set tags+=/usr/include/**/tags
+set tags+=~/prog/sources/**/tags
+
 
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript,css setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript,css,vim setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartBashFile()
