@@ -120,7 +120,7 @@ nnoremap <S-F> :vimgrep //gj **/* <bar> copen<C-B><Right><Right><Right><Right><R
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 function! ReplaceAcrossAllFiles(search, replace)
   silent! execute "vimgrep /" . a:search . "/gj **/* | copen"
-  silent! execute  "cfdo %s/" . a:search . "/" . a:replace . "/gc"
+  silent! execute  "cfdo %s/\v" . a:search . "/" . a:replace . "/gc"
   silent! cfdo update
 endfunction
 
