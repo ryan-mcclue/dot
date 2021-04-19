@@ -4,6 +4,7 @@
 
 eval $(dircolors ~/.dir_colors/dircolors) 
 alias ls='ls --color=auto'
+alias grep='grep --color=auto'
 
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
