@@ -3,6 +3,7 @@
 [[ $- == *i* ]] || return
 
 eval $(dircolors ~/.dir_colors/dircolors) 
+alias ls='ls --color=auto'
 
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
