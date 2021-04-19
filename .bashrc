@@ -4,6 +4,8 @@
 
 eval $(dircolors ~/.dir_colors/dircolors) 
 
+export HISTTIMEFORMAT="%d/%m/%y %T "
+
 source ~/.bash/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWCOLORHINTS=true
