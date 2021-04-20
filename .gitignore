@@ -11,10 +11,10 @@
 
 !.bashrc
 !.gdbinit
+!.inputrc
 
 !ubuntu-env-setup.bash
 !sourcetrail.desktop
 !cdt.desktop
-!pycharm.desktop
 
 !.vimrc
