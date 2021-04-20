@@ -12,9 +12,9 @@ source ~/.bash/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWCOLORHINTS=true
 
-dark_green='\e[01;32m'
-dark_blue='\e[01;34m'
-colour_reset='\e[m'
+dark_green='\[\e[01;32m\]'
+dark_blue='\[\e[01;34m\]'
+colour_reset='\[\e[m\]'
 
 export PROMPT_COMMAND='__git_ps1 "${dark_green}\u@\h${colour_reset}${dark_blue}:\w" "\\\$ ${colour_reset}"'
 
