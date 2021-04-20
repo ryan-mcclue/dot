@@ -27,6 +27,9 @@ pushd gnome-terminal-colors-solarized
 popd
 rm -rf gnome-terminal-colors-solarized
 
+mkdir /root/.dir_colors
+cp ~/.dir_colors/dircolors /root/.dir_colors
+
 mkdir ~/.bash /root/.bash
 wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -O ~/.bash/git-prompt.sh
 cp ~/.bash/git-prompt.sh /root/.bash

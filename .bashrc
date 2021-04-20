@@ -18,7 +18,7 @@ colour_reset='\e[m'
 
 export PROMPT_COMMAND='__git_ps1 "${dark_green}\u@\h${colour_reset}${dark_blue}:\w" "\\\$ ${colour_reset}"'
 
-cd ~/prog/personal
+[[ ~ == "/root" ]] || cd ~/prog/personal
 
 # NOTE(Ryan): This is to handle particular python scripts
 export PATH="$PATH:~/.local/bin"
