@@ -42,6 +42,7 @@ cp .gdbinit ~/.gdbinit
 cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications  
 
 add-apt-repository ppa:ryan-mcclue/ppa-test -y
+sudo apt install ubuntu-unity-desktop
 
 mkdir -p ~/prog/{personal,apps,sources}
 
