@@ -39,8 +39,9 @@ echo ~ /root | xargs -n 1 cp .inputrc
 
 cp .gdbinit ~/.gdbinit
 
-echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp cdt.desktop
-echo ~/.local/share/applications ~/Desktop | xargs -n 1 cp sourcetrail.desktop
+cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications  
+
+add-apt-repository ppa:ryan-mcclue/ppa-test -y
 
 mkdir -p ~/prog/{personal,apps,sources}
 

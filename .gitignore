@@ -15,6 +15,7 @@
 
 !ubuntu-env-setup.bash
 !sourcetrail.desktop
-!cdt.desktop
+!vtune.desktop
+!ghidra.desktop
 
 !.vimrc
