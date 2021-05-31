@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 # SPDX-License-Identifier: zlib-acknowledgement
-
+if false; then
 red='\033[31m'
 green='\033[32m'
 reset='\033[0m'
@@ -44,7 +44,6 @@ cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications
 # IMPORTANT(Ryan): Contained in /proc/sys/kernel. Sysctl will modify kernel parameters at
 # run time
 sudo sh -c 'echo kernel.perf_event_paranoid=1 >> /etc/sysctl.d/local.conf'
-
 
 sudo add-apt-repository ppa:ryan-mcclue/ppa-test -y
 sudo apt install ubuntu-unity-desktop
@@ -90,3 +89,31 @@ git config --global alias.adog "log --all --decorate --oneline --graph"
 git config --global merge.tool vimdiff
 git config --global merge.conflictstyle diff3
 git config --global mergetool.prompt false
+
+fi
+
+# TODO(Ryan): Condense into function
+git clone --depth 1 https://github.com/torvalds/linux ~/prog/sources/linux
+pushd ~/prog/sources/linux
+find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
+popd
+
+git clone --depth 1 https://github.com/gcc-mirror/gcc ~/prog/sources/gcc
+pushd ~/prog/sources/gcc
+find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
+popd
+
+git clone --depth 1 https://github.com/freedesktop/xorg-libX11 ~/prog/sources/xorg-libX11
+pushd ~/prog/sources/xorg-libX11
+find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
+popd
+
+git clone --depth 1 https://github.com/freedesktop/xorg-libXrender ~/prog/sources/xorg-libXrender 
+pushd ~/prog/sources/xorg-libXrender
+find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
+popd
+
+git clone --depth 1 https://github.com/freedesktop/xorg-libXrandr ~/prog/sources/xorg-libXrandr 
+pushd ~/prog/sources/xorg-libXrandr
+find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
+popd
