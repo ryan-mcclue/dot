@@ -41,7 +41,12 @@ cp .gdbinit ~/.gdbinit
 
 cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications  
 
-add-apt-repository ppa:ryan-mcclue/ppa-test -y
+# IMPORTANT(Ryan): Contained in /proc/sys/kernel. Sysctl will modify kernel parameters at
+# run time
+sudo sh -c 'echo kernel.perf_event_paranoid=1 >> /etc/sysctl.d/local.conf'
+
+
+sudo add-apt-repository ppa:ryan-mcclue/ppa-test -y
 sudo apt install ubuntu-unity-desktop
 
 mkdir -p ~/prog/{personal,apps,sources}
