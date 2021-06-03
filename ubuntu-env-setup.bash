@@ -44,6 +44,7 @@ cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications
 # IMPORTANT(Ryan): Contained in /proc/sys/kernel. Sysctl will modify kernel parameters at
 # run time
 sudo sh -c 'echo kernel.perf_event_paranoid=1 >> /etc/sysctl.d/local.conf'
+sudo sh -c 'echo kernel.yama.ptrace_scope=0 >> /etc/sysctl.d/local.conf'
 
 sudo add-apt-repository ppa:ryan-mcclue/ppa-test -y
 sudo apt install ubuntu-unity-desktop
