@@ -70,6 +70,14 @@ function! Make(script)
     endif
   elseif &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
+  elseif &ft ==# "java"
+    if a:script ==# "build-tests.bash"
+      let &errorformat = 
+        \ "%.%#unsw\.test%.%#(%f:%l),"
+        \. "%DEntering dir '%f',%XLeaving dir,"
+    else
+      compiler javac
+    endif
   else
     return 0
   endif
