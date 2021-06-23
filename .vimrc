@@ -157,8 +157,8 @@ endfunction
 augroup AutoSaveFolds
   autocmd!
 
-  autocmd BufWinLeave ?* mkview
-  autocmd BufWinEnter ?* silent loadview | set foldmethod=manual
+  autocmd BufWinLeave *.c,*.cpp,*.h,*.bash,*.py mkview
+  autocmd BufWinEnter *.c,*.cpp,*.h,*.bash,*.py silent loadview | set foldmethod=manual
 augroup END
 
 augroup CommentRegions
