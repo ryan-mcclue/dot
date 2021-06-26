@@ -41,9 +41,13 @@ syntax on
 set number
 
 if has("gui_running")
-  set guifont=Inconsolata\ 14
-  " IMPORTANT(Ryan): Always use tcd over cd!
-  tcd ~/prog/personal/
+  if has("gui_gtk3")
+    set guifont=Inconsolata\ 14
+    " IMPORTANT(Ryan): Always use tcd over cd!
+    tcd ~/prog/personal/
+  else
+    set guifont=Consolas:h11:cANSI
+  endif
 endif
 
 set showmatch
