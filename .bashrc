@@ -16,7 +16,14 @@ dark_green='\[\e[01;32m\]'
 dark_blue='\[\e[01;34m\]'
 colour_reset='\[\e[m\]'
 
-export PROMPT_COMMAND='__git_ps1 "${dark_green}\u@\h${colour_reset}${dark_blue}:\w" "\\\$ ${colour_reset}"'
+venv_name () { 
+  v_name="${VIRTUAL_ENV##*/}"
+  if [[ ! -z "${v_name}" ]]; then
+    printf "($v_name)"
+  fi
+}
+
+export PROMPT_COMMAND='venv_name;__git_ps1 "${dark_green}\u@\h${colour_reset}${dark_blue}:\w" "\\\$ ${colour_reset}"'
 
 [[ ~ == "/root" ]] || cd ~/prog/personal
 
