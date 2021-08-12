@@ -28,8 +28,6 @@ nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <
 
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
-command! Tabnew tabnew | tcd ~/prog/personal 
-
 set incsearch hlsearch 
 
 nnoremap <silent> <Esc><Esc> :silent! nohls<CR> 
@@ -43,8 +41,6 @@ set number
 if has("gui_running")
   if has("gui_gtk3")
     set guifont=Inconsolata\ 14
-    " IMPORTANT(Ryan): Always use tcd over cd!
-    tcd ~/prog/personal/
   else
     set guifont=Consolas:h11:cANSI
   endif
