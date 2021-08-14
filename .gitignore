@@ -4,7 +4,6 @@
 
 !*/
 
-!.gitignore
 !.gitattributes
 
 !README.md
@@ -13,9 +12,6 @@
 !.gdbinit
 !.inputrc
 
-!ubuntu-env-setup.bash
-!sourcetrail.desktop
-!vtune.desktop
-!ghidra.desktop
+!setup
 
 !.vimrc

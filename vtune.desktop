@@ -1,9 +1,0 @@
-#! /usr/bin/env xdg-open
-[Desktop Entry]
-Version=1.0
-Type=Application
-Terminal=false
-Exec=/home/ryan/intel/oneapi/vtune/latest/bin64/vtune-gui
-Name=VTune
-Comment=Profiler
-Icon=/home/ryan/intel/oneapi/vtune/latest/bin64/resources/app/icons/VTune.png

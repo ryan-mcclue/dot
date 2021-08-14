@@ -62,7 +62,7 @@ cnoremap w!! w !sudo tee %
 
 function! Make(script)
   if &ft ==# "python"
-    if a:script ==# "build-tests.bash"
+    if a:script ==# "build-tests"
       " NOTE(Ryan): compiler pyunit if wanting to change from pytest
       compiler gcc
     else
@@ -71,7 +71,7 @@ function! Make(script)
   elseif &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
   elseif &ft ==# "java"
-    if a:script ==# "build-tests.bash"
+    if a:script ==# "build-tests"
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
@@ -82,16 +82,16 @@ function! Make(script)
     return 0
   endif
 
-  let &makeprg="bash " . a:script
+  let &makeprg="./" . a:script
 
   make! 
   copen
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :call Make("build-tests.bash")<CR><CR>
-nnoremap <silent> <C-B> :call Make("build.bash")<CR><CR>
-nnoremap <silent> <C-L> :call Make("misc/lint.bash")<CR><CR>
+nnoremap <silent> <C-T> :call Make("build-tests")<CR><CR>
+nnoremap <silent> <C-B> :call Make("build")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
@@ -137,17 +137,12 @@ endfunction
 set tags+=/usr/include/**/tags
 set tags+=~/prog/sources/**/tags
 
-
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript,css,vim,java setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript,css,vim,java,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
-function! StartBashFile()
-  normal i#! /usr/bin/env bash
-  normal o# SPDX-License-Identifier: zlib-acknowledgement
-endfunction
 function! StartPythonFile()
   normal i#! /usr/bin/env python3
   normal o# SPDX-License-Identifier: zlib-acknowledgement
@@ -157,8 +152,8 @@ endfunction
 augroup AutoSaveFolds
   autocmd!
 
-  autocmd BufWinLeave *.c,*.cpp,*.h,*.bash,*.py mkview
-  autocmd BufWinEnter *.c,*.cpp,*.h,*.bash,*.py silent loadview | set foldmethod=manual
+  autocmd BufWinLeave *.* mkview
+  autocmd BufWinEnter *.* silent! loadview | set foldmethod=manual
 augroup END
 
 augroup CommentRegions
@@ -166,7 +161,6 @@ augroup CommentRegions
 
   autocmd BufNewFile *.c,*.h,*.cpp,*.js normal i// SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile .gitignore,.gitattributes,*.yml normal i# SPDX-License-Identifier: zlib-acknowledgement
-  autocmd BufNewFile *.bash :call StartBashFile()
   autocmd BufNewFile *.py :call StartPythonFile()
   autocmd BufNewFile *.bat normal i:: SPDX-License-Identifier: zlib-acknowledgement
   autocmd BufNewFile *.md,*.html normal i<!-- SPDX-License-Identifier: zlib-acknowledgement -->

@@ -1,45 +1,41 @@
-#! /usr/bin/env bash
+#!/bin/sh
+
 # SPDX-License-Identifier: zlib-acknowledgement
-red='\033[31m'
-green='\033[32m'
-reset='\033[0m'
+_dark_red_fg=$'\e[01;31m'
+_colour_reset=$'\e[0m'
 
-if [[ $EUID -eq 0 ]]; then
-  printf "${red}CANNOT BE ROOT TO IMPORT GPG/SSH KEYS FOR USER!\n${reset}"
+xmsg() {
+  printf "${_dark_red_fg}\
+${1}\n\
+${_colour_reset}" >&2
   exit 1
-fi
+}
 
-if [[ ! -f private-key.asc ]]; then
-  printf "${red}REQUIRE GPG PRIVATE-KEY.ASC TO BE IN $(pwd)\n${reset}"
-  exit 2
-fi
+test ${EUID} -eq 0 && \
+  xmsg "CANNOT BE ROOT TO IMPORT GPG/SSH KEYS FOR USER!"
 
-if [[ ! -f .ssh/id_rsa || ! -f .ssh/id_rsa.pub ]]; then
-  printf "${red}REQUIRE .SSH FOLDER TO BE POPULATED IN $(pwd)\n${reset}"
-  exit 3
-fi
+test ! -f 'private-key.asc' && \
+  xmsg "REQUIRE GPG PRIVATE-KEY.ASC TO BE IN ${PWD}"
 
-printf "${green}CONFIGURING GNOME TERMINAL AND BASH\n${reset}"
-git clone https://github.com/aruhier/gnome-terminal-colors-solarized.git
-pushd gnome-terminal-colors-solarized
+test ! -f '.ssh/id_rsa' -o ! -f '.ssh/id_rsa.pub' && \
+  xmsg "REQUIRE .SSH FOLDER TO BE POPULATED IN ${PWD}"
+
+command -v git >/dev/null 2>&1 && \
+  xmsg "REQUIRE GIT TO BE INSTALLED"
+
+command -v gpg >/dev/null 2>&1 && \
+  xmsg "REQUIRE GPG TO BE INSTALLED"
+
+git clone \
+  'https://github.com/aruhier/gnome-terminal-colors-solarized.git'
+cd 'gnome-terminal-colors-solarized'
 ./install.sh --install-dircolors
-popd
-rm -rf gnome-terminal-colors-solarized
+cd -
+rm -rf 'gnome-terminal-colors-solarized'
 
-mkdir /root/.dir_colors
-cp ~/.dir_colors/dircolors /root/.dir_colors
+ln -sf "~" .bashrc, .inputrc, .gdbinit
 
-mkdir ~/.bash /root/.bash
-wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -O ~/.bash/git-prompt.sh
-cp ~/.bash/git-prompt.sh /root/.bash
-
-echo ~ /root | xargs -n 1 cp .bashrc
-echo ~ /root | xargs -n 1 cp .inputrc
-
-cp .gdbinit ~/.gdbinit
-
-cp {sourcetrail,ghidra,vtune}.desktop ~/.local/share/applications  
-
+# PUT IN SCRIPTS REPO
 # IMPORTANT(Ryan): Contained in /proc/sys/kernel. Sysctl will modify kernel parameters at
 # run time
 sudo sh -c 'echo kernel.perf_event_paranoid=1 >> /etc/sysctl.d/local.conf'
@@ -48,9 +44,13 @@ sudo sh -c 'echo kernel.yama.ptrace_scope=0 >> /etc/sysctl.d/local.conf'
 sudo add-apt-repository ppa:ryan-mcclue/ppa-test -y
 sudo apt install ubuntu-unity-desktop
 
-mkdir -p ~/prog/{personal,apps,sources}
+mkdir -p "~/prog/personal" \
+  "~/prog/apps" \
+  "~/prog/sources" \
+  "~/prog/toolchains"
 
-printf "${green}CONFIGURING GPG AND SSH\n${reset}"
+git clone scripts
+
 gpg --import private-key.asc
 mkdir ~/.ssh
 cp -r .ssh/. ~/.ssh 
@@ -76,6 +76,10 @@ git config --global user.signingkey ${gpg_keyid}
 gpg_loc=$(which gpg)
 git config --global gpg.program ${gpg_loc}
 
+# Ensure the .git-templates/hooks are executable
+git config --global init.templatedir '~/.git_templates'
+git config --global commit.template '~/.gitmessage'  
+
 git config --global commit.gpgsign true
 git config --global diff.tool vimdiff
 # NOTE(Ryan): This reorders the default vimdiff windows, i.e. the staged file is on the left. $
@@ -92,7 +96,7 @@ git config --global mergetool.prompt false
 
 fi
 
-# TODO(Ryan): Condense into function
+# TODO(Ryan): Put into scripts folder
 git clone --depth 1 https://github.com/torvalds/linux ~/prog/sources/linux
 pushd ~/prog/sources/linux
 find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpx -R
