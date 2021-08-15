@@ -152,8 +152,8 @@ endfunction
 augroup AutoSaveFolds
   autocmd!
 
-  autocmd BufWinLeave *.* mkview
-  autocmd BufWinEnter *.* silent! loadview | set foldmethod=manual
+  autocmd BufWinLeave * mkview
+  autocmd BufWinEnter * silent! loadview | set foldmethod=manual
 augroup END
 
 augroup CommentRegions
