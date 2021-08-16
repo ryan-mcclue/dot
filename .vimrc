@@ -61,28 +61,52 @@ colorscheme solarized
 cnoremap w!! w !sudo tee %
 
 function! Make(script)
+  if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
+    echoerr a:script . " does not exist!"
+    return 1
+  endif
+
+  # NOTE(Ryan): Shell toolchain
+  # Linting: shellcheck
+  if &ft ==# "sh" && a:script ==# "misc/lint"
+    compiler gcc 
+  endif
+
+  # NOTE(Ryan): Python toolchain
+  # compiler, tester, linter
   if &ft ==# "python"
     if a:script ==# "build-tests"
-      " NOTE(Ryan): compiler pyunit if wanting to change from pytest
-      compiler gcc
+      compiler pyunit
     else
       compiler gcc
     endif
-  elseif &ft ==# "c" || &ft ==# "cpp"
+  endif
+
+  # NOTE(Ryan): C/C++ toolchain
+  # Linting: MISRA
+  # Compilation: gcc
+  # Testing: 
+  if &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
-  elseif &ft ==# "java"
+  endif
+
+  # IMPORTANT(Ryan): Ad-hoc java toolchain for university course.
+  if &ft ==# "java"
     if a:script ==# "build-tests"
+      " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
     else
       compiler javac
     endif
-  else
-    return 0
   endif
 
-  let &makeprg="./" . a:script
+  if &ft ==# "sh"
+    let &makeprg="shellcheck " . expand('%')
+  else
+    let &makeprg="./" . a:script
+  endif
 
   make! 
   copen
