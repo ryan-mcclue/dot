@@ -13,6 +13,9 @@ set expandtab
 set shiftround 
 set autowrite
 
+" NOTE(Ryan): Allow indentation to be set to 2 spaces instead of the default 4 
+let g:python_recommended_style = 0
+
 filetype plugin indent on
 set autoindent
 
@@ -89,7 +92,7 @@ function! Make(script)
 
   " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
   if &ft ==# "java"
-    if a:script ==# "build-tests"
+    if a:script ==# "run-tests"
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
@@ -109,7 +112,7 @@ function! Make(script)
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :call Make("build-tests")<CR><CR>
+nnoremap <silent> <C-T> :call Make("run-tests")<CR><CR>
 nnoremap <silent> <C-B> :call Make("build")<CR><CR>
 nnoremap <silent> <C-L> :call Make("lint")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
@@ -160,7 +163,7 @@ set tags+=~/prog/sources/**/tags
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript,css,vim,java,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript,css,vim,java,sh,python setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartPythonFile()
@@ -168,7 +171,10 @@ function! StartPythonFile()
   normal o# SPDX-License-Identifier: zlib-acknowledgement
 endfunction
 
-" NOTE(Ryan): Saved to &viewdir
+" IMPORTANT(Ryan): View files contain information about indentation.
+" Therefore, subsequent changes to global indentation settings in .vimrc 
+" will be overriden when loading the view file.
+" This can be seen with :verbose set tabstop?
 augroup AutoSaveFolds
   autocmd!
 
