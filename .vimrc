@@ -61,39 +61,35 @@ colorscheme solarized
 cnoremap w!! w !sudo tee %
 
 function! Make(script)
-  if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
+  if &ft !=# "sh" && a:script !=# "lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
     return 1
   endif
 
-  # NOTE(Ryan): Shell toolchain
-  # Linting: shellcheck
-  if &ft ==# "sh" && a:script ==# "misc/lint"
+  " NOTE(Ryan): Shell toolchain
+  " linter: shellcheck
+  if &ft ==# "sh" && a:script ==# "lint"
     compiler gcc 
   endif
 
-  # NOTE(Ryan): Python toolchain
-  # compiler, tester, linter
+  " NOTE(Ryan): Python toolchain
+  " linter: pylint (Google style rcfile)
+  " tester: pytest + coverage
   if &ft ==# "python"
-    if a:script ==# "build-tests"
-      compiler pyunit
-    else
-      compiler gcc
-    endif
+    compiler gcc
   endif
 
-  # NOTE(Ryan): C/C++ toolchain
-  # Linting: MISRA
-  # Compilation: gcc
-  # Testing: 
+  " NOTE(Ryan): C/C++ toolchain
+  " linter: MISRA
+  " compilation: gcc
+  " testing: 
   if &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
   endif
 
-  # IMPORTANT(Ryan): Ad-hoc java toolchain for university course.
+  " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
   if &ft ==# "java"
     if a:script ==# "build-tests"
-      " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
@@ -103,7 +99,7 @@ function! Make(script)
   endif
 
   if &ft ==# "sh"
-    let &makeprg="shellcheck " . expand('%')
+    let &makeprg="shellcheck -f gcc " . expand('%')
   else
     let &makeprg="./" . a:script
   endif
@@ -115,7 +111,7 @@ endfunction
 
 nnoremap <silent> <C-T> :call Make("build-tests")<CR><CR>
 nnoremap <silent> <C-B> :call Make("build")<CR><CR>
-nnoremap <silent> <C-L> :call Make("misc/lint")<CR><CR>
+nnoremap <silent> <C-L> :call Make("lint")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
@@ -168,7 +164,7 @@ augroup IndentSettings
 augroup end
 
 function! StartPythonFile()
-  normal i#! /usr/bin/env python3
+  normal i#!/usr/bin/python3
   normal o# SPDX-License-Identifier: zlib-acknowledgement
 endfunction
 
@@ -176,7 +172,7 @@ endfunction
 augroup AutoSaveFolds
   autocmd!
 
-  autocmd BufWinLeave * mkview
+  autocmd BufWinLeave * silent! mkview
   autocmd BufWinEnter * silent! loadview | set foldmethod=manual
 augroup END
 
