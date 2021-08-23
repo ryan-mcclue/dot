@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # SPDX-License-Identifier: zlib-acknowledgement
-_dark_red_fg=$'\e[01;31m'
-_colour_reset=$'\e[0m'
+_dark_red_fg='\e[01;31m'
+_colour_reset='\e[0m'
 
 xmsg() {
   printf "${_dark_red_fg}\
@@ -13,7 +13,7 @@ ${_colour_reset}" >&2
 
 xinstalled() {
   for program in "$@"; do
-    command -v "${program}" >/dev/null 2>&1 && \
+    command -v "${program}" >/dev/null 2>&1 || \
       xmsg "REQUIRE ${program} TO BE INSTALLED"
   done
 }
