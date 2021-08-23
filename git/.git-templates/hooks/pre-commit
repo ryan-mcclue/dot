@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# SPDX-License-Identifier: zlib-acknowledgement
+_dark_red_fg='\e[01;31m'
+_colour_reset='\e[0m'
+
+xmsg() {
+  printf "${_dark_red_fg}Error:${_colour_reset} ${1}\n" >&2
+  exit 1
+}
+
+current_branch="$(git branch --show-current)"
+if test "$current_branch" = "master"; then
+  xmsg "Don't commit directly to master"  
+fi
