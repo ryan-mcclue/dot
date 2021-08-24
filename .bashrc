@@ -157,6 +157,7 @@ __path_append() {
     test -d "${d}" || continue
     # IMPORTANT(Ryan): Although bash provides convenient pattern substitution it is not POSIX.
     # Whilst unimportant for .bashrc, I want to use POSIX if it's not tedious to do so.
+    # Bash is bloated and there are places where bash is not available, e.g. containers, Dockerfiles, etc.
     case "$PATH" in
       *":$d"* | *":$d:"* | *"$d:"*) ;;
       *) export PATH="${PATH:+"${PATH}:"}${d}" ;;
