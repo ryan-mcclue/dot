@@ -1,18 +1,21 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
 *
-
 !*/
 
 !.gitignore
-!git/**/*
 
 !README.md
+
+!git/.gitmessage
+!git/.git_templates/hooks/pre-commit
+
+!terminator/config
+
+!requirements.txt
 
 !.bashrc
 !.gdbinit
 !.inputrc
-
 !setup
-
 !.vimrc

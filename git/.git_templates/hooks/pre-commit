@@ -1,5 +1,4 @@
 #!/bin/sh
-
 # SPDX-License-Identifier: zlib-acknowledgement
 _dark_red_fg='\e[01;31m'
 _colour_reset='\e[0m'

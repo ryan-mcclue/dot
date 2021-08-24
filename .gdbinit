@@ -1,2 +1,3 @@
+# SPDX-License-Identifier: zlib-acknowledgement
 set disassembly-flavor intel
-dir /usr/src/glibc/glibc-2.31
+set auto-load safe-path misc/

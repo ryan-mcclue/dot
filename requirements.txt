@@ -1,0 +1,7 @@
+git
+gpg
+ssh
+gnome-terminal
+terminator
+vim
+gcc

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: zlib-acknowledgement
 set colored-stats on
 set bell-style none
+# NOTE(Ryan): Useful for sql prompt
 set editing-mode vi

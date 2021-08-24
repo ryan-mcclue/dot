@@ -1,6 +1,6 @@
 #!/bin/sh
-
 # SPDX-License-Identifier: zlib-acknowledgement
+
 _dark_red_fg='\e[01;31m'
 _colour_reset='\e[0m'
 
@@ -14,20 +14,21 @@ ${_colour_reset}" >&2
 xinstalled() {
   for program in "$@"; do
     command -v "${program}" >/dev/null 2>&1 || \
-      xmsg "REQUIRE ${program} TO BE INSTALLED"
+      xmsg "Require ${program} to be installed.\n\
+Run: xargs -a requirements.txt sudo apt install"
   done
 }
 
 # --------------------------- Verify System State ---------------------------
 
-test ${EUID} -eq 0 && \
-  xmsg "CANNOT BE ROOT TO IMPORT GPG/SSH KEYS FOR USER!"
+test "$(id -u)" -eq 0 && \
+  xmsg "Cannot be root to import gpg/ssh keys for user!"
 
 test ! -f 'private-key.asc' && \
-  xmsg "REQUIRE GPG PRIVATE-KEY.ASC TO BE IN ${PWD}"
+  xmsg "Require gpg private-key.asc to be in ${PWD}"
 
 test ! -f '.ssh/id_rsa' -o ! -f '.ssh/id_rsa.pub' && \
-  xmsg "REQUIRE .SSH FOLDER TO BE POPULATED IN ${PWD}"
+  xmsg "Require .ssh folder to be populated in ${PWD}"
 
 xinstalled 'git' 'gpg' 'ssh' 'gnome-terminal' 'terminator' 'vim' 'gcc'
 
@@ -40,36 +41,42 @@ ssh-add
 
 git clone \
   'https://github.com/aruhier/gnome-terminal-colors-solarized.git'
+(
 cd 'gnome-terminal-colors-solarized'
 ./install.sh --install-dircolors
-cd -
+)
 rm -rf 'gnome-terminal-colors-solarized'
 
-ln -sf "~/.bashrc" '.bashrc'
-ln -sf "~/.inputrc" '.inputrc'
-ln -sf "~/.gdbinit" '.gdbinit'
-ln -sf "~/.vimrc" 'vim/.vimrc'
-mkdir -p "~/.vim/colors"
-ln -sf "~/.vim/colors/solarized.vim" 'vim/solarized.vim' 
-ln -sf "~/.config/terminator/config" 'terminator/config'
+ln -sf "$HOME/.bashrc" '.bashrc'
+ln -sf "$HOME/.inputrc" '.inputrc'
+ln -sf "$HOME/.gdbinit" '.gdbinit'
+ln -sf "$HOME/.config/terminator/config" 'terminator/config'
+
+ln -sf "$HOME/.vimrc" '.vimrc'
+mkdir -p "$HOME/.vim/colors"
+git clone 'https://github.com/altercation/vim-colors-solarized.git'
+(
+cd 'vim-colors-solarized'
+cp 'colors/solarized.vim' "$HOME/.vim/colors/"
+)
+rm -rf 'vim-colors-solarized'
 
 # --------------------------- Configure Git ---------------------------
-ln -sf "~/.git/" 
+mkdir -p "$HOME/.git_templates/hooks"
+ln -sf "$HOME/.git_templates/hooks/pre-commit" "git/.git_templates/hooks/pre-commit"
+ln -sf "$HOME/.gitmessage" "git/.gitmessage"
 
 git config --global user.name "Ryan McClue"
 git config --global user.email "re.mcclue@protonmail.com"
 
 gpg_keyid=$(gpg --list-keys | sed -n 4p)
-git config --global user.signingkey ${gpg_keyid}
+git config --global user.signingkey "$gpg_keyid"
 
-gpg_loc=$(which gpg)
-git config --global gpg.program ${gpg_loc}
+gpg_loc=$(commad -v gpg)
+git config --global gpg.program "$gpg_loc"
 
-# Ensure the .git-templates/hooks are executable
-ln -sf 
-git config --global init.templatedir '~/.git_templates'
-git config --global commit.template '~/.gitmessage'  
-
+git config --global init.templatedir "$HOME/.git_templates"
+git config --global commit.template "$HOME/.gitmessage"
 git config --global commit.gpgsign true
 git config --global diff.tool vimdiff
 # NOTE(Ryan): This reorders the default vimdiff windows, i.e. the staged file is on the left.
@@ -84,13 +91,8 @@ git config --global merge.tool vimdiff
 git config --global merge.conflictstyle diff3
 git config --global mergetool.prompt false
 
-# add my proper 
-# sudo add-apt-repository ppa:ryan-mcclue/ppa-test -y
-
 # --------------------------- Setup Directory Structure ---------------------------
-mkdir -p "~/prog/personal" \
-  "~/prog/apps" \
-  "~/prog/sources" \
-  "~/prog/toolchains"
-
-git clone scripts
+mkdir -p "$HOME/prog/personal" \
+  "$HOME/prog/apps" \
+  "$HOME/prog/sources" \
+  "$HOME/prog/toolchains"

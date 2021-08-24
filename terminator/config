@@ -1,0 +1,45 @@
+[global_config]
+[keybindings]
+  new_tab = <Alt>t
+  go_up = <Alt>k
+  go_down = <Alt>j
+  split_horiz = <Primary><Alt>o
+  split_vert = <Primary><Alt>e
+  close_term = <Alt>w
+  copy = <Primary><Alt>c
+  paste = <Primary><Alt>v
+  line_up = <Super>k
+  line_down = <Super>j
+  close_window = <Primary>q
+  move_tab_right = <Primary><Shift>l
+  move_tab_left = <Primary><Shift>h
+  next_tab = <Alt>l
+  prev_tab = <Alt>h
+  switch_to_tab_1 = <Alt>1
+  switch_to_tab_2 = <Alt>2
+  switch_to_tab_3 = <Alt>3
+  switch_to_tab_4 = <Alt>4
+  switch_to_tab_5 = <Alt>5
+  switch_to_tab_6 = <Alt>6
+  switch_to_tab_7 = <Alt>7
+  switch_to_tab_8 = <Alt>8
+  switch_to_tab_9 = <Alt>9
+  switch_to_tab_10 = <Alt>0
+  layout_launcher = <Shift>asciitilde
+[profiles]
+  [[default]]
+    background_color = "#fdf6e3"
+    cursor_color = "#aaaaaa"
+    foreground_color = "#657b83"
+    show_titlebar = False
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+[plugins]
