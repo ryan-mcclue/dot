@@ -136,6 +136,7 @@ alias ls='ls -a --color=auto'
 alias grep='grep --color=auto'
 alias lintian='lintian -iIEcv --pedantic --color auto'
 alias tree='tree -a -I .git'
+alias gdiff='git difftool --cached'
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then

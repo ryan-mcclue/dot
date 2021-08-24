@@ -64,28 +64,19 @@ colorscheme solarized
 cnoremap w!! w !sudo tee %
 
 function! Make(script)
-  if &ft !=# "sh" && a:script !=# "lint" && !filereadable(a:script)
+  if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
     return 1
   endif
 
-  " NOTE(Ryan): Shell toolchain
-  " linter: shellcheck
-  if &ft ==# "sh" && a:script ==# "lint"
+  if &ft ==# "sh" && a:script ==# "misc/lint"
     compiler gcc 
   endif
 
-  " NOTE(Ryan): Python toolchain
-  " linter: pylint (Google style rcfile)
-  " tester: pytest + coverage
   if &ft ==# "python"
     compiler gcc
   endif
 
-  " NOTE(Ryan): C/C++ toolchain
-  " linter: MISRA
-  " compilation: gcc
-  " testing: 
   if &ft ==# "c" || &ft ==# "cpp"
     compiler gcc
   endif
@@ -102,7 +93,8 @@ function! Make(script)
   endif
 
   if &ft ==# "sh"
-    let &makeprg="shellcheck -f gcc " . expand('%')
+    " NOTE(Ryan): Exclude checking for variables directly used in printf format string 
+    let &makeprg="shellcheck -e SC2059 -f gcc " . expand('%')
   else
     let &makeprg="./" . a:script
   endif
@@ -112,9 +104,9 @@ function! Make(script)
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :call Make("run-tests")<CR><CR>
-nnoremap <silent> <C-B> :call Make("build")<CR><CR>
-nnoremap <silent> <C-L> :call Make("lint")<CR><CR>
+nnoremap <silent> <C-T> :call Make("misc/run-tests")<CR><CR>
+nnoremap <silent> <C-B> :call Make("misc/build")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
@@ -163,7 +155,7 @@ set tags+=~/prog/sources/**/tags
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript,css,vim,java,sh,python setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartPythonFile()
