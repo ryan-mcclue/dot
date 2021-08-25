@@ -72,7 +72,7 @@ git config --global user.email "re.mcclue@protonmail.com"
 gpg_keyid=$(gpg --list-keys | sed -n 4p)
 git config --global user.signingkey "$gpg_keyid"
 
-gpg_loc=$(commad -v gpg)
+gpg_loc=$(command -v gpg)
 git config --global gpg.program "$gpg_loc"
 
 git config --global init.templatedir "$HOME/.git_templates"
