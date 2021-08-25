@@ -9,7 +9,7 @@ RUN set -ex; \
       ca-certificates sudo git gpg ssh gnome-terminal terminator vim gcc; \
     useradd -m ryan -g sudo; \
     printf "ryan ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo; \
-    git clone https://github.com/ryan-mcclue/cas.git
+    git clone https://github.com/ryan-mcclue/cas.git /home/ryan
     
 CMD su - ryan; \
     cd cas
