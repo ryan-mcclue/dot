@@ -12,3 +12,8 @@ current_branch="$(git branch --show-current)"
 if test "$current_branch" = "master"; then
   xmsg "Don't commit directly to master"  
 fi
+
+case "$current_branch" in
+  wip/*|fix/*) ;;
+  *) xmsg "Start branch names with wip/ or fix/" ;;
+esac
