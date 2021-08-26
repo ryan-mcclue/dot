@@ -1,7 +1,10 @@
+sudo
+ca-certificates 
 git
-gpg
-ssh
+dconf-cli
 gnome-terminal
-terminator
+gnupg
+openssh-client
 vim
+terminator
 gcc

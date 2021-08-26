@@ -7,7 +7,9 @@ RUN set -ex; \
     ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone; \
     apt update; \
     apt install -y --no-install-recommends \
-      sudo ca-certificates git gnupg openssh-client vim gnome-terminal terminator gcc; \
+      sudo ca-certificates git \
+           dconf-cli gnome-terminal \
+           gnupg openssh-client vim terminator gcc; \
     useradd -m ryan -g sudo; \
     printf "ryan ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo; \
     # NOTE(Ryan): Prevent sudo usage prompt appearing on startup
@@ -15,8 +17,9 @@ RUN set -ex; \
     git clone https://github.com/ryan-mcclue/cas.git /home/ryan/cas; \
     chmod 777 -R /home/ryan/cas;
 
-ENTRYPOINT ["/bin/bash", "-l"]
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
 
 USER ryan
 WORKDIR /home/ryan/cas
-# TODO(Ryan): Prevent having to manually run: eval "$(ssh-agent -s)"
+CMD eval "$(ssh-agent -s)"
+# IMPORTANT(Ryan): Will have to manually run: eval "$(ssh-agent -s)"

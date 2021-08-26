@@ -30,7 +30,7 @@ test ! -f 'private-key.asc' && \
 test ! -f '.ssh/id_rsa' -o ! -f '.ssh/id_rsa.pub' && \
   xmsg "Require .ssh folder to be populated in ${PWD}"
 
-xinstalled 'git' 'gpg' 'ssh' 'gnome-terminal' 'terminator' 'vim' 'gcc'
+xinstalled 'git' 'gpg' 'ssh' 'dconf-cli' 'gnome-terminal' 'terminator' 'vim' 'gcc'
 
 # --------------------------- Setup Configuration Files ---------------------------
 gpg --import private-key.asc
@@ -50,6 +50,7 @@ rm -rf 'gnome-terminal-colors-solarized'
 ln -sf '.bashrc' "$HOME/.bashrc"
 ln -sf '.inputrc' "$HOME/.inputrc"
 ln -sf '.gdbinit' "$HOME/.gdbinit"
+mkdir -p "$HOME/.config/terminator"
 ln -sf 'terminator/config' "$HOME/.config/terminator/config"
 
 ln -sf '.vimrc' "$HOME/.vimrc"
