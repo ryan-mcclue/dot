@@ -15,10 +15,10 @@ RUN set -ex; \
     printf "ryan ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo; \
     # NOTE(Ryan): Prevent sudo usage prompt appearing on startup
     touch /home/ryan/.sudo_as_admin_successful; \
-    git clone https://github.com/ryan-mcclue/cas.git /home/ryan/prog/personal/cas; \
+    git clone https://github.com/ryan-mcclue/dot.git /home/ryan/prog/personal/dot; \
     chmod 777 -R /home/ryan/prog;
 
 USER ryan
-WORKDIR /home/ryan/prog/personal/cas
+WORKDIR /home/ryan/prog/personal/dot
 # NOTE(Ryan): This is equivalent to running: eval "$(ssh-agent -c)"
 CMD ["ssh-agent", "bash", "-l"]

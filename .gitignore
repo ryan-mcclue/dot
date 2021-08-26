@@ -6,6 +6,7 @@
 !.gitignore
 
 !README.md
+!LICENSE
 
 !git/.gitmessage
 !git/.git_templates/hooks/pre-commit
