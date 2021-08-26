@@ -1,7 +1,9 @@
 sudo
-ca-certificates 
+ca-certificates
 git
 dconf-cli
+libglib2.0-bin
+wget
 gnome-terminal
 gnupg
 openssh-client

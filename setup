@@ -30,7 +30,8 @@ test ! -f 'private-key.asc' && \
 test ! -f '.ssh/id_rsa' -o ! -f '.ssh/id_rsa.pub' && \
   xmsg "Require .ssh folder to be populated in ${PWD}"
 
-xinstalled 'git' 'gpg' 'ssh' 'dconf-cli' 'gnome-terminal' 'terminator' 'vim' 'gcc'
+xinstalled 'dconf' 'gsettings' 'wget' 'gnome-terminal' \
+  'git' 'gpg' 'ssh' 'terminator' 'vim' 'gcc'
 
 # --------------------------- Setup Configuration Files ---------------------------
 gpg --import private-key.asc
