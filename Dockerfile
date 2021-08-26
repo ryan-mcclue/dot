@@ -16,7 +16,7 @@ RUN set -ex; \
     # NOTE(Ryan): Prevent sudo usage prompt appearing on startup
     touch /home/ryan/.sudo_as_admin_successful; \
     git clone https://github.com/ryan-mcclue/cas.git /home/ryan/prog/personal/cas; \
-    chmod 777 -R /home/ryan/prog/personal/cas;
+    chmod 777 -R /home/ryan/prog;
 
 USER ryan
 WORKDIR /home/ryan/prog/personal/cas
