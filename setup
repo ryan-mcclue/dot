@@ -48,13 +48,13 @@ cd 'gnome-terminal-colors-solarized'
 )
 rm -rf 'gnome-terminal-colors-solarized'
 
-ln -sf '.bashrc' "$HOME/.bashrc"
-ln -sf '.inputrc' "$HOME/.inputrc"
-ln -sf '.gdbinit' "$HOME/.gdbinit"
+ln -sf "$HOME/prog/personal/cas/.bashrc" "$HOME/.bashrc"
+ln -sf "$HOME/prog/personal/cas/.inputrc" "$HOME/.inputrc"
+ln -sf "$HOME/prog/personal/cas/.gdbinit" "$HOME/.gdbinit"
 mkdir -p "$HOME/.config/terminator"
-ln -sf 'terminator/config' "$HOME/.config/terminator/config"
+ln -sf "$HOME/prog/personal/cas/terminator/config" "$HOME/.config/terminator/config"
 
-ln -sf '.vimrc' "$HOME/.vimrc"
+ln -sf "$HOME/prog/personal/cas/.vimrc" "$HOME/.vimrc"
 mkdir -p "$HOME/.vim/colors"
 git clone 'https://github.com/altercation/vim-colors-solarized.git'
 (
@@ -65,8 +65,8 @@ rm -rf 'vim-colors-solarized'
 
 # --------------------------- Configure Git ---------------------------
 mkdir -p "$HOME/.git_templates/hooks"
-ln -sf "git/.git_templates/hooks/pre-commit" "$HOME/.git_templates/hooks/pre-commit"
-ln -sf "git/.gitmessage" "$HOME/.gitmessage"
+ln -sf "$HOME/prog/personal/cas/git/.git_templates/hooks/pre-commit" "$HOME/.git_templates/hooks/pre-commit"
+ln -sf "$HOME/prog/personal/cas/git/.gitmessage" "$HOME/.gitmessage"
 
 git config --global user.name "Ryan McClue"
 git config --global user.email "re.mcclue@protonmail.com"
