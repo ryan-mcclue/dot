@@ -175,6 +175,6 @@ __path_append \
   "$HOME/.local/bin" \
   /usr/local/bin \
   /usr/local/sbin \
-  "$HOME/prog/apps/*/bin" \
-  "$HOME/prog/toolchains/*/bin" \
-  "$HOME/prog/personal/scripts"
+  ~/prog/apps/*/bin \
+  ~/prog/toolchains/*/bin \
+  ~/prog/personal/scripts
