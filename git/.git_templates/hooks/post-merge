@@ -1,0 +1,19 @@
+#!/bin/sh
+# SPDX-License-Identifier: zlib-acknowledgement
+
+current_branch="$(git branch --show-current)"
+
+merged_branch="$(git reflog -1 | cut -d" " -f 4)"
+merged_branch="${merged_branch%:}"
+
+test "$merged_branch" = "master" && exit 0
+
+git branch -d "$merged_branch"
+
+project_name="$(git rev-parse --show-toplevel)"
+project_name="${project_name##*/}"
+
+git ls-remote --exit-code --heads \
+  "git@github.com:ryan-mcclue/$project_name.git" "$merged_branch"
+
+test ! $? -eq 0 && git push origin --delete "$merged_branch"
