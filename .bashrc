@@ -134,7 +134,7 @@ set -o vi noclobber
 alias c='clear'
 alias ls='ls -a --color=auto'
 alias grep='grep --color=auto'
-alias lintian='lintian -iIEcv --pedantic --color auto'
+alias lintian='lintian -i --color auto'
 alias tree='tree -a -I .git'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
