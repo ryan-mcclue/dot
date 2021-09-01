@@ -3,7 +3,7 @@
   new_tab = <Alt>t
   go_up = <Alt>k
   go_down = <Alt>j
-  split_horiz = <Primary><Alt>o
+  split_horiz = <Shift>t
   split_vert = <Primary><Alt>e
   close_term = <Alt>w
   copy = <Primary><Alt>c
