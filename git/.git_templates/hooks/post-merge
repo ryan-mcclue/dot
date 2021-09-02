@@ -2,6 +2,30 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
 current_branch="$(git branch --show-current)"
+if test "$current_branch" -eq "master"; then
+  recent_tag=$(git tag --list --sort=-version:refname | head -1)
+  (
+  IFS=.
+  set -- ${recent_tag#v}
+  major=$1
+  minor=$2
+  patch=$3
+
+  if test $patch -eq 9; then
+    new_patch=0
+    if test $minor -eq 9; then
+      new_minor=0 
+      new_major=$((major + 1))
+    else
+      new_minor=$((minor + 1))
+    fi
+  else
+    new_patch=$((patch + 1))
+  fi
+
+  git tag v${new_major:-0}.${new_minor:-0}.${new_patch:-0}
+  )
+fi
 
 merged_branch="$(git reflog -1 | cut -d" " -f 4)"
 merged_branch="${merged_branch%:}"
