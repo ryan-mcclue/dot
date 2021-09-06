@@ -31,6 +31,10 @@ __ps1() {
 
   local git_dirty_char;
   test -n "$(git status --porcelain 2>/dev/null)" && git_dirty_char="*"
+  # TODO(Ryan): Incorporate detached head 
+  # branch_name=$(git symbolic-ref -q HEAD)
+  # branch_name=${branch_name##refs/heads/}
+  # branch_name=${branch_name:-DETACHED_HEAD}
   local cur_git_branch=$(git branch --show-current 2>/dev/null)
   if test -n "$cur_git_branch"; then
     if test -n "$git_dirty_char"; then
