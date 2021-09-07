@@ -54,6 +54,8 @@ set backspace=indent,eol,start
 set laststatus=2
 set showmode
 set scrolloff=5
+set noscrollbind
+set nocursorbind
 set nowrap
 
 set guioptions+=!
