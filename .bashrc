@@ -141,7 +141,7 @@ alias grep='grep --color=auto'
 alias lintian='lintian -i --color auto'
 alias tree='tree -a -I .git'
 alias gitc='git difftool --cached && git commit'
-alias gitp='git push --tags'
+alias rm='rm -i'
 alias gitcm='git difftool --cached && git commit --no-verify'
 
 if command -v dircolors >/dev/null 2>&1; then 
