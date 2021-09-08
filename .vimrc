@@ -65,6 +65,8 @@ colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
+" IMPORTANT(Ryan): Unfortunately gcc does not provide an option to output
+" absolute file names. Therefore, vim cwd must be root of project
 function! Make(script)
   if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
