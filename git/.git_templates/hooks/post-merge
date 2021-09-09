@@ -40,4 +40,4 @@ project_name="${project_name##*/}"
 git ls-remote --exit-code --heads \
   "git@github.com:ryan-mcclue/$project_name.git" "$merged_branch"
 
-test ! $? -eq 0 && git push origin --delete "$merged_branch"
+test $? -eq 0 && git push origin --delete "$merged_branch"
