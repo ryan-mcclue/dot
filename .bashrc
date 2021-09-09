@@ -29,12 +29,12 @@ __ps1() {
     *) cur_dir="$PWD"
   esac
 
-  local detached_head=$(git symbolic-ref -q HEAD)
+  local detached_head=$(git symbolic-ref HEAD 2>/dev/null)
   if test -n "$detached_head"; then
     local cur_git_branch=$(git branch --show-current 2>/dev/null)
-    local_rev=$(git rev-parse "$cur_git_branch")
+    local_rev=$(git rev-parse "$cur_git_branch" 2>/dev/null)
     remote_rev=$(git rev-parse "origin/$cur_git_branch" 2>/dev/null)
-    base_rev=$(git merge-base "$cur_git_branch" "origin/$cur_git_branch")
+    base_rev=$(git merge-base "$cur_git_branch" "origin/$cur_git_branch" 2>/dev/null)
 
     local git_dirty_char;
     if test -n "$(git status --porcelain 2>/dev/null)"; then
@@ -60,8 +60,9 @@ __ps1() {
       cur_git_branch="$_pdark_yellow_fg($cur_git_branch)$_pcolour_reset"
     fi
   else
-    cur_hash="$(git rev-parse --short HEAD)"
-    cur_git_branch="$_pdark_yellow_fg(¦$cur_hash¦)$_pcolour_reset"
+    cur_hash="$(git rev-parse --short HEAD 2>/dev/null)"
+    cur_hash="${cur_hash:+(¦$cur_hash¦)}"
+    cur_git_branch="${_pdark_yellow_fg}${cur_hash}${_pcolour_reset}"
   fi
 
   # NOTE(Ryan): Chroot takes precedence. 
