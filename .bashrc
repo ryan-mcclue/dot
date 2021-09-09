@@ -109,6 +109,10 @@ $_pdark_green_fg╚ $privelege_char$_pcolour_reset "
 }
 PROMPT_COMMAND="__ps1"
 
+gcd() {
+  cd "$@" && git remote update 2>/dev/null
+} && export -f
+
 _dark_blue_fg=$'\e[01;34m'
 _dark_green_fg=$'\e[01;32m'
 _dark_yellow_bg_white_fg=$'\e[01;43;37m'
