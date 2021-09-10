@@ -77,6 +77,8 @@ git config --global user.signingkey "$gpg_keyid"
 gpg_loc=$(command -v gpg)
 git config --global gpg.program "$gpg_loc"
 
+# IMPORTANT(Ryan): If using multiple ssh keys, specify for particular directory with:
+# git config core.sshCommand "ssh -i ~/.ssh/id_rsa -F /dev/null"
 git config --global init.templatedir "$HOME/.git_templates"
 git config --global commit.template "$HOME/.gitmessage"
 git config --global commit.gpgsign true
