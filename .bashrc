@@ -61,7 +61,8 @@ __ps1() {
     fi
   else
     cur_hash="$(git rev-parse --short HEAD 2>/dev/null)"
-    cur_hash="${cur_hash:+(¦$cur_hash¦)}"
+    cur_tag="$(git describe --tags 2>/dev/null)"
+    cur_hash="${cur_hash:+(¦$cur_hash${cur_tag:+ - $cur_tag}¦)}"
     cur_git_branch="${_pdark_yellow_fg}${cur_hash}${_pcolour_reset}"
   fi
 
