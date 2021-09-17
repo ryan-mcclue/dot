@@ -65,8 +65,6 @@ colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
-" IMPORTANT(Ryan): Unfortunately gcc does not provide an option to output
-" absolute file names. Therefore, vim cwd must be root of project
 function! Make(script)
   if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
@@ -81,13 +79,23 @@ function! Make(script)
     compiler gcc
   endif
 
-  if &ft ==# "c" || &ft ==# "cpp"
+  if &ft ==# "cpp"
     compiler gcc
+  endif
+  
+  if &ft ==# "c"
+    if a:script ==# "misc/run-tests"
+      " NOTE(Ryan): This pattern is for CMocka. 
+      "             %.%# is wildcard for everything
+      let &errorformat = "%.%#---\ %f:%l%.%#"
+    else
+      compiler gcc
+    endif
   endif
 
   " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
   if &ft ==# "java"
-    if a:script ==# "run-tests"
+    if a:script ==# "misc/run-tests"
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
