@@ -140,6 +140,7 @@ export VISUAL=vim
 export PYTHONDONTWRITEBYTECODE=1
 export DEBEMAIL='re.mcclue@protonmail.com'
 export DEBFULLNAME='Ryan McClue'
+export CMAKE_GENERATOR='Ninja'
 
 # NOTE(Ryan): Almost all terminals are xterm, so no real need to detect type.
 export TERM=xterm-256color
