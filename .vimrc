@@ -175,17 +175,6 @@ function! StartPythonFile()
   normal o# SPDX-License-Identifier: zlib-acknowledgement
 endfunction
 
-" IMPORTANT(Ryan): View files contain information about indentation.
-" Therefore, subsequent changes to global indentation settings in .vimrc 
-" will be overriden when loading the view file.
-" This can be seen with :verbose set tabstop?
-augroup AutoSaveFolds
-  autocmd!
-
-  autocmd BufWinLeave * silent! mkview
-  autocmd BufWinEnter * silent! loadview | set foldmethod=manual
-augroup END
-
 augroup CommentRegions
   autocmd!
 
