@@ -163,6 +163,7 @@ endfunction
 " ctags --c++-kinds=+lpx --fields=+iaS --extra=+q -R *
 set tags+=/usr/include/**/tags
 set tags+=~/prog/sources/**/tags
+" TODO(Ryan): To speed up perhaps tags=tags; path=.,sources,include,etc.?
 
 augroup IndentSettings
   autocmd!
