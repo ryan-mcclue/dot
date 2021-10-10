@@ -7,6 +7,6 @@ wget
 gnome-terminal
 gnupg
 openssh-client
-vim
+vim-gtk
 terminator
 gcc
