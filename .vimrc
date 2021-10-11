@@ -168,7 +168,7 @@ set tags+=~/prog/sources/**/tags
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,cmake,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartPythonFile()
