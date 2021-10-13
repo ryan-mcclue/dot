@@ -165,9 +165,11 @@ set -o vi noclobber
 alias c='clear'
 alias ls='ls -a --color=auto'
 alias grep='grep --color=auto'
-alias lintian='lintian -i --color auto'
+alias lintian='lintian -i --color aUto'
 alias tree='tree -a -I .git'
+# TODO(Ryan): Safe rm function
 alias rm='rm -i'
+alias sizeof='du -sh'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
 
@@ -210,4 +212,3 @@ __path_append \
   ~/prog/apps/*/bin \
   ~/prog/toolchains/*/bin \
   ~/prog/personal/scripts \
-  ~/eclipse/*/eclipse
