@@ -169,6 +169,7 @@ alias lintian='lintian -i --color aUto'
 alias tree='tree -a -I .git'
 # TODO(Ryan): Safe rm function
 alias rm='rm -i'
+# TODO(Ryan): Add shell completion
 alias sizeof='du -sh'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
