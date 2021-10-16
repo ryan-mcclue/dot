@@ -160,7 +160,7 @@ function! ReplaceAcrossAllFiles(search, replace)
 endfunction
 
 " NOTE(Ryan): ctags --list-kinds=c
-" ctags --c++-kinds=+lpx --fields=+iaS --extra=+q -R *
+" ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
 set tags+=/usr/include/**/tags
 set tags+=~/prog/sources/**/tags
 " TODO(Ryan): To speed up perhaps tags=tags; path=.,sources,include,etc.?
