@@ -29,6 +29,8 @@ nnoremap <silent> <expr> t &diff ? ":windo diffoff \<bar> wincmd h\<CR>" : t
 nnoremap <silent> <expr> e &diff ? "\<C-W>\<C-O>" : e
 nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <C-N>
 
+nnoremap m q
+
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
 set incsearch hlsearch 
@@ -164,6 +166,11 @@ endfunction
 set tags+=/usr/include/**/tags
 set tags+=~/prog/sources/**/tags
 " TODO(Ryan): To speed up perhaps tags=tags; path=.,sources,include,etc.?
+
+" find . -type f -name "*.cpp" -o -name "*.h" > cscope.files && cscope -b
+" NOTE(Ryan): CSCOPE_DB=cscope.out && export CSCOPE_DB :cs add cscope.out
+" nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space> 
+nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space>
 
 augroup IndentSettings
   autocmd!
