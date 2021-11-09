@@ -22,3 +22,4 @@
 !setup
 !.vimrc
 !Dockerfile
+!.python3-startup.py

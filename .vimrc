@@ -29,6 +29,7 @@ nnoremap <silent> <expr> t &diff ? ":windo diffoff \<bar> wincmd h\<CR>" : t
 nnoremap <silent> <expr> e &diff ? "\<C-W>\<C-O>" : e
 nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <C-N>
 
+" NOTE(Ryan): :norm! @<reg> to replay macro over selection
 nnoremap m q
 
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
@@ -153,7 +154,7 @@ inoremap <expr> q pumvisible() ? "\<C-E>" : 'q'
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
-nnoremap <S-F> :vimgrep //gj **/* <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right>
+nnoremap <S-F> :silent! vimgrep /TODO/gj **/*.[ch] **/*.cpp <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right>
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 function! ReplaceAcrossAllFiles(search, replace)
   silent! execute "vimgrep /" . a:search . "/gj **/* | copen"

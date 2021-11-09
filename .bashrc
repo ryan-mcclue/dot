@@ -137,6 +137,7 @@ fi
 
 export EDITOR=vim
 export VISUAL=vim
+export PYTHONSTARTUP="$HOME/.python3-startup.py"
 export PYTHONDONTWRITEBYTECODE=1
 export DEBEMAIL='re.mcclue@protonmail.com'
 export DEBFULLNAME='Ryan McClue'
@@ -173,6 +174,8 @@ alias rm='rm -i'
 alias sizeof='du -sh'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
+# TODO(Ryan): git aliases for previous commit messages on branch
+# and one for squashing commits
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then

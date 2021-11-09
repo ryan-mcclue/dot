@@ -63,9 +63,14 @@ cp 'colors/solarized.vim' "$HOME/.vim/colors/"
 )
 rm -rf 'vim-colors-solarized'
 
+ln -sf "$HOME/prog/personal/dot/.python3-startup.py" "$HOME/.python3-startup.py"
+
 # --------------------------- Configure Git ---------------------------
 mkdir -p "$HOME/.git_templates/hooks"
-ln -sf "$HOME/prog/personal/dot/git/.git_templates/hooks/pre-commit" "$HOME/.git_templates/hooks/pre-commit"
+ln -sf "$HOME/prog/personal/dot/git/.git_templates/hooks/pre-commit" \
+  "$HOME/.git_templates/hooks/pre-commit"
+ln -sf "$HOME/prog/personal/dot/git/.git_templates/hooks/post-merge" \
+  "$HOME/.git_templates/hooks/post-merge"
 ln -sf "$HOME/prog/personal/dot/git/.gitmessage" "$HOME/.gitmessage"
 
 git config --global user.name "Ryan McClue"
