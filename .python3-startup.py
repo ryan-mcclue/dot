@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
-import math
+import math, os
+import keyboard
 
-def c():
-  pass 
+def clear():
+  os.system("clear")
+
+keyboard.add_hotkey("ctrl+l", clear)
