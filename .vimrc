@@ -32,6 +32,11 @@ nnoremap <silent> <expr> <C-C> &diff ? /^\(<<<<<<<\\|=======\\|>>>>>>>\)<CR> : <
 " NOTE(Ryan): :norm! @<reg> to replay macro over selection
 nnoremap m q
 
+" NOTE(Ryan): Unicode --> multiply middle dot 
+inoremap <Right>m <C-V>u00b7
+" NOTE(Ryan): Unicode --> theta
+inoremap <Right>t <C-V>u03b8
+
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
 set incsearch hlsearch 

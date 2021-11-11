@@ -172,8 +172,7 @@ alias tree='tree -a -I .git'
 alias rm='rm -i'
 # TODO(Ryan): Add shell completion
 alias sizeof='du -sh'
-# NOTE(Ryan): This to allow keyboard polling
-alias py3='sudo python3'
+alias py3='python3'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
 # TODO(Ryan): git aliases for previous commit messages on branch
