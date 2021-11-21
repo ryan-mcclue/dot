@@ -169,8 +169,9 @@ endfunction
 
 " NOTE(Ryan): ctags --list-kinds=c
 " ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
-set tags+=/usr/include/**/tags
+set tags+=~/prog/hals/**/tags
 set tags+=~/prog/sources/**/tags
+set tags+=/usr/include/**/tags
 " TODO(Ryan): To speed up perhaps tags=tags; path=.,sources,include,etc.?
 
 " find . -type f -name "*.cpp" -o -name "*.h" > cscope.files && cscope -b
@@ -181,7 +182,7 @@ nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space>
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,cmake,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,cmake,ld,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartPythonFile()

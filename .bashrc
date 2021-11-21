@@ -218,19 +218,10 @@ __path_append \
   ~/prog/toolchains/*/bin \
   ~/prog/personal/scripts \
 
-TGCC() {
-  if test -z "$ARM_GCC"; then
-    export ARM_GCC=1 
-    __prefix='arm-none-eabi-'
-  else
-    export ARM_GCC=""
-    __prefix=''
-  fi
-
-  alias GCC="${__prefix}gcc"
-  alias G++="${__prefix}g++"
-  alias OBJDUMP="${__prefix}objdump"
-  alias NM="${__prefix}nm"
-  alias READELF="${__prefix}readelf"
-  alias GDB="${__prefix}gdb"
-}
+__prefix='arm-none-eabi-'
+alias GCC="${__prefix}gcc"
+alias G++="${__prefix}g++"
+alias OBJDUMP="${__prefix}objdump"
+alias NM="${__prefix}nm"
+alias READELF="${__prefix}readelf"
+alias GDB="${__prefix}gdb"
