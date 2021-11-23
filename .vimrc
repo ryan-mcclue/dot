@@ -219,13 +219,13 @@ endfunction
 set tags=tags
 set path=.
 
+" NOTE(Ryan): This prevents having to use two commands; one for single tag,
+"             another for multiple tags.
 nnoremap <C-]> :ts <C-R>=expand("<cword>")<CR> <CR>
-" nmap <C-[> :silent !<C-]>
 
+cs add $CSCOPE_DB
 " find . -type f -name "*.cpp" -o -name "*.h" > cscope.files && cscope -b
-" NOTE(Ryan): CSCOPE_DB=cscope.out && export CSCOPE_DB :cs add cscope.out
-" nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space> 
-" nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space>
+nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space> 
 
 augroup IndentSettings
   autocmd!
