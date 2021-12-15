@@ -106,4 +106,4 @@ git config --global pager.branch false
 mkdir -p "$HOME/prog/personal" \
   "$HOME/prog/apps" \
   "$HOME/prog/sources" \
-  "$HOME/prog/toolchains"
+  "$HOME/prog/cross/arm/lib"

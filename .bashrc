@@ -153,7 +153,7 @@ export HISTFILESIZE=10000
 
 export PAGER='less -s -M +Gg'
 export MANPAGER="$PAGER"
-export CDPATH=".:$HOME/prog:$HOME/prog/personal:$HOME/prog/apps:$HOME/prog/sources:$HOME/prog/toolchains"
+export CDPATH=".:$HOME/prog:$HOME/prog/personal:$HOME/prog/apps:$HOME/prog/sources:$HOME/prog/cross/arm"
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
 # NOTE(Ryan): Disable control sequences ctrl-s/ctrl-q that buffer/unbuffer terminal.
@@ -215,7 +215,7 @@ __path_append \
   /usr/local/bin \
   /usr/local/sbin \
   ~/prog/apps/*/bin \
-  ~/prog/toolchains/*/bin \
+  ~/prog/cross/arm/*/bin \
   ~/prog/personal/scripts \
 
 __prefix='arm-none-eabi-'

@@ -36,6 +36,8 @@ nnoremap m q
 inoremap <Right>m <C-V>u00b7
 " NOTE(Ryan): Unicode --> theta
 inoremap <Right>t <C-V>u03b8
+" NOTE(Ryan): Unicode --> degree
+inoremap <Right>d <C-V>u00b0
 " NOTE(Ryan): Character subscripts
 execute "digraphs as " . 0x2090
 execute "digraphs es " . 0x2091
