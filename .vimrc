@@ -38,7 +38,12 @@ inoremap <Right>m <C-V>u00b7
 inoremap <Right>t <C-V>u03b8
 " NOTE(Ryan): Unicode --> degree
 inoremap <Right>d <C-V>u00b0
-" NOTE(Ryan): Character subscripts
+" NOTE(Ryan): Unicode --> ohm
+inoremap <Right>o <C-V>u2126
+" NOTE(Ryan): Unicode --> bullet point
+inoremap <Right>b <C-V>u00b7
+
+" NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
 execute "digraphs es " . 0x2091
 execute "digraphs hs " . 0x2095
@@ -232,7 +237,7 @@ nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space>
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cpp,cmake,ld,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cpp,asm,cmake,ld,html,javascript,css,vim,java,sh,python,yaml,markdown setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup end
 
 function! StartPythonFile()
