@@ -42,6 +42,10 @@ inoremap <Right>d <C-V>u00b0
 inoremap <Right>o <C-V>u2126
 " NOTE(Ryan): Unicode --> bullet point
 inoremap <Right>b <C-V>u00b7
+" NOTE(Ryan): Unicode --> arrow
+inoremap <Right>a <C-V>u279e
+" NOTE(Ryan): Unicode --> left-right (linking) arrow
+inoremap <Right>l <C-V>u27f7
 
 " NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
