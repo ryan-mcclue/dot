@@ -92,6 +92,18 @@ execute "digraphs xS " . 0x02e3
 execute "digraphs yS " . 0x02b8
 execute "digraphs zS " . 0x1dbb
 
+function! EvaluateExpression() range
+  let l:line = join(getline(a:firstline, a:lastline))
+" IMPORTANT(Ryan): Python code sensitive to indendation!
+py3 << EOF
+py_lines = vim.eval("l:line")
+print(f"{eval(py_lines)}")
+EOF
+endfunction
+xnoremap <S-E> :call EvaluateExpression()<CR>
+nnoremap <S-H> :py3 print(f"0x{:x}")<Left><Left><Left><Left><Left>
+nnoremap <S-D> :py3 print()<Left>
+
 function! InsertAsHex(num)
   let l:parsed_num = a:num
   let l:multiplier = 1
@@ -117,14 +129,6 @@ endfunction
 " IMPORTANT(Ryan): As ctrl-<number> sends a different keycode, this maps to <C-6>
 nnoremap <silent> <C-^> :silent! call InsertAsHex(expand('<cword>'))<CR>
 
-function! EvaluateExpression()
-" IMPORTANT(Ryan): Python code sensitive to indendation!
-python << EOF
-var = 10
-print(f"{var}")
-EOF
-" perhaps just do py3eval() to directly get value?
-endfunction
 
 function! PrintInBytes(num)
   let l:kilobyte = 1024
