@@ -92,6 +92,59 @@ execute "digraphs xS " . 0x02e3
 execute "digraphs yS " . 0x02b8
 execute "digraphs zS " . 0x1dbb
 
+function! InsertAsHex(num)
+  let l:parsed_num = a:num
+  let l:multiplier = 1
+
+  if a:num[-1:-1] == 'b'
+    if a:num[-2:-2] == 'k'
+      let l:multiplier = 1024
+    elseif a:num[-2:-2] == 'm'
+      let l:multiplier = 1024 * 1000
+    elseif a:num[-2:-2] == 'g'
+      let l:multiplier = 1024 * 1000000
+    else
+      echoerr "Don't currently support higher than gb conversions"
+      return
+    endif
+
+    l:parsed_num = a:num[:-3]
+
+  endif
+
+  execute printf("normal! ciw0x%x", l:parsed_num * l:multiplier)
+endfunction
+" IMPORTANT(Ryan): As ctrl-<number> sends a different keycode, this maps to <C-6>
+nnoremap <silent> <C-^> :silent! call InsertAsHex(expand('<cword>'))<CR>
+
+function! EvaluateExpression()
+" IMPORTANT(Ryan): Python code sensitive to indendation!
+python << EOF
+var = 10
+print(f"{var}")
+EOF
+" perhaps just do py3eval() to directly get value?
+endfunction
+
+function! PrintInBytes(num)
+  let l:kilobyte = 1024
+  let l:megabyte = l:kilobyte * 1000
+  let l:gigabyte = l:megabyte * 1000
+
+  if a:num < l:kilobyte
+    echomsg a:num . " bytes"
+  elseif a:num < l:megabyte 
+    echomsg a:num / l:kilobyte . "kb"
+  elseif a:num < l:gigabyte 
+    echomsg a:num / l:megabyte . "mb"
+  else
+    echomsg a:num / l:gigabyte . "gb"
+  endif
+
+endfunction
+" IMPORTANT(Ryan): As ctrl-<number> sends a different keycode, this maps to <C-2>
+nnoremap <silent> <C-@> :call PrintInBytes(expand('<cword>'))<CR>
+
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
 set incsearch hlsearch 
