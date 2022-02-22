@@ -156,6 +156,7 @@ export MANPAGER="$PAGER"
 export CDPATH=".:$HOME/prog:$HOME/prog/personal:$HOME/prog/apps:$HOME/prog/sources:$HOME/prog/cross/arm"
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
+
 # NOTE(Ryan): Disable control sequences ctrl-s/ctrl-q that buffer/unbuffer terminal.
 # They are carry overs from teletypes, which would buffer input due to high latency.
 stty -ixon
@@ -205,6 +206,14 @@ __path_append() {
   done
 }
 
+# IMPORTANT(Ryan): This path will likely change with postgresql ubuntu repository updates
+PGBIN=/usr/lib/postgresql/12/bin
+PGDATA="/home/ryan/pgsql-data"
+PGHOST="$PGDATA"
+export PGDATA PGHOST
+alias p0="pg_ctl stop"
+alias p1="pg_ctl -l $PGDATA/log start"
+
 __path_append \
   /bin \
   /sbin \
@@ -217,6 +226,7 @@ __path_append \
   ~/prog/apps/*/bin \
   ~/prog/cross/arm/*/bin \
   ~/prog/personal/scripts \
+  "$PGBIN" \
 
 __prefix='arm-none-eabi-'
 alias GCC="${__prefix}gcc"
