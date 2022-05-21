@@ -284,7 +284,6 @@ endfunction
 "set tags+=/usr/include/**/tags
 "set tags+=~/prog/sources/**/tags
 "set tags+=~/prog/hals/**/tags
-set tags=tags
 set path=.
 
 " NOTE(Ryan): This prevents having to use two commands; one for single tag,
