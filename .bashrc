@@ -235,3 +235,5 @@ alias OBJDUMP="${__prefix}objdump"
 alias NM="${__prefix}nm"
 alias READELF="${__prefix}readelf"
 alias GDB="${__prefix}gdb"
+
+eval $(keychain --agents ssh --eval id_rsa -q)
