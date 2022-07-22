@@ -280,8 +280,7 @@ function! ReplaceAcrossAllFiles(search, replace)
 endfunction
 
 " NOTE(Ryan): ctags --list-kinds=c
-" ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
-" find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpxL -a
+" find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
 "set tags+=/usr/include/**/tags
 "set tags+=~/prog/sources/**/tags
 "set tags+=~/prog/hals/**/tags
