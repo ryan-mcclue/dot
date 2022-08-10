@@ -46,6 +46,8 @@ inoremap <Right>b <C-V>u00b7
 inoremap <Right>a <C-V>u279e
 " NOTE(Ryan): Unicode --> left-right (linking) arrow
 inoremap <Right>l <C-V>u27f7
+" NOTE(Ryan): Unicode --> micro S.I
+inoremap <Right>u <C-V>u00b5
 
 " NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
@@ -281,6 +283,8 @@ endfunction
 
 " NOTE(Ryan): ctags --list-kinds=c
 " find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
+" ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
+" find . -type f -iname "*.[chS]" | xargs ctags --c-kinds=+lpxL -a
 "set tags+=/usr/include/**/tags
 "set tags+=~/prog/sources/**/tags
 "set tags+=~/prog/hals/**/tags
