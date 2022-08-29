@@ -50,6 +50,8 @@ inoremap <Right>l <C-V>u27f7
 inoremap <Right>u <C-V>u00b5
 " NOTE(Ryan): Unicode --> approximate
 inoremap <Right>= <C-V>u2248
+" NOTE(Ryan): Unicode --> therefore
+inoremap <Right>f <C-V>u2234
 
 " NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
