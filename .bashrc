@@ -175,8 +175,44 @@ alias sizeof='du -sh'
 alias py3='python3'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
-# TODO(Ryan): git aliases for previous commit messages on branch
-# and one for squashing commits
+
+git_content()
+{
+  if [ $# -eq 1 ]; then
+    git log -S"$1" | tr '~' ' '
+  elif [ $# -eq 2 ]; then
+    git log -S"$1" -- "$2" | tr '~' ' '
+  else
+    printf "Usage: git_content <content> [file_name]\n" >&2
+  fi
+} && export -f
+
+git_file()
+{
+  if [ $# -eq 2 ]; then
+    git log --diff-filter="${1^^}" -- "$2" | tr '~' ' '
+  else
+    printf "Usage: git_file <a|d|m> <file_name>\n" >&2
+  fi
+} && export -f
+
+git_msg()
+{
+  if [ $# -eq 1 ]; then
+    git show --color -s --format='%C(yellow)(%as)%C(reset) %s' -"$1" | tr '~' ' '
+  else
+    printf "Usage: git_msg <commit_count>\n" >&2
+  fi
+}
+
+git_squash()
+{
+  if [ $# -eq 1 ]; then
+    git rebase -i HEAD~"$1"
+  else
+    printf "Usage: git_squash <commit_count>\n" >&2
+  fi
+}
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
