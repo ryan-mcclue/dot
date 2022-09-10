@@ -173,8 +173,24 @@ alias rm='rm -i'
 # TODO(Ryan): Add shell completion
 alias sizeof='du -sh'
 alias py3='python3'
+
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
+
+git_compare()
+{
+  if [ $# -eq 0 ]; then
+    git difftool HEAD^ HEAD
+  elif [ $# -eq 1 ]; then
+    git difftool "$1" HEAD
+  elif [ $# -eq 2 ]; then
+    git difftool "$1" "$2"
+  elif [ $# -eq 3 ]; then
+    git difftool "$1" "$2" -- "$3"
+  else
+    printf "Usage: git_compare [hash1] [hash2] [file] \n" >&2
+  fi
+} && export -f
 
 git_content()
 {
@@ -203,7 +219,7 @@ git_msg()
   else
     printf "Usage: git_msg <commit_count>\n" >&2
   fi
-}
+} && export -f
 
 git_squash()
 {
@@ -212,7 +228,7 @@ git_squash()
   else
     printf "Usage: git_squash <commit_count>\n" >&2
   fi
-}
+} && export -f
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
