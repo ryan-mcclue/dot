@@ -52,6 +52,8 @@ inoremap <Right>u <C-V>u00b5
 inoremap <Right>= <C-V>u2248
 " NOTE(Ryan): Unicode --> therefore
 inoremap <Right>f <C-V>u2234
+" NOTE(Ryan): Unicode --> equivalent
+inoremap <Right>e <C-V>u2261
 
 " NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
