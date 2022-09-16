@@ -257,6 +257,7 @@ __path_append() {
   done
 }
 
+alias ssh_unsw="ssh z5346008@login.cse.unsw.edu.au"
 # IMPORTANT(Ryan): This path will likely change with postgresql ubuntu repository updates
 PGBIN=/usr/lib/postgresql/12/bin
 PGDATA="/home/ryan/pgsql-data"
