@@ -257,7 +257,24 @@ __path_append() {
   done
 }
 
-alias ssh_unsw="ssh z5346008@login.cse.unsw.edu.au"
+export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
+
+copyto_unsw() {
+  if [ $# -eq 2 ]; then
+    scp "$1" "$SSH_UNSW":"$2"
+  else
+    printf "Usage: copyto_unsw <local_file> <destination>\n" >&2
+  fi
+} && export -f
+
+copyfrom_unsw() {
+  if [ $# -eq 2 ]; then
+    scp "$SSH_UNSW":"$1" "$2"
+  else
+    printf "Usage: copyfrom_unsw <remote_file> <destination>\n" >&2
+  fi
+} && export -f
+
 # IMPORTANT(Ryan): This path will likely change with postgresql ubuntu repository updates
 PGBIN=/usr/lib/postgresql/12/bin
 PGDATA="/home/ryan/pgsql-data"
