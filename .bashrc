@@ -177,6 +177,9 @@ alias py3='python3'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
 
+# TODO(Ryan): blkid root block; parse from df -h
+# word splitting with IFS from apress pro bash programming book
+
 git_compare()
 {
   if [ $# -eq 0 ]; then
