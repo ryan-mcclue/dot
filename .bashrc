@@ -264,7 +264,7 @@ export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 
 copyto_unsw() {
   if [ $# -eq 2 ]; then
-    scp "$1" "$SSH_UNSW":"$2"
+    scp -r "$1" "$SSH_UNSW":"$2"
   else
     printf "Usage: copyto_unsw <local_file> <destination>\n" >&2
   fi
@@ -272,7 +272,7 @@ copyto_unsw() {
 
 copyfrom_unsw() {
   if [ $# -eq 2 ]; then
-    scp "$SSH_UNSW":"$1" "$2"
+    scp -r "$SSH_UNSW":"$1" "$2"
   else
     printf "Usage: copyfrom_unsw <remote_file> <destination>\n" >&2
   fi
