@@ -199,8 +199,13 @@ function! Make(script)
     return 1
   endif
 
-  if &ft ==# "sh" && a:script ==# "misc/lint"
-    compiler gcc 
+  if a:script ==# "misc/lint"
+    if &ft ==# "asm"
+      " NOTE(Ryan): This is for the avra assembler
+      let &errorformat = "%f(%l)%m"
+    else
+      compiler gcc
+    endif
   endif
 
   if &ft ==# "python"
