@@ -262,6 +262,14 @@ __path_append() {
 
 export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 
+ssh_tunnel() {
+  if [ $# -eq 4 ]; then
+    ssh -NL "$3":"$1":"$2" "$4"@"$1"
+  else
+    printf "Usage: ssh_tunnel <server-ip> <server-port> <local-port> <user>\n" >&2
+  fi
+} && export -f
+
 copyto_unsw() {
   if [ $# -eq 2 ]; then
     scp -r "$1" "$SSH_UNSW":"$2"
