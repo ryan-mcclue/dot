@@ -270,6 +270,16 @@ __path_append() {
   done
 }
 
+path() {
+  local prev_ifs="$IFS"
+  IFS=:
+  set -- $PATH 
+  printf "%s\n" "$@"
+  IFS="$prev_ifs"
+} && export -f
+
+# TODO(Ryan): ctags for specific languages
+
 export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 
 ssh_tunnel() {
