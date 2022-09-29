@@ -197,13 +197,23 @@ git_compare()
 
 git_content()
 {
+  local content="$1"
+  local commit_info=""
+
   if [ $# -eq 1 ]; then
-    git log -S"$1" | tr '~' ' '
+    commit_info=$(git log -S"$1" | tr '~' ' ')
   elif [ $# -eq 2 ]; then
-    git log -S"$1" -- "$2" | tr '~' ' '
+    commit_info=$(git log -S"$1" -- "$2" | tr '~' ' ')
   else
     printf "Usage: git_content <content> [file_name]\n" >&2
   fi
+
+  set -- $commit_info
+  local hash="$2"
+  local files_present_info=$(git grep "$content" "$hash")
+
+  printf "%s\n\n%s\n" "$commit_info" "$files_present_info"
+
 } && export -f
 
 git_file()
