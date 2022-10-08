@@ -19,6 +19,9 @@ let g:python_recommended_style = 0
 filetype plugin indent on
 set autoindent
 
+set autoread
+au CursorHold,CursorHoldI * :checktime
+
 set mouse=a
 
 set diffopt+=vertical
