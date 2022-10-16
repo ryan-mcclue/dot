@@ -174,6 +174,7 @@ alias rm='rm -i'
 alias sizeof='du -sh'
 alias py3='python3'
 
+alias git_clear='git rm -r --cached .'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
 
