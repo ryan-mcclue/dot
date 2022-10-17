@@ -280,6 +280,26 @@ apt_info()
   fi
 } && export -f
 
+run_ctags()
+{
+  if [ $# -ge 1 ]; then
+    if [ -f tags ]; then
+      read -sn1 -p "Are you sure want to overwrite existing tags file? (y/n): " confirm
+      echo
+      if [ ! $confirm = "y" ]; then
+        printf "Exitted without overwriting existing tags file.\n"
+        exit 0
+      fi
+    fi
+    rm -f tags
+    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" \
+      | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
+    printf "Created tags file.\n"
+  else
+    printf "Usage: search <folder1> [folder2] ...\n" >&2
+  fi
+} && export -f
+
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
@@ -316,7 +336,7 @@ path() {
   IFS="$prev_ifs"
 } && export -f
 
-# TODO(Ryan): ctags for specific languages
+# run_ctags()
 
 export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 
