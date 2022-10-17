@@ -244,6 +244,43 @@ git_squash()
   fi
 } && export -f
 
+apt_files()
+{
+  if [ $# -eq 1 ]; then
+    dpkg -L "$1"
+  else
+    printf "Usage: apt_files <package>\n" >&2
+  fi
+} && export -f
+
+apt_search()
+{
+  if [ $# -eq 1 ]; then
+    apt-cache search "$1"
+  else
+    printf "Usage: apt_search <package>\n" >&2
+  fi
+} && export -f
+
+apt_from()
+{
+  if [ $# -eq 1 ]; then
+    dpkg -S "$1"
+  else
+    printf "Usage: apt_from <package>\n" >&2
+  fi
+} && export -f
+
+apt_info()
+{
+  if [ $# -eq 1 ]; then
+    apt-cache show "$1"
+  else
+    printf "Usage: apt_info <package>\n" >&2
+  fi
+} && export -f
+
+
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
     eval "$(dircolors ~/.dir_colors/dircolors)"
