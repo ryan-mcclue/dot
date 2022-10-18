@@ -246,6 +246,8 @@ git_squash()
 
 apt_files()
 {
+  # TODO: indicate if not installed and show
+  # verify package exists, then go out with apt-file (take long time)
   if [ $# -eq 1 ]; then
     dpkg -L "$1"
   else

@@ -198,7 +198,7 @@ colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
-function! Make(script)
+function! Make(script, run)
   if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
     return 1
@@ -246,7 +246,7 @@ function! Make(script)
     " NOTE(Ryan): Exclude checking for variables directly used in printf format string 
     let &makeprg="shellcheck -e SC2059 -f gcc " . expand('%')
   else
-    let &makeprg="./" . a:script
+    let &makeprg="./" . a:script . " " . a:run
   endif
 
   make! 
@@ -254,9 +254,10 @@ function! Make(script)
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :call Make("misc/run-tests")<CR><CR>
-nnoremap <silent> <C-B> :call Make("misc/build")<CR><CR>
-nnoremap <silent> <C-L> :call Make("misc/lint")<CR><CR>
+nnoremap <silent> <C-T> :call Make("misc/run-tests", "")<CR><CR>
+nnoremap <silent> <C-B> :call Make("misc/build", "")<CR><CR>
+nnoremap <silent> <C-Y> :call Make("misc/build", "1")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint", "")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
