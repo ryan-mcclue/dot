@@ -9,6 +9,8 @@ set spell spelllang=en_au
 set encoding=utf-8
 set termencoding=utf-8
 
+set ignorecase
+
 set expandtab
 set shiftround 
 set autowrite
