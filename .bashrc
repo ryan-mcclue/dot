@@ -338,7 +338,16 @@ path() {
   IFS="$prev_ifs"
 } && export -f
 
-# run_ctags()
+text_rand() {
+  if [ $# -eq 1 ]; then
+    local num_lines="$1" 
+    # IMPORTANT(Ryan): After 76 bytes, base64 requires newline
+    local num_bytes=$(( num_lines * 76 ))
+    base64 /dev/urandom | head -c $((num_bytes)) > text-rand.txt
+  else
+    printf "Usage: text_rand <num-bytes>\n" >&2
+  fi
+} && export -f
 
 export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 
