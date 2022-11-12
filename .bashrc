@@ -289,7 +289,7 @@ run_ctags()
       read -sn1 -p "Are you sure want to overwrite existing tags file? (y/n): " confirm
       echo
       if [ ! $confirm = "y" ]; then
-        printf "Exitted without overwriting existing tags file.\n"
+        printf "Exited without overwriting existing tags file.\n"
         exit 0
       fi
     fi
@@ -298,7 +298,26 @@ run_ctags()
       | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
     printf "Created tags file.\n"
   else
-    printf "Usage: search <folder1> [folder2] ...\n" >&2
+    printf "Usage: run_ctags <folder1> [folder2] ...\n" >&2
+  fi
+} && export -f
+
+run_cscope()
+{
+  if [ $# -ge 1 ]; then
+    if [ -f cscope.out ]; then
+      read -sn1 -p "Are you sure want to overwrite existing database file? (y/n): " confirm
+      echo
+      if [ ! $confirm = "y" ]; then
+        printf "Exited without overwriting existing database file.\n"
+        exit 0
+      fi
+    fi
+    rm -f cscope.out
+    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" > cscope.files && cscope -b
+    printf "Created database file.\n"
+  else
+    printf "Usage: run_cscope <folder1> [folder2] ...\n" >&2
   fi
 } && export -f
 

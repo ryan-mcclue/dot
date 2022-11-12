@@ -292,7 +292,8 @@ inoremap <expr> q pumvisible() ? "\<C-E>" : 'q'
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
-nnoremap <S-F> :silent! vimgrep /TODO/gj **/*.[ch] **/*.cpp <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right>
+" IMPORTANT(Ryan): C-F in command window gives Vim edit commands
+nnoremap <S-F> :silent! vimgrep /<C-R>=expand("<cword>")<CR>/gj **/*.[ch] **/*.cpp <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right>
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 function! ReplaceAcrossAllFiles(search, replace)
   silent! execute "vimgrep /" . a:search . "/gj **/* | copen"
@@ -313,9 +314,10 @@ set path=.
 "             another for multiple tags.
 nnoremap <C-]> :ts <C-R>=expand("<cword>")<CR> <CR>
 
-cs add $CSCOPE_DB
+cs add cscope.out 
 " find . -type f -name "*.cpp" -o -name "*.h" > cscope.files && cscope -b
-nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space> 
+nnoremap <C-[>v :cs find a <C-R>=expand("<cword>")<CR><CR> <Space> 
+nnoremap <C-[>c :cs find c <C-R>=expand("<cword>")<CR><CR> <Space> 
 
 augroup IndentSettings
   autocmd!
