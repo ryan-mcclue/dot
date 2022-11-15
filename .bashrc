@@ -321,6 +321,14 @@ run_cscope()
   fi
 } && export -f
 
+make_link() {
+  if [ $# -eq 2 ]; then
+    ln -vfns "$2" "$1"
+  else
+    printf "Usage: make_link <src> <dest>\n" >&2
+  fi
+} && export -f
+
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
