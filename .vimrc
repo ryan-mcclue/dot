@@ -323,6 +323,7 @@ augroup IndentSettings
   autocmd!
   
   autocmd FileType c,cpp,asm,cmake,ld,vhdl,html,javascript,css,vim,java,sh,prolog,python,yaml,markdown,sql setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType qf setlocal wrap
 augroup end
 
 function! StartPythonFile()
