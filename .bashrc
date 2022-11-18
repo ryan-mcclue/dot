@@ -321,6 +321,8 @@ run_cscope()
   fi
 } && export -f
 
+alias c_analyse="run_ctags . && run_cscope"
+
 make_link() {
   if [ $# -eq 2 ]; then
     ln -vfns "$2" "$1"
