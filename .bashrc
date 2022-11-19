@@ -331,6 +331,14 @@ make_link() {
   fi
 } && export -f
 
+find_func() {
+  if [ $# -eq 2 ]; then
+    rg --no-line-number --only-matching "$2[\x00-\x7F]+\(" "$1" | sort | uniq
+  else
+    printf "Usage: find_func <dir> <func-name>\n" >&2
+  fi
+} && export -f
+
 
 if command -v dircolors >/dev/null 2>&1; then 
   if test -r "$HOME/.dir_colors/dircolors"; then
