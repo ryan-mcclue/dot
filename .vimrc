@@ -200,7 +200,7 @@ colorscheme solarized
 
 cnoremap w!! w !sudo tee %
 
-function! Make(script, run)
+function! Make(script, type)
   if &ft !=# "sh" && a:script !=# "misc/lint" && !filereadable(a:script)
     echoerr a:script . " does not exist!"
     return 1
@@ -224,7 +224,7 @@ function! Make(script, run)
   endif
   
   if &ft ==# "c"
-    if a:script ==# "misc/run-tests"
+    if a:type ==# "tests"
       " NOTE(Ryan): This pattern is for CMocka. 
       "             %.%# is wildcard for everything
       let &errorformat = "%.%#---\ %f:%l%.%#"
@@ -235,7 +235,7 @@ function! Make(script, run)
 
   " IMPORTANT(Ryan): This is a basic first attempt that is not flexible
   if &ft ==# "java"
-    if a:script ==# "misc/run-tests"
+    if a:type ==# "tests"
       let &errorformat = 
         \ "%.%#unsw\.test%.%#(%f:%l),"
         \. "%DEntering dir '%f',%XLeaving dir,"
@@ -248,7 +248,7 @@ function! Make(script, run)
     " NOTE(Ryan): Exclude checking for variables directly used in printf format string 
     let &makeprg="shellcheck -e SC2059 -f gcc " . expand('%')
   else
-    let &makeprg="./" . a:script . " " . a:run
+    let &makeprg="./" . a:script . " " . a:type
   endif
 
   make! 
@@ -256,9 +256,8 @@ function! Make(script, run)
   redraw
 endfunction
 
-nnoremap <silent> <C-T> :call Make("misc/run-tests", "")<CR><CR>
-nnoremap <silent> <C-B> :call Make("misc/build", "")<CR><CR>
-nnoremap <silent> <C-Y> :call Make("misc/build", "1")<CR><CR>
+nnoremap <silent> <C-B> :call Make("misc/build", "app")<CR><CR>
+nnoremap <silent> <C-T> :call Make("misc/build", "tests")<CR><CR>
 nnoremap <silent> <C-L> :call Make("misc/lint", "")<CR><CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
