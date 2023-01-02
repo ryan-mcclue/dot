@@ -375,6 +375,14 @@ path() {
   IFS="$prev_ifs"
 } && export -f
 
+where() {
+  if [ $# -eq 1 ]; then
+    realpath $(which $1)
+  else
+    printf "Usage: where <binary>\n" >&2
+  fi
+} && export -f
+
 text_rand() {
   if [ $# -eq 1 ]; then
     local num_lines="$1" 
