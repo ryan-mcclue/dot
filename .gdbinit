@@ -8,6 +8,9 @@ set history expansion on
 
 set print pretty
 
+# enable breakpoints in CRT
+set backtrace past-main on
+
 # python print('Hello from python!')
 
 # Debug child process
