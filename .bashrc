@@ -178,6 +178,8 @@ alias git_clear='git rm -r --cached .'
 alias gitc='git difftool --cached && git commit'
 alias gitcm='git difftool --cached && git commit --no-verify'
 
+alias get_idf='. $HOME/esp/esp-idf/export.sh'
+
 # TODO(Ryan): blkid root block; parse from df -h
 # word splitting with IFS from apress pro bash programming book
 
