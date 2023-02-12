@@ -259,6 +259,7 @@ endfunction
 nnoremap <silent> <C-B> :call Make("misc/build", "app")<CR><CR>
 nnoremap <silent> <C-T> :call Make("misc/build", "tests")<CR><CR>
 nnoremap <silent> <C-L> :call Make("misc/lint", "")<CR><CR>
+nnoremap <silent> <S-U> :!misc/flash<CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>
 nnoremap <silent> <C-C> :cclose<CR>
