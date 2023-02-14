@@ -227,7 +227,8 @@ function! Make(script, type)
     if a:type ==# "tests"
       " NOTE(Ryan): This pattern is for CMocka. 
       "             %.%# is wildcard for everything
-      let &errorformat = "%.%#---\ %f:%l%.%#"
+      " let &errorformat = "%.%#---\ %f:%l%.%#"
+      let &errorformat = "%.%#---\ %f:%l: error: %m"
     else
       compiler gcc
     endif
