@@ -296,7 +296,7 @@ inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
 " IMPORTANT(Ryan): C-F in command window gives Vim edit commands
-nnoremap <S-F> :silent! vimgrep /<C-R>=expand("<cword>")<CR>/gj **/*.[ch] **/*.cpp <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right>
+nnoremap <S-F> :silent! vimgrep /<C-R>=expand("<cword>")<CR>/gj **/*.[ch] **/*.cpp **/*.mm <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right>
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 function! ReplaceAcrossAllFiles(search, replace)
   silent! execute "vimgrep /" . a:search . "/gj **/* | copen"
