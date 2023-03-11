@@ -18,6 +18,8 @@ set autowrite
 " NOTE(Ryan): Allow indentation to be set to 2 spaces instead of the default 4 
 let g:python_recommended_style = 0
 
+let tlist_objc_settings = 'ObjectiveC;P:protocols;i:interfaces;types(...)'
+
 filetype plugin indent on
 set autoindent
 
