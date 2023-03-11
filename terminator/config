@@ -43,4 +43,54 @@
       type = Terminal
       parent = window0
       profile = default
+  [[code]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 530:46
+      maximised = False
+      fullscreen = False
+      size = 734, 451
+      title = /bin/bash
+      last_active_window = True
+    [[[child1]]]
+      type = Notebook
+      parent = child0
+      order = 0
+      labels = None, None, None, None
+      last_active_term = 8ed15994-a62c-4ae8-89aa-f6cb94021ce3, c8bf6fab-e5c7-4e30-88f1-1cd0466c2135, 518477da-c3a9-4cbe-9169-3a015561515e, 5e0ddef0-9ec0-496a-8ac0-57c6a14f1056
+      active_page = 3
+    [[[terminal2]]]
+      type = Terminal
+      parent = child1
+      order = 0
+      profile = default
+      uuid = 8ed15994-a62c-4ae8-89aa-f6cb94021ce3
+      directory = /home/ryan/prog/personal/embedded
+      command = vim code/stm32f429zitx-main.c; bash
+    [[[terminal3]]]
+      type = Terminal
+      parent = child1
+      order = 1
+      profile = default
+      uuid = c8bf6fab-e5c7-4e30-88f1-1cd0466c2135
+      directory = /home/ryan/prog/personal/embedded
+      command = vim code/stm32f429zitx-uart.c; bash
+    [[[terminal4]]]
+      type = Terminal
+      parent = child1
+      order = 2
+      profile = default
+      uuid = 518477da-c3a9-4cbe-9169-3a015561515e
+      command = vim stm32f429zitx-bsp/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c; bash
+      directory = /home/ryan/prog/personal/embedded
+    [[[terminal5]]]
+      type = Terminal
+      parent = child1
+      order = 3
+      profile = default
+      uuid = 5e0ddef0-9ec0-496a-8ac0-57c6a14f1056
+      directory = /home/ryan/prog/personal/embedded
+      command = vim stm32f429zitx-bsp/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c; bash
 [plugins]

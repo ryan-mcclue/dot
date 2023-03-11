@@ -298,7 +298,7 @@ run_ctags()
       fi
     fi
     rm -f tags
-    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" \
+    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" -o -iname "*.mm" \
       | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
     printf "Created tags file.\n"
   else
