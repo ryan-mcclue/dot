@@ -63,6 +63,8 @@ inoremap <Right>f <C-V>u2234
 inoremap <Right>e <C-V>u2261
 " NOTE(Ryan): Unicode --> infinity
 inoremap <Right>i <C-V>u221e
+" NOTE(Ryan): Unicode --> pi
+inoremap <Right>p <C-V>u03c0
 
 " NOTE(Ryan): Character subscripts, ctrl-k + <sequence>
 execute "digraphs as " . 0x2090
