@@ -1,27 +1,48 @@
 # SPDX-License-Identifier: zlib-acknowledgement
+# NOTE(Ryan): Allow loading .gdbinit from working directory
+set auto-load safe-path /
+
 set disassembly-flavor intel
 
+# NOTE(Ryan): Don't print prompt message and wait for user input for large outputs
 set pagination off
+
+# NOTE(Ryan): Use ! to search history
 set history save on
-# can use ! to search history
+set history size 10000
+set history filename ~/.gdb_history
 set history expansion on
 
-set print pretty
+# NOTE(Ryan): Print struct fields on new lines
+set print pretty on
 
-# enable breakpoints in CRT
+# disable xmethod
+
+# NOTE(Ryan): Enable breakpoints in CRT
 set backtrace past-main on
 
-# python print('Hello from python!')
+# NOTE(Ryan): GDB stdout to file
+# set logging on
 
-# Debug child process
+# NOTE(Ryan): Set GDB inferior as child process
 # set follow-fork-mode child
 
-# Debug both parent and child processes
-# set detach-on-fork off
+# break sort_entities_by_z_index
+
+# IMPORTANT(Ryan): QTCreator does not load ~/.gdbinit by default.
+# Inside Tools-Options-GDB-AdditionalStartupCommands:
+#  source ~/.gdbinit
+#  python exec(open("~/python_gdb.py").read())
+
+# (gdb) set $pc = <pc from fault handler>
+# (gdb) set $lr = <lr from fault handler>
+# (gdb) set $sp = <sp from fault handler>
+# 
+# # Hopefully now a real backtrace!
+# (gdb) bt
+
 
 # supports pipe command: | help break | head -4 
-
-# gdb inferior is the program you are debugging
 
 # break *main (address, i.e. function prologue)
 # break *0x1234 + 16
