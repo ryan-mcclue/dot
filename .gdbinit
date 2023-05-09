@@ -26,13 +26,19 @@ set backtrace past-main on
 
 # NOTE(Ryan): Set GDB inferior as child process
 # set follow-fork-mode child
-
-# break sort_entities_by_z_index
+# TODO(Ryan): Multiprocessing
+# https://www.youtube.com/watch?v=ZBm4RqNvjEw  
 
 # IMPORTANT(Ryan): QTCreator does not load ~/.gdbinit by default.
 # Inside Tools-Options-GDB-AdditionalStartupCommands:
 #  source ~/.gdbinit
-#  python exec(open("~/python_gdb.py").read())
+#  source ~/python_gdb.py
+# IMPORTANT(Ryan): `info pretty-printer` shows that custom pretty printers not enabled by default
+# So, must tick 'Load system GDB pretty printers'. Otherwise, manually enable:
+#  enable pretty-printer global my_pp_func
+
+# IMPORTANT(Ryan): To ensure '\n' are interpreted correctly in QTCreator console
+# pipe print state->first_entity | cat
 
 # (gdb) set $pc = <pc from fault handler>
 # (gdb) set $lr = <lr from fault handler>
@@ -41,40 +47,6 @@ set backtrace past-main on
 # # Hopefully now a real backtrace!
 # (gdb) bt
 
-
-# supports pipe command: | help break | head -4 
-
-# break *main (address, i.e. function prologue)
-# break *0x1234 + 16
-
-# LINESPEC
-# break main
-# break do_work thread 1
-# break overloaded(int)
-# break print_name if strcmp(name, "ryan") == 0 && age == 26
-
-# EXPLICIT (to save lookups)
-# break -func main
-
-# these populate convenience variable $bpnum
-# to execute a series of commands after breakpoint has been hit
-# commands $bpnum
-# silent
-# enable 1 (to allow a breakpoint to only be run after another function was called)
-# continue
-
-# NOW WHEN run IS EXECUTED, THIS HOOK WILL BE RUN PRIOR
-# define hook-run
-# disable 1
-
-# print *struct_addr; will print out structure and its variable values
-# TODO(Ryan): python pretty print wrapper to perform ascii visualisations say of data structures, heap, etc.
-# https://github.com/chrisc11/debug-tips/blob/master/gdb/python-linked-list.md
-# https://interrupt.memfault.com/blog/automate-debugging-with-gdb-python-api 
-
-# save breakpoints <file>; source <file>
-
-# ignore $bpnum 1000
-
 # TODO(Ryan): Can walk up stack-frames for recursive functions?
+# This is time-travel/reversible debugging. Very slow in gdb
 # https://developers.redhat.com/articles/2022/06/07/how-debug-stack-frames-and-recursion-gdb#intermediate_frame_manipulation
