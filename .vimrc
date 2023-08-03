@@ -298,14 +298,30 @@ inoremap <expr> q pumvisible() ? "\<C-E>" : 'q'
 inoremap <expr> n pumvisible() ? "\<C-N>" : 'n'
 inoremap <expr> <S-N> pumvisible() ? "\<C-P>" : "\<S-N>"
 
-" IMPORTANT(Ryan): C-F in command window gives Vim edit commands
-nnoremap <S-F> :silent! vimgrep /<C-R>=expand("<cword>")<CR>/gj **/*.[ch] **/*.cpp **/*.mm <bar> copen<C-B><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right><Right>
-nnoremap <C-F> :call ReplaceAcrossAllFiles(
+
+function! SearchAcrossAllFiles(search)
+  let fts = [expand("%:e")]
+  if &ft ==# "c" || &ft ==# "cpp" || &ft ==# "asm" 
+    let fts = ["[ch]", "cpp", "m", "mm", "asm", "[sS]"] 
+  endif
+
+  let search_fts="% "
+  for ft in fts
+    let search_fts .= "**/*." . ft . " "
+  endfor
+
+  silent! execute "vimgrep /" . a:search . "/gj " . search_fts . "| copen"
+endfunction
+
 function! ReplaceAcrossAllFiles(search, replace)
-  silent! execute "vimgrep /" . a:search . "/gj **/* | copen"
+  call SearchAcrossAllFiles(a:search)
   silent! execute  "cfdo %s/\\v" . a:search . "/" . a:replace . "/gc"
   silent! cfdo update
 endfunction
+
+" IMPORTANT(Ryan): C-F in command window gives Vim edit commands
+nnoremap <S-F> :call SearchAcrossAllFiles(
+nnoremap <C-F> :call ReplaceAcrossAllFiles(
 
 " NOTE(Ryan): ctags --list-kinds=c
 " find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
