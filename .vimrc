@@ -323,6 +323,14 @@ endfunction
 nnoremap <S-F> :call SearchAcrossAllFiles(
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 
+
+" TODO(Ryan): Incorporate C-F to edit command line (hit enter on current line
+" to execute
+" NOTE(Ryan): Command Execution
+nnoremap <Leader>i :r!python -c 'from math import *; print()'<Left><Left>
+nnoremap <Leader>p :echo system("python -c 'from math import *; print()'")<Left><Left><Left><Left>
+xnoremap <Leader>s yPgv:!python<CR>
+
 " NOTE(Ryan): ctags --list-kinds=c
 " find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
 " ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
