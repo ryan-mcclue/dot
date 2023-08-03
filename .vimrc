@@ -331,6 +331,12 @@ nnoremap <Leader>i :r!python -c 'from math import *; print()'<Left><Left>
 nnoremap <Leader>p :echo system("python -c 'from math import *; print()'")<Left><Left><Left><Left>
 xnoremap <Leader>s yPgv:!python<CR>
 
+" IMPORTANT(Ryan): Can only use bash variables if substituting due to dollar
+" sign
+nnoremap <Leader>ii :r!
+nnoremap <Leader>pp :echo system("")<Left><Left>
+xnoremap <Leader>ss yPgv:!bash<CR>
+
 " NOTE(Ryan): ctags --list-kinds=c
 " find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
 " ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
