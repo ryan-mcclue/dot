@@ -9,8 +9,6 @@ set spell spelllang=en_au
 set encoding=utf-8
 set termencoding=utf-8
 
-set ignorecase
-
 set expandtab
 set shiftround 
 set autowrite
@@ -253,12 +251,13 @@ function! SearchAcrossAllFiles(search)
     let search_fts .= "**/*." . ft . " "
   endfor
 
-  silent! execute "vimgrep /" . a:search . "/gj " . search_fts . "| copen"
+  silent! execute "vimgrep /\\<" . a:search . "\\>/gj " . search_fts . "| copen"
 endfunction
 
-function! ReplaceAcrossAllFiles(search, replace)
+function! ReplaceAcrossAllFiles(search, replace, bulk)
+  let confirm_char=(a:bulk ==# "") ? "c" : ""
   call SearchAcrossAllFiles(a:search)
-  silent! execute  "cfdo %s/\\v" . a:search . "/" . a:replace . "/gc"
+  silent! execute  "cfdo %s/\\v" . a:search . "/" . a:replace . "/g" . confirm_char
   silent! cfdo update
 endfunction
 
