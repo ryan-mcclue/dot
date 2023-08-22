@@ -111,63 +111,6 @@ execute "digraphs xS " . 0x02e3
 execute "digraphs yS " . 0x02b8
 execute "digraphs zS " . 0x1dbb
 
-function! EvaluateExpression() range
-  let l:line = join(getline(a:firstline, a:lastline))
-" IMPORTANT(Ryan): Python code sensitive to indendation!
-py3 << EOF
-py_lines = vim.eval("l:line")
-print(f"{eval(py_lines)}")
-EOF
-endfunction
-xnoremap <S-E> :call EvaluateExpression()<CR>
-nnoremap <S-H> :py3 print(f"0x{:x}")<Left><Left><Left><Left><Left>
-nnoremap <S-D> :py3 print()<Left>
-
-function! InsertAsHex(num)
-  let l:parsed_num = a:num
-  let l:multiplier = 1
-
-  if a:num[-1:-1] == 'b'
-    if a:num[-2:-2] == 'k'
-      let l:multiplier = 1024
-    elseif a:num[-2:-2] == 'm'
-      let l:multiplier = 1024 * 1000
-    elseif a:num[-2:-2] == 'g'
-      let l:multiplier = 1024 * 1000000
-    else
-      echoerr "Don't currently support higher than gb conversions"
-      return
-    endif
-
-    l:parsed_num = a:num[:-3]
-
-  endif
-
-  execute printf("normal! ciw0x%x", l:parsed_num * l:multiplier)
-endfunction
-" IMPORTANT(Ryan): As ctrl-<number> sends a different keycode, this maps to <C-6>
-nnoremap <silent> <C-^> :silent! call InsertAsHex(expand('<cword>'))<CR>
-
-
-function! PrintInBytes(num)
-  let l:kilobyte = 1024
-  let l:megabyte = l:kilobyte * 1000
-  let l:gigabyte = l:megabyte * 1000
-
-  if a:num < l:kilobyte
-    echomsg a:num . " bytes"
-  elseif a:num < l:megabyte 
-    echomsg a:num / l:kilobyte . "kb"
-  elseif a:num < l:gigabyte 
-    echomsg a:num / l:megabyte . "mb"
-  else
-    echomsg a:num / l:gigabyte . "gb"
-  endif
-
-endfunction
-" IMPORTANT(Ryan): As ctrl-<number> sends a different keycode, this maps to <C-2>
-nnoremap <silent> <C-@> :call PrintInBytes(expand('<cword>'))<CR>
-
 command! -nargs=1 -complete=file Diffsplit diffsplit <args> | wincmd L | wincmd h
 
 set incsearch hlsearch 
@@ -319,13 +262,10 @@ function! ReplaceAcrossAllFiles(search, replace)
   silent! cfdo update
 endfunction
 
-" IMPORTANT(Ryan): C-F in command window gives Vim edit commands
-nnoremap <S-F> :call SearchAcrossAllFiles(
+" IMPORTANT(Ryan): C-F in command window to edit (hit enter on current line to execute)
+nnoremap <S-F> :call SearchAcrossAllFiles(<C-R>=expand("<cword>")<CR>
 nnoremap <C-F> :call ReplaceAcrossAllFiles(
 
-
-" TODO(Ryan): Incorporate C-F to edit command line (hit enter on current line
-" to execute
 " NOTE(Ryan): Command Execution
 nnoremap <Leader>i :r!python -c 'from math import *; print()'<Left><Left>
 nnoremap <Leader>p :echo system("python -c 'from math import *; print()'")<Left><Left><Left><Left>
