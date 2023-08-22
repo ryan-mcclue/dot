@@ -211,6 +211,7 @@ git_content()
     commit_info=$(git log -S"$1" -- "$2" | tr '~' ' ')
   else
     printf "Usage: git_content <content> [file_name]\n" >&2
+    return
   fi
 
   set -- $commit_info
