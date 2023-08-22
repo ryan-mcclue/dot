@@ -263,8 +263,8 @@ function! ReplaceAcrossAllFiles(search, replace)
 endfunction
 
 " IMPORTANT(Ryan): C-F in command window to edit (hit enter on current line to execute)
-nnoremap <S-F> :call SearchAcrossAllFiles(<C-R>=expand("<cword>")<CR>
-nnoremap <C-F> :call ReplaceAcrossAllFiles(
+nnoremap <S-F> :call SearchAcrossAllFiles("<C-R>=expand("<cword>")<CR>")<Left><Left>
+nnoremap <C-F> :call ReplaceAcrossAllFiles("
 
 " NOTE(Ryan): Command Execution
 nnoremap <Leader>i :r!python -c 'from math import *; print()'<Left><Left>
