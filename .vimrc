@@ -276,6 +276,20 @@ nnoremap <Leader>ii :r!
 nnoremap <Leader>pp :echo system("")<Left><Left>
 xnoremap <Leader>ss yPgv:!bash<CR>
 
+function! GitBlameDiff()
+  let hash=system("git --no-pager blame -w -M3 -L " . line('.') . "," . line('.') . " -- " . expand("%:t") . " | awk '{print $1}'")
+  " NOTE(Ryan): Remove newline added by awk
+  let hash = substitute(hash, '\n', '', 'g')
+  execute "!git difftool " . hash . "^.." . hash . " -- " . expand("%:t")
+endfunction
+nnoremap <Leader>bd :call GitBlameDiff()<CR>
+
+function! GitBlamePrint()
+  let cmd="git --no-pager blame -w -M3 -L" . line('.') . "," . line('.') . " -- " . expand("%:t") . "| awk '{print $2, $3, $4, $5}'"
+  echo system(cmd)
+endfunction
+nnoremap <Leader>bp :call GitBlamePrint()<CR>
+
 " NOTE(Ryan): ctags --list-kinds=c
 " find . -type f -iname "*.[chS]" -o -iname "*.cpp" | sudo xargs ctags --c-kinds=+lpx --c++-kinds=+lpx --fields=+iaS -a
 " ctags --c++-kinds=+lpx --fields=+iaS --extras=+q -R *
