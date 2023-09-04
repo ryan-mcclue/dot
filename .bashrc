@@ -170,6 +170,7 @@ alias lintian='lintian -i --color aUto'
 alias tree='tree -a -I .git'
 # TODO(Ryan): Safe rm function
 alias rm='rm -i'
+alias s='cd scratch'
 # TODO(Ryan): Add shell completion
 alias sizeof='du -sh'
 alias py3='python3'
