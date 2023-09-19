@@ -202,6 +202,15 @@ function! Make(script, type)
   redraw
 endfunction
 
+" IMPORTANT(Ryan): Intended for stdin loop binary named same as cwd
+function! RunInTerminal()
+  let cwd = getcwd()
+  let folder = fnamemodify(cwd, ":p:h:t")
+  silent execute "terminal build/" . folder
+endfunction
+nnoremap <silent> <C-I> :call RunInTerminal()<CR>
+tnoremap <silent> <C-C> <C-\><C-N>:q!<CR>
+
 nnoremap <silent> <C-B> :call Make("misc/build", "app")<CR><CR>
 nnoremap <silent> <C-T> :call Make("misc/build", "tests")<CR><CR>
 nnoremap <silent> <C-S> :call Make("misc/build", expand("%"))<CR><CR>

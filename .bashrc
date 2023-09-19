@@ -400,8 +400,6 @@ text_rand() {
   fi
 } && export -f
 
-export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
-
 ssh_tunnel() {
   if [ $# -eq 4 ]; then
     ssh -NL "$3":"$1":"$2" "$4"@"$1"
@@ -409,6 +407,10 @@ ssh_tunnel() {
     printf "Usage: ssh_tunnel <server-ip> <server-port> <local-port> <user>\n" >&2
   fi
 } && export -f
+
+
+export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
+export SSH_UNSW_DB="z5346008@d2.cse.unsw.edu.au"
 
 copyto_unsw() {
   if [ $# -eq 2 ]; then
