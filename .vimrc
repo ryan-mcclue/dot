@@ -155,6 +155,13 @@ function! Make(script, type)
     if &ft ==# "asm"
       " NOTE(Ryan): This is for the avra assembler
       let &errorformat = "%f(%l)%m"
+    elseif &ft ==# "sql"
+      " NOTE(Ryan): This is for sqlfluff parse 
+" L:   8 | P:   1 |  PRS | Line 8, Position 1: Found unparsable section: 'graham\n-- check
+"                        | (length(value) >= 3)\n\n--...'
+      " TODO
+      " let &errorformat = "%f(%l)%m"
+      let &errorformat = "%f: L:%.%#%l | P:%.%#%c | %.%# | Line%.%#: %m"
     else
       compiler gcc
     endif
@@ -208,13 +215,13 @@ function! RunInTerminal()
   let folder = fnamemodify(cwd, ":p:h:t")
   silent execute "terminal build/" . folder
 endfunction
-nnoremap <silent> <C-I> :call RunInTerminal()<CR>
+nnoremap <silent> <S-I> :call RunInTerminal()<CR>
 tnoremap <silent> <C-C> <C-\><C-N>:q!<CR>
 
 nnoremap <silent> <C-B> :call Make("misc/build", "app")<CR><CR>
 nnoremap <silent> <C-T> :call Make("misc/build", "tests")<CR><CR>
 nnoremap <silent> <C-S> :call Make("misc/build", expand("%"))<CR><CR>
-nnoremap <silent> <C-L> :call Make("misc/lint", "")<CR><CR>
+nnoremap <silent> <C-L> :call Make("misc/lint", expand("%"))<CR><CR>
 nnoremap <silent> <S-U> :!misc/flash<CR>
 nnoremap <silent> <C-N> :cnext<CR>
 nnoremap <silent> <C-P> :cprev<CR>

@@ -419,12 +419,26 @@ copyto_unsw() {
     printf "Usage: copyto_unsw <local_file> <destination>\n" >&2
   fi
 } && export -f
+copyto_unsw_db() {
+  if [ $# -eq 2 ]; then
+    scp -r "$1" "$SSH_UNSW_DB":"$2"
+  else
+    printf "Usage: copyto_unsw_db <local_file> <destination>\n" >&2
+  fi
+} && export -f
 
 copyfrom_unsw() {
   if [ $# -eq 2 ]; then
     scp -r "$SSH_UNSW":"$1" "$2"
   else
     printf "Usage: copyfrom_unsw <remote_file> <destination>\n" >&2
+  fi
+} && export -f
+copyfrom_unsw_db() {
+  if [ $# -eq 2 ]; then
+    scp -r "$SSH_UNSW_DB":"$1" "$2"
+  else
+    printf "Usage: copyfrom_unsw_db <remote_file> <destination>\n" >&2
   fi
 } && export -f
 
