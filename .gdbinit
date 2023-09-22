@@ -21,6 +21,8 @@ set print pretty on
 # NOTE(Ryan): Enable breakpoints in CRT
 set backtrace past-main on
 
+source ~/python_gdb.py
+
 # NOTE(Ryan): GDB stdout to file
 # set logging on
 
