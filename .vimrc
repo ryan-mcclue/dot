@@ -161,7 +161,14 @@ function! Make(script, type)
 "                        | (length(value) >= 3)\n\n--...'
       " TODO
       " let &errorformat = "%f(%l)%m"
-      let &errorformat = "%f: L:%.%#%l | P:%.%#%c | %.%# | Line%.%#: %m"
+      " let &errorformat = "%f: L:%.%#%l | P:%.%#%c | %.%# | Line%.%#: %m"
+
+      " NOTE(Ryan): For psql
+      " psql:q1.sql:5: ERROR:  column l.regions does not exist
+      " LINE 3: select l.regions
+      "                ^
+      " HINT:  Perhaps you meant to reference the column "l.region".
+      let &errorformat = "psql:%f:%.%# ERROR: %m\nLINE %l: %.%#"
     else
       compiler gcc
     endif
