@@ -1,0 +1,7 @@
+\set PROMPT1 '%M:%> %n@%/%R%#%x '
+
+\pset null '[null]'
+
+\set COMP_KEYWORD_CASE lower
+
+\set c '\\! clear;'

@@ -23,6 +23,7 @@
 !.gdbinit
 !python_gdb.py
 !.inputrc
+!.psqlrc
 !setup
 !.vimrc
 !Dockerfile
