@@ -181,7 +181,8 @@ alias gitcm='git difftool --cached && git commit --no-verify'
 
 alias gcc_defines='gcc -E -dM - </dev/null' 
 
-alias get_idf='. $HOME/esp/esp-idf/export.sh'
+export IDF_PATH="$HOME/prog/sources/esp/esp-idf"
+alias setup_idf=". $IDF_PATH/export.sh"
 
 # TODO(Ryan): blkid root block; parse from df -h
 # word splitting with IFS from apress pro bash programming book
