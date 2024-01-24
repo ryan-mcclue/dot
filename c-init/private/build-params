@@ -1,0 +1,4 @@
+param_compiler="g++"
+param_linker="ld"
+param_mode="debug"
+param_arch="x86_64"

@@ -1,0 +1,209 @@
+#!/bin/bash
+set -ue
+
+error() { printf "Error: %s\n" "$1" >&2 && exit 1; }
+push_dir() { command pushd "$@" > /dev/null; }
+pop_dir() { command popd "$@" > /dev/null; }
+
+[[ "$1" != "app" && "$1" != "tests" ]] && error "Usage: ./build <app|tests>"
+
+BUILD_TYPE="$1"
+
+BUILD_START_TIME=$(date +%s.%N)
+
+shopt -s extglob
+CPU_INFO=$(lscpu)
+parse_cpu_info() {
+  local field_name="$1"
+  local variable_name="$2"
+
+  field_value=$(echo "$CPU_INFO" | grep "^$field_name:" | cut -d ':' -f2)
+  trimmed_value=${field_value##+([[:space:]])}
+
+  eval "$variable_name=\"$trimmed_value\""
+}
+
+insert_metrics_db() {
+  local db_name="misc/$NAME-metrics.db"
+  # IMPORTANT(Ryan): Compile sqlite3 from source for better error messages
+  [[ ! -f "$db_name" ]] && sqlite3 "$db_name" < "misc/metrics.sql"
+
+  local build_machine_hash=""
+  # NOTE(Ryan): Only do this when necessary as is slow
+  if [[ ! -f "private/build-machine-hash" ]]; then
+    parse_cpu_info "Architecture" "ARCH"
+    parse_cpu_info "Model name" "MICROARCH"
+    parse_cpu_info "CPU(s)" "CORES"
+    parse_cpu_info "CPU max MHz" "FREQUENCY"
+    parse_cpu_info "Flags" "FLAGS"
+    SIMD_RAW="$(echo "$FLAGS" | grep -o '\bavx\w*\b\|\bsse\w*\b')"
+    SIMD="$(echo "$SIMD_RAW" | tr '\n' ' ')"
+    OS_RAW="$(lsb_release --description | cut -d ':' -f2)"
+    OS="${OS_RAW##+([[:space:]])}"
+
+    local build_machine_str="${ARCH}${MICROARCH}${CORES}${FREQUENCY}${FLAGS}${SIMD}${OS}"
+    build_machine_hash="$(echo -n "$build_machine_str" | sha256sum | awk '{print $1}')"
+
+    local compiler_str="$($PARAM_COMPILER --version | head -1)"
+    local linker_str="$($PARAM_LINKER --version | head -1)"
+
+    local build_machine_str="
+insert or replace into build_machines values 
+(\"$build_machine_hash\",
+\"$OS\",
+\"$ARCH, $MICROARCH@${FREQUENCY}x$CORES ($SIMD)\", 
+\"$compiler_str\", 
+\"$linker_str\");
+"
+    echo "$build_machine_str" | sqlite3 -batch "$db_name"
+
+    echo "$build_machine_hash" > "private/build-machine-hash"
+  else
+    build_machine_hash=$(cat "private/build-machine-hash")
+  fi
+
+  local hash=$(git rev-parse HEAD)
+  local parent_hash=$(git rev-parse HEAD^@)
+  local top10_symbols=$(nm -C --print-size --size-sort --reverse-sort --radix=d build/$BINARY_NAME | head -10)
+  local top10_symbols_str=""
+  while IFS= read -r line; do
+    read -r addr size type name <<< $(echo "$line")
+    top10_symbols_str+="\"${name}\",${size},"
+  done <<< "$top10_symbols"
+
+  local loc=0
+  for file in $(find -type f -iname "*.cpp" -o -iname "*.[ch]"); do
+    num_lines=$(cat "$file" | wc -l)
+    loc=$((loc + num_lines))
+  done
+
+  local sizes=$(size build/$BINARY_NAME | tail -1)
+  local text_size=$(echo -n "$sizes" | cut -d $'\t' -f1)
+  local data_size=$(echo -n "$sizes" | cut -d $'\t' -f2)
+  local bss_size=$(echo -n "$sizes" | cut -d $'\t' -f3)
+
+  local name=$(git config user.name)
+  local branch=$(git branch --show-current)
+
+  local metrics_str="
+insert or replace into build_metrics values (
+  CURRENT_TIMESTAMP, 
+  \"$name\",
+  \"$branch\",
+  \"$hash\",
+  \"$parent_hash\",
+  \"$BUILD_TYPE\",
+  $text_size,
+  $data_size,
+  $bss_size,
+  $BUILD_TIME,
+  $loc,
+  $top10_symbols_str
+  \"$build_machine_hash\"
+);
+"
+  echo "$metrics_str" | sqlite3 -batch "$db_name"
+}
+
+print_end_time() {
+  BUILD_END_TIME=$(date +%s.%N)
+  BUILD_TIME=$( echo "scale=4; ($BUILD_END_TIME - $BUILD_START_TIME)" | bc -l )
+    
+  printf "Build Time: %.4fs\n" "$BUILD_TIME" 
+}
+
+[[ "$OSTYPE" != "linux-gnu" ]] && error "Currently only support linux as build machine"
+
+# NOTE(Ryan): This file is ignored by source control to allow tweaking of build params without affecting history
+source "private/build-params"
+PARAM_COMPILER=${param_compiler:-"g++"}
+PARAM_LINKER=${param_linker:-"ld"}
+PARAM_MODE=${param_mode:-"debug"}
+PARAM_ARCH=${param_arch:-"x86_64"}
+
+mkdir -p build run
+
+COMPILER_FLAGS=()
+LINKER_FLAGS=()
+
+if [[ "$BUILD_TYPE" == "app" ]]; then
+  NAME="iot"
+  BINARY_ARGS=("-decode" "i-12e")
+else
+  NAME="iot-tests"
+  BINARY_ARGS=()
+
+  COMPILER_FLAGS+=( "-DTEST_BUILD" )
+  LINKER_FLAGS+=( "-lcmocka" )
+fi
+
+BINARY_NAME="$NAME-$PARAM_MODE"
+
+# NOTE(Ryan): Enable various warnings largely related to implicit signed, alignment, casting, promotion issues
+COMPILER_FLAGS+=( "-Wall" "-Wextra" "-Wshadow" "-Wconversion" "-Wdouble-promotion" "-Wformat=2" "-pedantic" )
+COMPILER_FLAGS+=( "-Wundef" "-Wshadow" "-Wpadded" "-fno-common" "-march=native" )
+COMPILER_FLAGS+=( "-Wfloat-equal" "-Wlogical-op" "-Wredundant-decls" "-Wstrict-overflow=2" "-Warray-bounds=2" )
+COMPILER_FLAGS+=( "-Wpointer-arith" "-Wformat-truncation" "-Wmissing-include-dirs" )
+COMPILER_FLAGS+=( "-Wcast-align" "-Wswitch-enum" "-Wsign-conversion" "-Wdisabled-optimization" )
+COMPILER_FLAGS+=( "-Winline" "-Wmissing-declarations" "-Wdouble-promotion" "-Wshadow" "-Wtrampolines" )
+COMPILER_FLAGS+=( "-Wvector-operation-performance" "-Wnull-dereference" "-Winvalid-pch" )
+COMPILER_FLAGS+=( "-Wduplicated-cond" "-Wshift-overflow=2" "-Wcast-align=strict" )
+# NOTE(Ryan): Display the specific warning flag so we can ignore it if needed
+COMPILER_FLAGS+=( "-fdiagnostics-show-option")
+# NOTE(Ryan): Ignored warnings
+COMPILER_FLAGS+=( "-Wno-unknown-pragmas" "-Wno-missing-field-initializers" "-Wno-cast-align" "-Wno-useless-cast" "-Wno-comment" "-Wno-missing-declarations" )
+COMPILER_FLAGS+=( "-Wno-parentheses" "-Wno-conversion" "-Wno-padded" "-Wno-write-strings" )
+# NOTE(Ryan): C++ specific
+COMPILER_FLAGS+=( "-std=c++2a" "-fno-exceptions" "-fno-rtti" "-Wctor-dtor-privacy" )
+COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
+# NOTE(Ryan): Generate preprocessed files
+COMPILER_FLAGS+=( "-save-temps=obj" )
+
+COMPILER_FLAGS+=( "-Icode/base" )
+
+# IMPORTANT(Ryan): Seems have to specify library location for lld that is default for ld? 
+# COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
+
+# COMPILER_FLAGS+=( "-isystem external/raylib/src" )
+#COMPILER_FLAGS+=( "-Lexternal/raylib/src" "-Wl,-rpath=external/raylib/src" )
+
+# NOTE(Ryan): To differentiate binary types of same version $(readelf -n)
+LINKER_FLAGS+=( "-Wl,--build-id" )
+LINKER_FLAGS+=( "-lm" "-ldl" )
+
+
+if [[ "$PARAM_MODE" == "debug" ]]; then
+  COMPILER_FLAGS+=( "-DDEBUG_BUILD" )
+
+  # NOTE(Ryan): -g3 gives macro definitions
+  COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
+  COMPILER_FLAGS+=("-Wno-unused-function" "-Wno-unused-variable"  "-Wno-unused-but-set-variable" )
+  COMPILER_FLAGS+=("-Wno-unused-parameter" "-Wno-unused-result" "-Wno-vla" )
+  COMPILER_FLAGS+=("-Wno-double-promotion" "-Wno-sign-conversion" )
+
+  # NOTE(Ryan): Sanitisers
+  # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
+  # NOTE(Ryan): Static analyser
+  # COMPILER_FLAGS+=( "-fanalyzer" )
+elif
+  
+if [[ "$PARAM_MODE" == "release" ]]; then
+  COMPILER_FLAGS+=( "-DRELEASE_BUILD" )
+  COMPILER_FLAGS+=( "-O3" )
+  COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
+
+  COMPILER_FLAGS+=( "-flto" )
+  # NOTE(Ryan): Pointer analysis; large compile times
+  COMPILER_FLAGS+=( "-fipa-pta" )
+  COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
+  LINKER_FLAGS+=( "-Wl,--gc-sections" )
+elif
+
+$PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
+
+print_end_time
+
+# NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
+build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+
+# insert_metrics_db

@@ -12,6 +12,8 @@
 !git/.git_templates/hooks/pre-commit
 !git/.git_templates/hooks/post-merge
 
+!c-init/**/*
+
 !terminator/config
 
 !ranger/rc.conf

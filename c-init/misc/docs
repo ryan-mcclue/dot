@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+readonly docs_path="$HOME/prog/personal/docs"
+declare -A docs
+docs["$docs_path/xtensa/esp32_datasheet_en.pdf"]=1
+docs["$docs_path/xtensa/esp32_errata_en.pdf"]=1
+docs["$docs_path/xtensa/esp32_technical_reference_manual_en.pdf"]=1
+docs["$docs_path/xtensa/esp32-wroom-32_datasheet_en.pdf"]=1
+docs["$docs_path/xtensa/SCH_ESP32-WROOM-32E_V1.2_20191224.pdf"]=1
+docs["$docs_path/xtensa/xtensa.pdf"]=1
+
+# NOTE(Ryan): This is arbitrary to allow okular instances to attach
+readonly sleep_amt=.3
+
+for key in "${!docs[@]}"; do
+  okular "$key" --page "${docs[$key]}" &
+  sleep $sleep_amt 
+done
+

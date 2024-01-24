@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "preRun",
+            "type": "shell",
+            "command": "clear && openocd -c \"set ESP_RTOS none\" -f board/esp32-wrover-kit-3.3v.cfg && exit"
+        }
+    ]
+}
