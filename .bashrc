@@ -182,7 +182,19 @@ alias gitcm='git difftool --cached && git commit --no-verify'
 alias gcc_defines='gcc -E -dM - </dev/null' 
 
 export IDF_PATH="$HOME/prog/sources/esp/esp-idf"
-alias setup_idf=". $IDF_PATH/export.sh"
+idf_init() {
+  . "$IDF_PATH/export.sh"
+
+  if [[ ! -f "sdkconfig" ]]; then 
+    idf.py create-project -p . $(basename "$(pwd)")
+    idf.py set-target esp32 
+    idf.py menuconfig
+    # serial flasher config; set flash size to what is on board; 
+    # set clock speed
+    # partition table csv
+    # idf.py add-dependency mdns  
+  fi
+} && export -f
 
 # TODO(Ryan): blkid root block; parse from df -h
 # word splitting with IFS from apress pro bash programming book
