@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #pragma once
 
-#include "base-context.h"
+#include "base/base-context.h"
 
-#include "base-types.h"
+#include "base/base-types.h"
 
 // IMPORTANT: Uses stdlib math
-#include "base-math.h"
+#include "base/base-math.h"
 
 // IMPORTANT: Uses stdlib malloc
-#include "base-memory.h"
+#include "base/base-memory.h"
 
-#include "base-string.h"
-#include "base-map.h"
+#include "base/base-string.h"
+#include "base/base-map.h"
 
 // NOTE(Ryan):
 //  - Desktop:
@@ -21,13 +21,13 @@
 //    * cycle counter, breakpoints,  
 #if defined(PLATFORM_CORTEXM)
   // IMPORTANT: Uses CMSIS 
-  #include "base-dev-cortexm4.h"
+  #include "base/base-dev-cortexm4.h"
   // gcc -dM -E - > file.txt
 #else
-  #include "base-dev-linux.h"
-  #include "base-file.h"
-  #include "base-repetition.h"
-  #include "base-profiler.h"
+  #include "base/base-dev-linux.h"
+  #include "base/base-file.h"
+  #include "base/base-repetition.h"
+  #include "base/base-profiler.h"
 #endif
 
 // TODO(Ryan):

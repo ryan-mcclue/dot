@@ -159,7 +159,7 @@ COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
 # NOTE(Ryan): Generate preprocessed files
 COMPILER_FLAGS+=( "-save-temps=obj" )
 
-COMPILER_FLAGS+=( "-Icode/base" )
+COMPILER_FLAGS+=( "-Icode" )
 
 # IMPORTANT(Ryan): Seems have to specify library location for lld that is default for ld? 
 # COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
