@@ -3,6 +3,166 @@
 // https://github.com/mattiasgustavsson/yarnspin/blob/main/source/libs/thread.h
 // imgedit for background thread
 
+// this is essentially the UI struct, so could contain input etc.
+struct imgedit
+{
+  // this what background thread operates on
+  imgedit_image_t* images;
+
+  thread_atomic_int_t exit_process_thread;
+  thread_mutex_t mutex;
+}
+
+int imgedit_process_thread( void* user_data ) {
+    imgedit_t* imgedit = (imgedit_t*) user_data;
+    thread_timer_t timer;
+    thread_timer_init( &timer );
+    thread_mutex_lock( &imgedit->mutex );
+
+    // any setup, e.g. read initial imgedit state
+
+    while( thread_atomic_int_load( &imgedit->exit_process_thread ) == 0 ) {
+      // read new imgedit state
+      
+      thread_mutex_unlock( &imgedit->mutex );
+      thread_yield(); // seems only here as speed of this not important?
+      // perform work internal work, i.e. affecting on local thread
+
+      thread_timer_wait( &timer, 1000000 );
+      thread_mutex_lock( &imgedit->mutex );
+
+      // update other thread
+
+    }
+    thread_mutex_unlock( &imgedit->mutex );
+    thread_timer_term( &timer );
+}
+
+void main(void)
+{
+  thread_atomic_int_store( &imgedit.exit_process_thread, 0 );
+  thread_mutex_init( &imgedit.mutex );
+  thread_ptr_t process_thread = thread_create( imgedit_process_thread, &imgedit, THREAD_STACK_SIZE_DEFAULT );
+
+  // ui
+  while (running)
+  {
+    thread_mutex_lock( &imgedit.mutex );
+
+    // handle input, draw ui, etc.
+
+    thread_mutex_unlock( &imgedit.mutex );
+
+    // glPresent()
+  }
+
+  thread_atomic_int_store( &imgedit.exit_process_thread, 1 );
+  thread_join( process_thread );
+  thread_destroy( process_thread );
+  thread_mutex_term( &imgedit.mutex );
+}
+
+
+
+
+
+
+
+
+// essentially 1 thread checks if new data and queues it
+// another thread takes off queue, loads and puts in cache
+
+ AcquireSRWLockExclusive(&os_w32_state->condition_variable_srw_lock);
+ ReleaseSRWLockExclusive(&os_w32_state->condition_variable_srw_lock);
+
+condition_variable_alloc() // windows CONDITION_VARIABLE; wait till particular condition occurs
+mutex_alloc() // windows CRITICAL_SECTION;
+srw_lock() // windows SRWLOCK;
+
+stripe {
+  mutex;
+  cv;
+}
+
+
+fs_shared->arena = arena;
+fs_shared->u2s_ring_size  = Kilobytes(64);
+fs_shared->u2s_ring_base  = PushArrayNoZero(arena, U8, fs_shared->u2s_ring_size);
+fs_shared->u2s_ring_mutex = OS_MutexAlloc();
+fs_shared->u2s_ring_cv    = OS_ConditionVariableAlloc();
+
+fs_shared->scanner_thread = OS_ThreadStart(0, FS_ScannerThreadEntryPoint);
+
+root_function void
+FS_ScannerThreadEntryPoint(void *p)
+{
+ SetThreadName(Str8Lit("[FS] Scanner"));
+ for(;;)
+ {
+  for(U64 slot_idx = 0; slot_idx < fs_shared->slots_count; slot_idx += 1)
+  {
+   OS_SRWMutexScope_R(stripe->rw_mutex)
+   {
+      FS_U2SEnqueueRequest(n->path, U64Max);
+   }
+  }
+  OS_Sleep(100);
+ }
+}
+
+root_function B32
+FS_U2SEnqueueRequest(String8 path, U64 endt_us)
+{
+ B32 sent = 0;
+ OS_MutexScope(fs_shared->u2s_ring_mutex) for(;;)
+ {
+  U64 unconsumed_size = fs_shared->u2s_ring_write_pos - fs_shared->u2s_ring_read_pos;
+  U64 available_size = fs_shared->u2s_ring_size - unconsumed_size;
+  if(available_size >= sizeof(U64) + path.size)
+  {
+   sent = 1;
+   fs_shared->u2s_ring_write_pos += RingWriteStruct(fs_shared->u2s_ring_base, fs_shared->u2s_ring_size, fs_shared->u2s_ring_write_pos, &path.size);
+   fs_shared->u2s_ring_write_pos += RingWrite(fs_shared->u2s_ring_base, fs_shared->u2s_ring_size, fs_shared->u2s_ring_write_pos, path.str, path.size);
+   fs_shared->u2s_ring_write_pos += 7;
+   fs_shared->u2s_ring_write_pos -= fs_shared->u2s_ring_write_pos%8;
+   break;
+  }
+  if(OS_TimeMicroseconds() >= endt_us)
+  {
+   break;
+  }
+  OS_ConditionVariableWait(fs_shared->u2s_ring_cv, fs_shared->u2s_ring_mutex, endt_us);
+ }
+ if(sent)
+ {
+  OS_ConditionVariableSignalAll(fs_shared->u2s_ring_cv);
+ }
+ return sent;
+}
+
+
+
+
+
+
+void main()
+{
+  InitializeSRWLock(&os_w32_state->process_srw_lock);
+  InitializeSRWLock(&os_w32_state->thread_srw_lock);
+  InitializeSRWLock(&os_w32_state->critical_section_srw_lock);
+  InitializeSRWLock(&os_w32_state->srw_lock_srw_lock);
+  InitializeSRWLock(&os_w32_state->condition_variable_srw_lock);
+  os_w32_state->process_arena = ArenaAlloc(Kilobytes(256));
+  os_w32_state->thread_arena = ArenaAlloc(Kilobytes(256));
+  os_w32_state->critical_section_arena = ArenaAlloc(Kilobytes(256));
+  os_w32_state->srw_lock_arena = ArenaAlloc(Kilobytes(256));
+  os_w32_state->condition_variable_arena = ArenaAlloc(Kilobytes(256));
+
+
+}
+
+
+
 // thread context will be global
 #pragma once
 
