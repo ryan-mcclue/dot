@@ -31,12 +31,6 @@
     #define ARCH_ARM32_STR
   #endif
 
-  #if defined(__ARM_ARCH_7A__)
-    #define ARCH_ARM7A
-    #define ARCH_ARM7A_STR "arm7a "
-  #else
-    #define ARCH_ARM7A_STR
-  #endif
 
   #if defined(__XTENSA__)
     #define ARCH_XTENSA
@@ -59,11 +53,11 @@
     #define PLATFORM_LINUX_STR
   #endif
   
-  #if defined(__arm__)
-    #define PLATFORM_ARM_EABI
-    #define PLATFORM_ARM_EABI_STR "arm-eabi "
+  #if defined(__ARM_ARCH_PROFILE) && __ARM_ARCH_PROFILE == 'M'
+    #define PLATFORM_CORTEXM
+    #define PLATFORM_CORTEXM_STR "cortex-m4 "
   #else
-    #define PLATFORM_ARM_EABI_STR
+    #define PLATFORM_CORTEXM_STR
   #endif
 
   #if defined(ESP_PLATFORM) && ESP_PLATFORM == 1
@@ -172,7 +166,7 @@
 
   #define CONTEXT_STR \
     ARCH_X86_64_STR ARCH_ARM64_STR ARCH_ARM32_STR ARCH_XTENSA_STR \
-    PLATFORM_LINUX_STR PLATFORM_ARM_EABI_STR PLATFORM_ESP32_STR \
+    PLATFORM_LINUX_STR PLATFORM_CORTEXM_STR PLATFORM_ESP32_STR \
     COMPILER_GCC_STR \
     IDF_VERSION_STR \
     LANG_CPP_STR LANG_C_STR

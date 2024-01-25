@@ -30,6 +30,15 @@ GLOBAL b32 global_debugger_present;
   #define BP()
 #endif
 
+// IMPORTANT(Ryan): x86intrin.h includes approx 46kLOC!
+INTERNAL u64
+read_cpu_timer(void)
+{
+  u32 a, d = 0;
+  asm volatile("rdtsc" : "=a" (a), "=d" (d));
+  return ((u64)d << 32) | a;
+}
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

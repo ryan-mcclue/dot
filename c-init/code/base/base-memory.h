@@ -41,14 +41,7 @@ mem_arena_allocate(memory_index cap, memory_index roundup_granularity)
 {
   u64 rounded_size = memory_index_round_to_nearest(cap, roundup_granularity);
   MemArena *result = (MemArena *)malloc(rounded_size);
-  if (result == NULL)
-  {
-    // IMPORTANT(Ryan): Only error where no breakpoint, so self-contained
-    printf(ASC_RED); fflush(stdout);
-    fprintf(stderr, "%s:%d:0: FATAL_ERROR: Malloc failed\n\t%s\n", __FILE__, __LINE__, strerror(errno));
-    printf(ASC_CLEAR); fflush(stdout);
-    exit(1);
-  }
+  if (result == NULL) return result;
 
   result->memory = result + sizeof(MemArena);
   result->max = cap;

@@ -248,20 +248,6 @@ struct SourceLoc
 #define PRINT_F64(var) printf(STRINGIFY(var) " = %lf\n", var)
 #define PRINT_STR8(var) printf(STRINGIFY(var) " = %.*s\n", str8_varg(var))
 
-// IMPORTANT(Ryan): x86intrin.h includes approx 46kLOC!
-INTERNAL u64
-read_cpu_timer(void)
-{
-  #if defined(COMPILER_GCC) && defined(ARCH_X86_64)
-    u32 a, d = 0;
-    asm volatile("rdtsc" : "=a" (a), "=d" (d));
-    return ((u64)d << 32) | a;
-  #else
-    #warning "read_cpu_timer() returning 0!"
-    return 0;
-  #endif
-}
-
 // IMPORTANT(Ryan): Better than templates as no complicated type checking or generation of little functions
 #define __DLL_PUSH_FRONT(first, last, node, next, prev) \
 (\
