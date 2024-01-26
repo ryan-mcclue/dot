@@ -1,11 +1,127 @@
 // SPDX-License-Identifier: zlib-acknowledgement
+#pragma once
+
+#include <pthread.h>
+
+// TODO(Ryan): put in platform specific
+#define READ_BARRIER asm volatile("" ::: "memory")
+#define WRITE_BARRIER asm volatile("" ::: "memory")
+
+#define OS_MutexScope(m) DeferLoop(OS_MutexScopeEnter(m), OS_MutexScopeLeave(m))
+
+typedef void* thread_handle;
+typedef int thread_function(void *params);
+
+INTERNAL u64
+thread_get_id(void)
+{
+	pthread_t thread = pthread_self();
+	u64 id = 0;
+	pthread_threadid_np(thread, &id);
+	return id;
+}
+
+INTERNAL void
+thread_yield(void)
+{
+  sched_yield();
+}
+
+// IMPORTANT(Ryan): return normally sufficient, only run when want main() to not close other threads
+INTERNAL void
+thread_exit(void)
+{
+  int return_code = 0;
+  pthread_exit((void *)(uintptr_t)return_code);
+}
+
+// IMPORTANT: joining on a thread will perform resource cleanup for that thread
+INTERNAL void
+thread_join(thread_ptr thread)
+{
+  void* retval;
+  pthread_join( (pthread_t) thread, &retval );
+  return (int)(uintptr_t) retval;
+}
+
+INTERNAL void
+thread_set_highpriority(thread_ptr thread)
+{
+  struct sched_param sp;
+  memset( &sp, 0, sizeof( sp ) );
+  sp.sched_priority = sched_get_priority_min( SCHED_RR );
+  pthread_setschedparam( pthread_self(), SCHED_RR, &sp);
+}
+
+INTERNAL void
+thread_mutex_init(thread_mutex_t* mutex )
+{
+        // Compile-time size check
+        struct x { char thread_mutex_type_too_small : ( sizeof( thread_mutex_t ) < sizeof( pthread_mutex_t ) ? 0 : 1 ); };
+
+        pthread_mutex_init( (pthread_mutex_t*) mutex, NULL );
+}
+
+INTERNAL void
+thread_mutex_destroy()
+{
+        pthread_mutex_destroy( (pthread_mutex_t*) mutex );
+}
+
+void thread_mutex_lock( thread_mutex_t* mutex )
+{
+        pthread_mutex_lock( (pthread_mutex_t*) mutex );
+}
+
+
+void thread_mutex_unlock( thread_mutex_t* mutex )
+{
+        pthread_mutex_unlock( (pthread_mutex_t*) mutex );
+}
+
+// TODO: rename to sleep()
+void thread_timer_wait( thread_timer_t* timer, THREAD_U64 nanoseconds )
+{
+        struct timespec rem;
+        struct timespec req;
+        req.tv_sec = nanoseconds / 1000000000ULL;
+        req.tv_nsec = nanoseconds - req.tv_sec * 1000000000ULL;
+        while( nanosleep( &req, &rem ) )
+            req = rem;
+}
+
+// __thread is gcc using linux tls (so tls is OS functionality?)
+
+
+// pthread_cond_t is condition variable
+// critical section is a mutex
+// TODO: signal has both a mutex and cv? equivalent of stripe?
+
+INTERNAL thread_handle
+start_thread(thread_function func, void *params)
+{
+  pthread_t thread_id = 0;
+  pthread_attr_t *thread_attr = NULL;
+
+  int res = pthread_create(&thread_id, thread_attr, (void* (*)(void * ))func, params);
+  if (res == 0) error();
+
+  return (thread_ptr_t)thread;
+}
+
 
 // https://github.com/mattiasgustavsson/yarnspin/blob/main/source/libs/thread.h
 // imgedit for background thread
 
+
+
+
+
 // this is essentially the UI struct, so could contain input etc.
 struct imgedit
 {
+  // thread_mutex detected_devices_mutex;
+  
   // this what background thread operates on
   imgedit_image_t* images;
 
@@ -26,10 +142,14 @@ int imgedit_process_thread( void* user_data ) {
       // read new imgedit state
       
       thread_mutex_unlock( &imgedit->mutex );
-      thread_yield(); // seems only here as speed of this not important?
+      thread_yield(); // seems only here as speed of this not important? 
+
+      // prefer nanosleep()?
       // perform work internal work, i.e. affecting on local thread
 
       thread_timer_wait( &timer, 1000000 ); // use this say, to pause scanning, i.e. only scan every 'so' often
+      // IMPORTANT: this sleeps!
+      
       thread_mutex_lock( &imgedit->mutex );
 
       // update other thread
@@ -58,210 +178,36 @@ void main(void)
   }
 
   thread_atomic_int_store( &imgedit.exit_process_thread, 1 );
+
+  // waits for this thread to terminate
+  // TODO: more efficient if just set it to a detached state so OS cleans up exited thread for us, no need to join and explicitly clean up
+  // also, as when main thread exits, other threads closed as well (as not other process like fork()) so no need to cleanup at all
   thread_join( process_thread );
   thread_destroy( process_thread );
+
+
   thread_mutex_term( &imgedit.mutex );
-}
-
-struct ThreadInfo
-{
-  u32 id;
-  void *params;
-  thread_function func;
-}
-
-typedef void* thread_handle;
-typedef int thread_function(void *params);
-
-INTERNAL thread_handle
-start_thread(thread_function func, void *params)
-{
-  // local
-  
-  // ui->thread_arena, ui->first_free_thread, ui->thread_lock
-  ThreadInfo *info = thread_alloc();
-  info->func = func;
-  info->params = params;
-
-  // library
-  pthread_t thread_id = 0;
-  pthread_attr_t *thread_attr = NULL;
-
-  int res = pthread_create(&thread_id, thread_attr, (void* (*)(void * ))base_thread_entry, thread_info);
-  if (res == 0) error();
-
-  info->handle = create_thread(...) 
-
-  return (thread_ptr_t) thread;
-}
-
-void base_thread_entry(void *params)
-{
-  ThreadInfo *thread_info = (ThreadInfo *)params;
-
-  ThreadCtx tctx = ThreadCtxAlloc();
-  SetThreadCtx(&tctx);
-
-  // now, inside each thread can do ScratchBegin()
-  // the start of each thread should: SetThreadNameF("[FS] Streamer #%I64u", (U64)p);
-  thread_info->func(thread_info->params)
-
-  // for communication between threads, could just be global struct
-
-  ThreadCtxRelease(&tctx);
 }
 
 thread_function
 example(void *params)
 {
+  ThreadCtx tctx = ThreadCtxAlloc();
+  SetThreadCtx(&tctx);
+
   SetThreadName();
+
+  // now, inside each thread can do ScratchBegin()
+  
+  // for communication between threads, could just be global struct
+  ThreadCtxRelease(&tctx);
 }
 
-root_function OS_Handle
-OS_ThreadStart(void *params, OS_ThreadFunction *func)
-{
- OS_W32_Thread *thread = OS_W32_ThreadAlloc();
- if(thread != 0)
- {
-  thread->params = params;
-  thread->func = func;
-  thread->handle = CreateThread(0, 0, OS_W32_ThreadEntryPoint, thread, 0, &thread->thread_id);
- }
- OS_Handle result = {(U64)(thread)};
- return result;
-}
-
-
-function DWORD
-OS_W32_ThreadEntryPoint(void *params)
-{
- OS_W32_Thread *thread = (OS_W32_Thread *)params;
- BaseThreadEntry(thread->func, thread->params);
- return 0;
-}
-
-
-void thread_proc_wrapper(proc, params)
-{
-}
 
 // essentially 1 thread checks if new data and queues it
 // another thread takes off queue, loads and puts in cache
 
- AcquireSRWLockExclusive(&os_w32_state->condition_variable_srw_lock);
- ReleaseSRWLockExclusive(&os_w32_state->condition_variable_srw_lock);
-
-condition_variable_alloc() // windows CONDITION_VARIABLE; wait till particular condition occurs
-mutex_alloc() // windows CRITICAL_SECTION;
-srw_lock() // windows SRWLOCK;
-
-stripe {
-  mutex;
-  cv;
-}
-
-
-fs_shared->arena = arena;
-fs_shared->u2s_ring_size  = Kilobytes(64);
-fs_shared->u2s_ring_base  = PushArrayNoZero(arena, U8, fs_shared->u2s_ring_size);
-fs_shared->u2s_ring_mutex = OS_MutexAlloc();
-fs_shared->u2s_ring_cv    = OS_ConditionVariableAlloc();
-
-fs_shared->scanner_thread = OS_ThreadStart(0, FS_ScannerThreadEntryPoint);
-
-root_function void
-FS_ScannerThreadEntryPoint(void *p)
-{
- SetThreadName(Str8Lit("[FS] Scanner"));
- for(;;)
- {
-  for(U64 slot_idx = 0; slot_idx < fs_shared->slots_count; slot_idx += 1)
-  {
-   OS_SRWMutexScope_R(stripe->rw_mutex)
-   {
-      FS_U2SEnqueueRequest(n->path, U64Max);
-   }
-  }
-  OS_Sleep(100);
- }
-}
-
-root_function B32
-FS_U2SEnqueueRequest(String8 path, U64 endt_us)
-{
- B32 sent = 0;
- OS_MutexScope(fs_shared->u2s_ring_mutex) for(;;)
- {
-  U64 unconsumed_size = fs_shared->u2s_ring_write_pos - fs_shared->u2s_ring_read_pos;
-  U64 available_size = fs_shared->u2s_ring_size - unconsumed_size;
-  if(available_size >= sizeof(U64) + path.size)
-  {
-   sent = 1;
-   fs_shared->u2s_ring_write_pos += RingWriteStruct(fs_shared->u2s_ring_base, fs_shared->u2s_ring_size, fs_shared->u2s_ring_write_pos, &path.size);
-   fs_shared->u2s_ring_write_pos += RingWrite(fs_shared->u2s_ring_base, fs_shared->u2s_ring_size, fs_shared->u2s_ring_write_pos, path.str, path.size);
-   fs_shared->u2s_ring_write_pos += 7;
-   fs_shared->u2s_ring_write_pos -= fs_shared->u2s_ring_write_pos%8;
-   break;
-  }
-  if(OS_TimeMicroseconds() >= endt_us)
-  {
-   break;
-  }
-  OS_ConditionVariableWait(fs_shared->u2s_ring_cv, fs_shared->u2s_ring_mutex, endt_us);
- }
- if(sent)
- {
-  OS_ConditionVariableSignalAll(fs_shared->u2s_ring_cv);
- }
- return sent;
-}
-
-
-
-
-
-
-void main()
-{
-  InitializeSRWLock(&os_w32_state->process_srw_lock);
-  InitializeSRWLock(&os_w32_state->thread_srw_lock);
-  InitializeSRWLock(&os_w32_state->critical_section_srw_lock);
-  InitializeSRWLock(&os_w32_state->srw_lock_srw_lock);
-  InitializeSRWLock(&os_w32_state->condition_variable_srw_lock);
-  os_w32_state->process_arena = ArenaAlloc(Kilobytes(256));
-  os_w32_state->thread_arena = ArenaAlloc(Kilobytes(256));
-  os_w32_state->critical_section_arena = ArenaAlloc(Kilobytes(256));
-  os_w32_state->srw_lock_arena = ArenaAlloc(Kilobytes(256));
-  os_w32_state->condition_variable_arena = ArenaAlloc(Kilobytes(256));
-
-
-}
-
-
-
-// thread context will be global
-#pragma once
-
-#define READ_BARRIER asm volatile("" ::: "memory")
-#define WRITE_BARRIER asm volatile("" ::: "memory")
-
-thread_id: pthread_self();
-thread_yield: sched_yield();
-thread_exit: pthread_exit();
-
-void thread_set_high_priority( thread_ptr_t thread )
-{
-  struct sched_param sp;
-  memset( &sp, 0, sizeof( sp ) );
-  sp.sched_priority = sched_get_priority_min( SCHED_RR );
-  pthread_setschedparam( pthread_self(), SCHED_RR, &sp);
-}
-
-pthread_mutex_init( (pthread_mutex_t*) mutex, NULL );
-pthread_mutex_destroy( (pthread_mutex_t*) mutex );
-pthread_mutex_lock( (pthread_mutex_t*) mutex ); // like a critical section
-pthread_mutex_unlock( (pthread_mutex_t*) mutex );
-
+// TODO: more atomics as needed
 __atomic_load( &atomic->i, &ret, __ATOMIC_SEQ_CST );
 __atomic_store( &atomic->i, &desired, __ATOMIC_SEQ_CST );
 return (int)__atomic_fetch_add( &atomic->i, 1, __ATOMIC_SEQ_CST );

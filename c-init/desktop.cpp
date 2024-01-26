@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
   ThreadContext tctx = thread_context_allocate();
   tctx.is_main_thread = true;
   thread_context_set(&tctx);
+  thread_set_name(str8_lit("Main Thread"));
 
 #if defined(RELEASE_BUILD)
   linux_set_cwd_to_self();
@@ -27,6 +28,9 @@ int main(int argc, char *argv[])
   profiler_init();
 
   profiler_end_and_print();
+
+  // necessary?
+  thread_context_release();
 
   return 0;
 }
