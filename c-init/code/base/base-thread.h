@@ -21,6 +21,7 @@ int imgedit_process_thread( void* user_data ) {
 
     // any setup, e.g. read initial imgedit state
 
+    // TODO(Ryan): when to use cv other mutex?
     while( thread_atomic_int_load( &imgedit->exit_process_thread ) == 0 ) {
       // read new imgedit state
       
@@ -28,7 +29,7 @@ int imgedit_process_thread( void* user_data ) {
       thread_yield(); // seems only here as speed of this not important?
       // perform work internal work, i.e. affecting on local thread
 
-      thread_timer_wait( &timer, 1000000 );
+      thread_timer_wait( &timer, 1000000 ); // use this say, to pause scanning, i.e. only scan every 'so' often
       thread_mutex_lock( &imgedit->mutex );
 
       // update other thread
@@ -62,12 +63,87 @@ void main(void)
   thread_mutex_term( &imgedit.mutex );
 }
 
+struct ThreadInfo
+{
+  u32 id;
+  void *params;
+  thread_function func;
+}
+
+typedef void* thread_handle;
+typedef int thread_function(void *params);
+
+INTERNAL thread_handle
+start_thread(thread_function func, void *params)
+{
+  // local
+  
+  // ui->thread_arena, ui->first_free_thread, ui->thread_lock
+  ThreadInfo *info = thread_alloc();
+  info->func = func;
+  info->params = params;
+
+  // library
+  pthread_t thread_id = 0;
+  pthread_attr_t *thread_attr = NULL;
+
+  int res = pthread_create(&thread_id, thread_attr, (void* (*)(void * ))base_thread_entry, thread_info);
+  if (res == 0) error();
+
+  info->handle = create_thread(...) 
+
+  return (thread_ptr_t) thread;
+}
+
+void base_thread_entry(void *params)
+{
+  ThreadInfo *thread_info = (ThreadInfo *)params;
+
+  ThreadCtx tctx = ThreadCtxAlloc();
+  SetThreadCtx(&tctx);
+
+  // now, inside each thread can do ScratchBegin()
+  // the start of each thread should: SetThreadNameF("[FS] Streamer #%I64u", (U64)p);
+  thread_info->func(thread_info->params)
+
+  // for communication between threads, could just be global struct
+
+  ThreadCtxRelease(&tctx);
+}
+
+thread_function
+example(void *params)
+{
+  SetThreadName();
+}
+
+root_function OS_Handle
+OS_ThreadStart(void *params, OS_ThreadFunction *func)
+{
+ OS_W32_Thread *thread = OS_W32_ThreadAlloc();
+ if(thread != 0)
+ {
+  thread->params = params;
+  thread->func = func;
+  thread->handle = CreateThread(0, 0, OS_W32_ThreadEntryPoint, thread, 0, &thread->thread_id);
+ }
+ OS_Handle result = {(U64)(thread)};
+ return result;
+}
 
 
+function DWORD
+OS_W32_ThreadEntryPoint(void *params)
+{
+ OS_W32_Thread *thread = (OS_W32_Thread *)params;
+ BaseThreadEntry(thread->func, thread->params);
+ return 0;
+}
 
 
-
-
+void thread_proc_wrapper(proc, params)
+{
+}
 
 // essentially 1 thread checks if new data and queues it
 // another thread takes off queue, loads and puts in cache
