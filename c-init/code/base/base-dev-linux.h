@@ -195,6 +195,17 @@ __fatal_error(SourceLoc source_loc, const char *fmt, ...)
 #include <sys/types.h>
 #include <unistd.h>
 
+INTERNAL void
+linux_sleep(u64 ns)
+{
+  struct timespec rem = ZERO_STRUCT;
+  struct timespec req = ZERO_STRUCT;
+  req.tv_sec = ns / 1000000000ULL;
+  req.tv_nsec = ns - req.tv_sec * 1000000000ULL;
+  while (nanosleep(&req, &rem))
+      req = rem;
+}
+
 #define LINUX_WALLTIME_FREQ NANO_TO_SEC(1)
 INTERNAL u64
 linux_walltime(void)

@@ -2,23 +2,77 @@
 #pragma once
 
 #include <pthread.h>
+#include <sys/types.h>
 
 // TODO(Ryan): put in platform specific
 #define READ_BARRIER asm volatile("" ::: "memory")
 #define WRITE_BARRIER asm volatile("" ::: "memory")
 
-#define OS_MutexScope(m) DeferLoop(OS_MutexScopeEnter(m), OS_MutexScopeLeave(m))
+typedef pthread_t thread_handle;
+typedef void* thread_function(void *params);
+INTERNAL thread_handle
+start_thread(thread_function func, void *params)
+{
+  pthread_attr_t thread_attr = ZERO_STRUCT;
+  if (pthread_attr_init(&thread_attr) != 0)
+    WARN("Failed to init thread attr.");
+  if (pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED) != 0)
+    WARN("Failed to set thread to detached state.");
+  // NOTE(Ryan): Set to multiple of common page size 4K
+  if (pthread_attr_setstacksize(&thread_attr, KB(4) * 128) != 0)
+    WARN("Failed to set thread stack size.");
 
-typedef void* thread_handle;
-typedef int thread_function(void *params);
+  pthread_t thread_id = 0;
+  int thread_result = pthread_create(&thread_id, &thread_attr, (void* (*)(void * ))func, params);
+  pthread_attr_destroy(&thread_attr);
 
-INTERNAL u64
+  if (thread_result != 0)
+  {
+    WARN("Failed to create thread.");
+    return NULL;
+  }
+  else
+  {
+    return thread_id;
+  }
+}
+
+typedef pthread_mutex_t thread_mutex;
+INTERNAL void
+thread_mutex_init(thread_mutex *mutex)
+{
+  if (pthread_mutex_init(mutex, NULL) != 0)
+    WARN("Failed to initialise mutex.");
+}
+
+INTERNAL void
+thread_mutex_destroy(thread_mutex *mutex)
+{
+  if (pthread_mutex_destroy(mutex) != 0)
+    WARN("Failed to destroy mutex.");
+}
+
+INTERNAL void 
+thread_mutex_lock(thread_mutex *mutex)
+{
+  if (pthread_mutex_lock(mutex) != 0)
+    WARN("Failed to lock mutex.");
+}
+
+INTERNAL void
+thread_mutex_unlock(thread_mutex *mutex)
+{
+  if (pthread_mutex_unlock(mutex) != 0)
+    WARN("Failed to unlock mutex.");
+}
+
+#define MUTEX_SCOPE(m) \
+  DEFER_LOOP(thread_mutex_lock(m), thread_mutex_unlock(m))
+
+INTERNAL pid_t
 thread_get_id(void)
 {
-	pthread_t thread = pthread_self();
-	u64 id = 0;
-	pthread_threadid_np(thread, &id);
-	return id;
+  return gettid();
 }
 
 INTERNAL void
@@ -27,7 +81,8 @@ thread_yield(void)
   sched_yield();
 }
 
-// IMPORTANT(Ryan): return normally sufficient, only run when want main() to not close other threads
+// IMPORTANT(Ryan): Using 'return;' normally sufficient. 
+// Only use this when want main() to not close other threads
 INTERNAL void
 thread_exit(void)
 {
@@ -36,87 +91,48 @@ thread_exit(void)
 }
 
 // IMPORTANT: joining on a thread will perform resource cleanup for that thread
-INTERNAL void
-thread_join(thread_ptr thread)
+INTERNAL int
+thread_join(thread_handle thread)
 {
-  void* retval;
-  pthread_join( (pthread_t) thread, &retval );
-  return (int)(uintptr_t) retval;
+  void *retval = NULL;
+  if (pthread_join(thread, &retval) != 0)
+    WARN("Failed to join thread.");
+  return (int)(uintptr_t)retval;
 }
 
 INTERNAL void
-thread_set_highpriority(thread_ptr thread)
+thread_set_highpriority(thread_handle thread)
 {
-  struct sched_param sp;
-  memset( &sp, 0, sizeof( sp ) );
-  sp.sched_priority = sched_get_priority_min( SCHED_RR );
-  pthread_setschedparam( pthread_self(), SCHED_RR, &sp);
+  struct sched_param sp = ZERO_STRUCT;
+  sp.sched_priority = sched_get_priority_min(SCHED_RR);
+  if (pthread_setschedparam(thread, SCHED_RR, &sp) != 0)
+    WARN("Failed to set thread to high priority");
 }
 
+typedef u32 volatile atomic_u32;
 INTERNAL void
-thread_mutex_init(thread_mutex_t* mutex )
+atomic_u32_store(atomic_u32 *a, u32 *v)
 {
-        // Compile-time size check
-        struct x { char thread_mutex_type_too_small : ( sizeof( thread_mutex_t ) < sizeof( pthread_mutex_t ) ? 0 : 1 ); };
-
-        pthread_mutex_init( (pthread_mutex_t*) mutex, NULL );
+  __atomic_store(a, v, __ATOMIC_SEQ_CST);
 }
 
-INTERNAL void
-thread_mutex_destroy()
+INTERNAL u32
+atomic_u32_load(atomic_u32 *a)
 {
-        pthread_mutex_destroy( (pthread_mutex_t*) mutex );
-}
-
-void thread_mutex_lock( thread_mutex_t* mutex )
-{
-        pthread_mutex_lock( (pthread_mutex_t*) mutex );
-}
-
-
-void thread_mutex_unlock( thread_mutex_t* mutex )
-{
-        pthread_mutex_unlock( (pthread_mutex_t*) mutex );
-}
-
-// TODO: rename to sleep()
-void thread_timer_wait( thread_timer_t* timer, THREAD_U64 nanoseconds )
-{
-        struct timespec rem;
-        struct timespec req;
-        req.tv_sec = nanoseconds / 1000000000ULL;
-        req.tv_nsec = nanoseconds - req.tv_sec * 1000000000ULL;
-        while( nanosleep( &req, &rem ) )
-            req = rem;
+  u32 ret = 0;
+  __atomic_load(a, &ret, __ATOMIC_SEQ_CST );
+  return ret;
 }
 
 // __thread is gcc using linux tls (so tls is OS functionality?)
 
-
 // pthread_cond_t is condition variable
 // critical section is a mutex
 // TODO: signal has both a mutex and cv? equivalent of stripe?
-
-INTERNAL thread_handle
-start_thread(thread_function func, void *params)
-{
-  pthread_t thread_id = 0;
-  pthread_attr_t *thread_attr = NULL;
-
-  int res = pthread_create(&thread_id, thread_attr, (void* (*)(void * ))func, params);
-  if (res == 0) error();
-
-  return (thread_ptr_t)thread;
-}
+// (look at linux-handmade for semaphores)
 
 
-// https://github.com/mattiasgustavsson/yarnspin/blob/main/source/libs/thread.h
-// imgedit for background thread
-
-
-
-
-
+#if 0
 // this is essentially the UI struct, so could contain input etc.
 struct imgedit
 {
@@ -204,12 +220,13 @@ example(void *params)
 }
 
 
-// essentially 1 thread checks if new data and queues it
-// another thread takes off queue, loads and puts in cache
+
+
+
+
+
 
 // TODO: more atomics as needed
-__atomic_load( &atomic->i, &ret, __ATOMIC_SEQ_CST );
-__atomic_store( &atomic->i, &desired, __ATOMIC_SEQ_CST );
 return (int)__atomic_fetch_add( &atomic->i, 1, __ATOMIC_SEQ_CST );
   return (int)__atomic_fetch_sub( &atomic->i, 1, __ATOMIC_SEQ_CST );
 __atomic_exchange( &atomic->i, &desired, &old, __ATOMIC_SEQ_CST );
@@ -883,11 +900,11 @@ worker_thread(void *arg)
 // In userspace, a thread is a task that shares its memory space
 //
 // cpu atomic instructions ensure that you have exclusive access to a variable, i.e. read and write to it with no other interference
-// mutexes are programming constructs built on top of this to create locks to ensure some code waits before another executes. say, atomic add it to 1 to indicate code should wait.
+// mutexes are programming constructs built on top of this to create locks to ensure some code waits before another executes. 
+// say, atomic add it to 1 to indicate code should wait.
 INTERNAL void
 create_thread(void *parameter)
 {
-#if 1
   // windows create_thread defaults to 1M
   u32 stack_size = MEGABYTES(1); 
   char *stack = (char *)malloc(stack_size);
@@ -916,14 +933,6 @@ create_thread(void *parameter)
     EBP();
     return;
   }
-#else
-  pthread_attr_t attr;
-  pthread_t tid;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  int result = pthread_create(&tid, &attr, worker_thread, parameter);
-  pthread_attr_destroy(&attr);
-#endif
 
 }
 
@@ -1111,4 +1120,4 @@ main(int argc, char *argv[])
 
   return 0;
 }
-
+#endif
