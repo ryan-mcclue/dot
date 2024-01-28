@@ -120,7 +120,7 @@ INTERNAL u32
 atomic_u32_load(atomic_u32 *a)
 {
   u32 ret = 0;
-  __atomic_load(a, &ret, __ATOMIC_SEQ_CST );
+  __atomic_load(a, &ret, __ATOMIC_SEQ_CST);
   return ret;
 }
 
