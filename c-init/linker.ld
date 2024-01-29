@@ -17,6 +17,19 @@ MEMORY
   ram (rwx) : ORIGIN = 0x20000000, LENGTH = SRAM_SIZE
 }
 
+/* NOTE: Desktop
+SECTIONS
+{
+  .gnu_build_id : 
+  {
+    PROVIDE(g_note_build_id = .);
+    *(.note.gnu.build-id)
+  }
+}
+INSERT AFTER .rodata;
+*/
+
+
 SECTIONS
 {
   .text :
@@ -39,6 +52,12 @@ SECTIONS
      * i.e functions that can throw exceptions will have entries here (or during debugging) */
 
     /* C-runtime, e.g. .init, .fini, .crt */
+  } >rom
+
+  .gnu_build_id : 
+  {
+    PROVIDE(_g_note_build_id = .);
+    *(.note.gnu.build-id)
   } >rom
 
   /* TODO: why _sidata and _sdata? */

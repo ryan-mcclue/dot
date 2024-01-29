@@ -170,6 +170,24 @@
     COMPILER_GCC_STR \
     IDF_VERSION_STR \
     LANG_CPP_STR LANG_C_STR
+
+    typedef struct ElfNoteSection ElfNoteSection;
+    struct ElfNoteSection
+    {
+      char namesz[4]; // sizeof("GNU")
+      char descsz[4]; // sizeof(20-char-sha1)
+      char type[4];
+      char *data;
+    };
+    
+    extern const ElfNoteSection g_note_build_id;
+    #define GET_BUILD_ID_PTR() \
+       (u8 *)&g_note_build_id.data[g_note_build_id.namesz]
+    // g_note_build_id.decsz number of bytes
+    
+    // const uint8_t gcau8DeviceName[12] __attribute__ ((section (“.image_header_body”))) =
+    // {‘N’, ‘u’, ‘c’, ‘l’, ‘e’, ‘o’, ‘L’, ‘4’, ‘3’, ‘2’, ‘K’, ‘C’ };
+
 #else
   #error Compiler not supported
 #endif

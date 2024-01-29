@@ -17,3 +17,9 @@ init(void)
   // (HSI) oscillator for clock source. This feeds into CPU, AHB and APB clocks
   // setup clock source for buses, e.g. AHB-> HSI, PLL
 }
+
+// define a systick interrupt handler that increments global tick
+
+// various syscalls for newlib functions, e.g. _sbrk malloc() (will utilise linker heap variable), 
+// printf() __io_putchar()
+// most other syscalls just blanks
