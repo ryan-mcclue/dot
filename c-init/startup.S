@@ -60,3 +60,31 @@ LoopFillZerobss:
   bl  main
   bx  lr    
 .size  Reset_Handler, .-Reset_Handler // directive not really necessary
+
+.section .isr_vector,"a",%progbits
+.type  g_pfnVectors, %object
+.size  g_pfnVectors, .-g_pfnVectors
+g_pfnVectors:
+  .word  _estack
+  .word  Reset_Handler
+
+  .word  NMI_Handler
+  .word  HardFault_Handler
+  .word  MemManage_Handler
+  .word  BusFault_Handler
+  .word  UsageFault_Handler
+  .word  0
+  .word  0
+  .word  0
+  .word  0
+  .word  SVC_Handler
+  .word  DebugMon_Handler
+  .word  0
+  .word  PendSV_Handler
+  .word  SysTick_Handler
+  
+  .word     WWDG_IRQHandler
+  /* Rest of external interrupts ... */
+
+.weak      WWDG_IRQHandler                   
+.thumb_set WWDG_IRQHandler,Default_Handler      

@@ -112,6 +112,21 @@ print_end_time() {
   printf "Build Time: %.4fs\n" "$BUILD_TIME" 
 }
 
+readonly FLASH_SIZE=$(( 2048 << 10 ))
+readonly RAM_SIZE=$(( 1024 << 10 ))
+print_flash_usage() {
+  raw_size_output=$(arm-none-eabi-size $1)
+  
+  text_section_size=$(echo $raw_size_output | cut -d ' ' -f 7)
+  data_section_size=$(echo $raw_size_output | cut -d ' ' -f 8)
+  
+  flash_usage=$(( $text_section_size + $data_section_size ))
+  # NOTE(Ryan): Rearrange multiplication due to implicit truncation
+  flash_percentage=$(( 100 * $flash_usage / $FLASH_SIZE )) 
+
+  printf "Flash usage: %d / %d (%d%%)\n" $flash_usage $FLASH_SIZE $flash_percentage
+}
+
 [[ "$OSTYPE" != "linux-gnu" ]] && error "Currently only support linux as build machine"
 
 # NOTE(Ryan): This file is ignored by source control to allow tweaking of build params without affecting history
@@ -160,20 +175,34 @@ COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
 COMPILER_FLAGS+=( "-save-temps=obj" )
 
 COMPILER_FLAGS+=( "-Icode" )
+printf -v build_date '\"%s\"' $(date '+%c(%:z%Z)' | tr ' ' '-')
+# TODO(Ryan): Derive version programmatically
+printf -v build_version '\"0.0.1\"'
+COMPILER_FLAGS+=( "-DBUILD_VERSION_STR=$build_version" "-DBUILD_DATE_STR=$build_date" "-DRAM_SIZE_INT=$RAM_SIZE" )
+
+COMPILER_FLAGS+=(  )
+target_compiler_flags+=( "-mcpu=cortex-m4" "-mthumb" )
+target_compiler_flags+=( "startup.S" )
+target_compiler_flags+=( "-mfloat-abi=hard" "-mfpu=fpv4-sp-d16" "--specs=nano.specs" )
 
 # IMPORTANT(Ryan): Seems have to specify library location for lld that is default for ld? 
 # COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
 
 # COMPILER_FLAGS+=( "-isystem external/raylib/src" )
-#COMPILER_FLAGS+=( "-Lexternal/raylib/src" "-Wl,-rpath=external/raylib/src" )
+# COMPILER_FLAGS+=( "-Lexternal/raylib/src" "-Wl,-rpath=external/raylib/src" )
 
-# NOTE(Ryan): To differentiate binary types of same version $(readelf -n)
-LINKER_FLAGS+=( "-Wl,--build-id" )
-LINKER_FLAGS+=( "-lm" "-ldl" )
+LINKER_FLAGS+=( "-Wl,--build-id" "-Wl,--warn-unresolved-symbols" )
+LINKER_FLAGS+=( "-lc" "-lm" "-ldl" )
+# NOTE(Ryan): Embedded
+# LINKER_FLAGS+=( "-Tcode/linker.ld" "-lnosys" "-Wl,-Map=build/${BINARY_NAME}.map,--cref" )
 
 
 if [[ "$PARAM_MODE" == "debug" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD" )
+
+  # NOTE(Ryan): Embedded
+  # COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
+  # LINKER_FLAGS+=( "-Wl,--gc-sections" )
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
@@ -202,6 +231,12 @@ elif
 $PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
 
 print_end_time
+
+# NOTE(Ryan): Embedded
+# print_flash_usage
+# arm-none-eabi-objcopy -O binary build/${BINARY_NAME}.elf build/${BINARY_NAME}.bin
+# arm-none-eabi-objcopy -O ihex build/${BINARY_NAME}.elf build/${BINARY_NAME}.bin
+# cp build/${BINARY_NAME}.map misc/console/{BINARY_NAME}.ino
 
 # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
 build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
