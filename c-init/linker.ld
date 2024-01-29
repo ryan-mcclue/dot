@@ -47,10 +47,13 @@ SECTIONS
   .data :
   {
     . = ALIGN(4);
-    /* variables indicate usage in startup.s */
+    /* if want to persist, store value in .word _sdata */
     _sdata = .;      
     *(.data)         
     *(.data*)        
+    /* #define RAMFUNC __attribute__((section(".ramfunc")))
+       void fast_function(void) RAMFUNC;
+    */
     *(.RamFunc)      
     *(.RamFunc*)     
 
