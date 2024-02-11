@@ -303,17 +303,38 @@ apt_info()
 
 c_init()
 {
-  [[ $# -ne 1 ]] && printf "Usage: c_init <name>\n" >&2 && return
+  if [[ $# -ne 2 ]]; then
+    printf "Usage: c_init <name> {desktop|embedded}\n" >&2 
+    return
+  fi
+
   local name="$1"
+  local type="$2"
 
-  mkdir "$name"
-  ln -sf "$HOME/prog/personal/dot/c-init/code"/* "$name"/code
-  ln -sf "$HOME/prog/personal/dot/c-init/misc"/* "$name"/misc
-  cp -r "$HOME/prog/personal/dot/c-init/private" "$name"
-  cp -r "$HOME/prog/personal/dot/c-init/.vscode" "$name"
+  case "$type" in
+    "embedded")
+      local files=("embedded.c" "system.c" "startup.S" "linker.ld")
+      ;;
+    "desktop")
+      local files=("desktop.cpp" "desktop-tests.cpp" "linker.ld")
+      ;;
+    *)
+      printf "Usage: c_init <name> {desktop|embedded}\n" >&2 
+      return
+      ;;
+  esac
 
-  cp "$HOME/prog/personal/dot/c-init/desktop.cpp" "$name"/code
-  cp "$HOME/prog/personal/dot/c-init/desktop-tests.cpp" "$name"/code
+  mkdir -p "$name/code" "$name/misc"
+
+  local path="$HOME/prog/personal/dot/c-init"
+  for f in "${files[@]}"; do
+    cp "$path/$f" "$name"/code
+  done
+
+  ln -sf "$path/code"/* "$name"/code
+  ln -sf "$path/misc"/* "$name"/misc
+  cp -r "$path/private" "$name"
+  cp -r "$path/.vscode" "$name"
 } && export -f
 
 run_ctags()
