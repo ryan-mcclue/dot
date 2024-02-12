@@ -142,10 +142,10 @@ COMPILER_FLAGS=()
 LINKER_FLAGS=()
 
 if [[ "$BUILD_TYPE" == "app" ]]; then
-  NAME="iot"
+  NAME="desktop"
   BINARY_ARGS=("-decode" "i-12e")
 else
-  NAME="iot-tests"
+  NAME="desktop-tests"
   BINARY_ARGS=()
 
   COMPILER_FLAGS+=( "-DTEST_BUILD" )
@@ -211,9 +211,7 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
   # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
   # NOTE(Ryan): Static analyser
   # COMPILER_FLAGS+=( "-fanalyzer" )
-elif
-  
-if [[ "$PARAM_MODE" == "release" ]]; then
+elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DRELEASE_BUILD" )
   COMPILER_FLAGS+=( "-O3" )
   COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
@@ -223,7 +221,7 @@ if [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-fipa-pta" )
   COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
   LINKER_FLAGS+=( "-Wl,--gc-sections" )
-elif
+fi
 
 $PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
 

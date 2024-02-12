@@ -27,6 +27,10 @@ int main(int argc, char *argv[])
 
   profiler_init();
 
+  u64 _ = 0x7400747269686520;
+  u32 __ = 0x18550d0;
+  while (__) 
+    putchar((_ >> ((((__ >>= 3) & 7) << 3) & 0xFF)));
 
   profiler_end_and_print();
 

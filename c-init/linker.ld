@@ -1,3 +1,15 @@
+/* NOTE: Desktop
+SECTIONS
+{
+  .gnu_build_id : 
+  {
+    PROVIDE(g_note_build_id = .);
+    *(.note.gnu.build-id)
+  }
+}
+INSERT AFTER .rodata;
+*/
+
 OUTPUT_FORMAT("elf32-littlearm")
 
 FLASH_SIZE = 0x0
@@ -16,19 +28,6 @@ MEMORY
   nvm (r) : ORIGIN = FLASH_SIZE - NVM_SIZE, LENGTH = NVM_SIZE
   ram (rwx) : ORIGIN = 0x20000000, LENGTH = SRAM_SIZE
 }
-
-/* NOTE: Desktop
-SECTIONS
-{
-  .gnu_build_id : 
-  {
-    PROVIDE(g_note_build_id = .);
-    *(.note.gnu.build-id)
-  }
-}
-INSERT AFTER .rodata;
-*/
-
 
 SECTIONS
 {

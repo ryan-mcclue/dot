@@ -193,15 +193,6 @@ map_lookup(Map *map, MapKey key)
   return result;
 }
 
-INTERNAL void *
-map_val_assert(Map *map, char const *key)
-{
-  MapSlot *slot = map_lookup(map, map_key_str(str8_cstr(key)));
-  ASSERT(slot != NULL);
-
-  return slot->val;
-}
-
 INTERNAL MapSlot *
 map_insert(MemArena *arena, Map *map, MapKey key, void *val)
 {
