@@ -336,8 +336,11 @@ c_init()
   cp -r "$path/misc" "$name"
   cp -r "$path/private" "$name"
   cp -r "$path/.vscode" "$name"
+  cp -r "$path/.github" "$name"
 
   cp "$path/.gitignore.copy" "$name"/.gitignore
+  cp "$path/LICENSE" "$name"
+  cp "$path/README.md" "$name"
 } && export -f
 
 run_ctags()
