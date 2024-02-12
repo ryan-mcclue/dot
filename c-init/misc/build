@@ -173,6 +173,7 @@ COMPILER_FLAGS+=( "-std=c++2a" "-fno-exceptions" "-fno-rtti" "-Wctor-dtor-privac
 COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
 # NOTE(Ryan): Generate preprocessed files
 COMPILER_FLAGS+=( "-save-temps=obj" )
+COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
 
 COMPILER_FLAGS+=( "-Icode" )
 printf -v build_date '\"%s\"' $(date '+%c(%:z%Z)' | tr ' ' '-')
@@ -180,29 +181,25 @@ printf -v build_date '\"%s\"' $(date '+%c(%:z%Z)' | tr ' ' '-')
 printf -v build_version '\"0.0.1\"'
 COMPILER_FLAGS+=( "-DBUILD_VERSION_STR=$build_version" "-DBUILD_DATE_STR=$build_date" "-DRAM_SIZE_INT=$RAM_SIZE" )
 
-COMPILER_FLAGS+=(  )
-target_compiler_flags+=( "-mcpu=cortex-m4" "-mthumb" )
-target_compiler_flags+=( "startup.S" )
-target_compiler_flags+=( "-mfloat-abi=hard" "-mfpu=fpv4-sp-d16" "--specs=nano.specs" )
+# NOTE(Ryan): Embedded
+# COMPILER_FLAGS+=( "-mcpu=cortex-m4" "-mthumb" )
+# COMPILER_FLAGS+=( "startup.S" )
+# COMPILER_FLAGS+=( "-mfloat-abi=hard" "-mfpu=fpv4-sp-d16" "--specs=nano.specs" )
 
-# IMPORTANT(Ryan): Seems have to specify library location for lld that is default for ld? 
+# IMPORTANT(Ryan): Seems have to specify library location for lld
 # COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
 
-# COMPILER_FLAGS+=( "-isystem external/raylib/src" )
+# COMPILER_FLAGS+=( "-isystem code/external/raylib/src" )
 # COMPILER_FLAGS+=( "-Lexternal/raylib/src" "-Wl,-rpath=external/raylib/src" )
 
-LINKER_FLAGS+=( "-Wl,--build-id" "-Wl,--warn-unresolved-symbols" )
+LINKER_FLAGS+=( "-Tcode/linker.ld" )
+LINKER_FLAGS+=( "-Wl,--gc-sections" "-Wl,--build-id" "-Wl,--warn-unresolved-symbols" )
 LINKER_FLAGS+=( "-lc" "-lm" "-ldl" )
 # NOTE(Ryan): Embedded
-# LINKER_FLAGS+=( "-Tcode/linker.ld" "-lnosys" "-Wl,-Map=build/${BINARY_NAME}.map,--cref" )
-
+# LINKER_FLAGS+=( "-lnosys" "-Wl,-Map=build/${BINARY_NAME}.map,--cref" )
 
 if [[ "$PARAM_MODE" == "debug" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD" )
-
-  # NOTE(Ryan): Embedded
-  # COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
-  # LINKER_FLAGS+=( "-Wl,--gc-sections" )
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )

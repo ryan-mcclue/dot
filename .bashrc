@@ -324,15 +324,16 @@ c_init()
       ;;
   esac
 
-  mkdir -p "$name/code" "$name/misc"
+  mkdir -p "$name/code"
 
   local path="$HOME/prog/personal/dot/c-init"
   for f in "${files[@]}"; do
     cp "$path/$f" "$name"/code
   done
 
-  ln -sf "$path/code"/* "$name"/code
-  ln -sf "$path/misc"/* "$name"/misc
+  ln -sf "$path/code/base" "$name/code/base"
+  cp -r "$path/code/external" "$name/code"
+  cp -r "$path/misc" "$name"
   cp -r "$path/private" "$name"
   cp -r "$path/.vscode" "$name"
 } && export -f

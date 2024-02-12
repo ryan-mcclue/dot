@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #pragma once
 
-// NOTE(Ryan): CMSIS
-#include "core_cm4.h"
+#include "external/cmsis/core_cm4.h"
 
 #if defined(DEBUG_BUILD)
   #define BP() \

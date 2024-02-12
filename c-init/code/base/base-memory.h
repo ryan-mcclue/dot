@@ -154,7 +154,7 @@ thread_context_allocate(memory_index cap, memory_index roundup_granularity)
 }
 
 INTERNAL void thread_context_set(ThreadContext *tctx) { tl_tctx = tctx; }
-INTERNAL ThreadContext * thread_context_get(void) { return tl_tctx; }
+INTERNAL ThreadContext *thread_context_get(void) { return tl_tctx; }
 
 INTERNAL void
 thread_context_deallocate(ThreadContext *tctx)
