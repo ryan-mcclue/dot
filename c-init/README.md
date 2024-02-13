@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: zlib-acknowledgement -->
 # Desktop 
-> ![Workflow](https://github.com/ryan-mcclue/desktop/actions/workflows/desktop-actions.yml/badge.svg)
+Desktop application
 
 ## Linux
 ```

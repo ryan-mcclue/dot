@@ -138,7 +138,7 @@ PARAM_LINKER=${param_linker:-"ld"}
 PARAM_MODE=${param_mode:-"debug"}
 PARAM_ARCH=${param_arch:-"x86_64"}
 
-mkdir -p build run
+mkdir -p build
 
 COMPILER_FLAGS=()
 LINKER_FLAGS=()

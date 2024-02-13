@@ -324,14 +324,15 @@ c_init()
       ;;
   esac
 
-  mkdir -p "$name/code"
+  mkdir -p "$name/code/base"
 
   local path="$HOME/prog/personal/dot/c-init"
   for f in "${files[@]}"; do
     cp "$path/$f" "$name"/code
   done
 
-  ln -sf "$path/code/base" "$name/code/base"
+  sudo mount --bind "$path/code/base" "$name/code/base"
+
   cp -r "$path/code/external" "$name/code"
   cp -r "$path/misc" "$name"
   cp -r "$path/private" "$name"
@@ -341,6 +342,11 @@ c_init()
   cp "$path/.gitignore.copy" "$name"/.gitignore
   cp "$path/LICENSE" "$name"
   cp "$path/README.md" "$name"
+} && export -f
+
+mb()
+{
+  sudo mount --bind "$HOME/prog/personal/dot/c-init/code/base" "code/base"
 } && export -f
 
 run_ctags()

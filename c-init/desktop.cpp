@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   global_debugger_present = linux_was_launched_by_gdb();
   MemArena *perm_arena = mem_arena_allocate(GB(8), MB(64));
 
-  ThreadContext tctx = thread_context_allocate(GB(8), MB(64))
+  ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
   tctx.is_main_thread = true;
   thread_context_set(&tctx);
   thread_context_set_name("Main Thread");

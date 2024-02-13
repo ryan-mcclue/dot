@@ -14,4 +14,4 @@
 
 !misc/**/*
 
-!.vscode/**/*.json
+!.github/**/*.yml

@@ -5,11 +5,11 @@
 #include <setjmp.h>
 #include <limits.h>
 
+#include "desktop.cpp"
+
 EXPORT_BEGIN
 #include <cmocka.h>
 EXPORT_END
-
-#include "desktop.cpp"
 
 void
 test_example(void **state)

@@ -11,7 +11,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Obtain deps
-        run: sudo apt -y install cmocka
+        run: sudo apt -y install libcmocka0
       - name: Setup release build
         run: |
           mkdir private
@@ -23,11 +23,9 @@ jobs:
       - name: Build app
         run: bash misc/build "app"
       - name: Run app
-        run: |
-          ./build/desktop-release
-          # ./build/desktop-release &
-          # pid=$!
-          # sleep 3
-          # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
-
-      - run: echo "Status: ${{ job.status }}"
+        run: ./build/desktop-release
+      # |
+      # ./build/desktop-release &
+      # pid=$!
+      # sleep 3
+      # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
