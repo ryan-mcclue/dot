@@ -237,7 +237,7 @@ print_end_time
 # arm-none-eabi-objcopy -O ihex build/${BINARY_NAME}.elf build/${BINARY_NAME}.bin
 # cp build/${BINARY_NAME}.map misc/console/{BINARY_NAME}.ino
 
-if [[ "$param_run" == "true" ]]; then
+if [[ "$PARAM_RUN" == "true" ]]; then
   # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
   build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
 fi

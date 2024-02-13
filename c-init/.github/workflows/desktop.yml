@@ -29,3 +29,7 @@ jobs:
       # pid=$!
       # sleep 3
       # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
+      - name: Run analyser
+        run: |
+          echo 'param_analyse="true"' >> private/build-params
+          bash misc/build "app"
