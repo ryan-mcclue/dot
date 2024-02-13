@@ -10,19 +10,24 @@ jobs:
 
       - name: Clone repo
         uses: actions/checkout@v4
-      # - name: Obtain deps
-      #   run: sudo apt -y install gcovr
+      - name: Obtain deps
+        run: sudo apt -y install cmocka
+      - name: Setup release build
+        run: |
+          mkdir private
+          echo 'param_mode="release"' > private/build-params
       - name: Build tests
         run: bash misc/build "tests"
       - name: Run tests
-        run: ./build/desktop-tests
+        run: ./build/desktop-tests-release
       - name: Build app
         run: bash misc/build "app"
       - name: Run app
         run: |
-          ./build/desktop &
-          pid=$!
-          sleep 3
-          kill $pid 2>/dev/null || echo "Running app failed" && exit 1
+          ./build/desktop-release
+          # ./build/desktop-release &
+          # pid=$!
+          # sleep 3
+          # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
 
       - run: echo "Status: ${{ job.status }}"

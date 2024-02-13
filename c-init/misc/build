@@ -130,7 +130,9 @@ print_flash_usage() {
 [[ "$OSTYPE" != "linux-gnu" ]] && error "Currently only support linux as build machine"
 
 # NOTE(Ryan): This file is ignored by source control to allow tweaking of build params without affecting history
-source "private/build-params"
+set +e
+source "private/build-params" 2>/dev/null
+set -e
 PARAM_COMPILER=${param_compiler:-"g++"}
 PARAM_LINKER=${param_linker:-"ld"}
 PARAM_MODE=${param_mode:-"debug"}
