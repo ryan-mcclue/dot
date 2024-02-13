@@ -137,11 +137,17 @@ PARAM_COMPILER=${param_compiler:-"g++"}
 PARAM_LINKER=${param_linker:-"ld"}
 PARAM_MODE=${param_mode:-"debug"}
 PARAM_ARCH=${param_arch:-"x86_64"}
+PARAM_ANALYSE=${param_analyse:-"false"}
+PARAM_RUN=${param_run:-"false"}
 
 mkdir -p build
 
 COMPILER_FLAGS=()
 LINKER_FLAGS=()
+
+if [[ "$PARAM_ANALYSE" == "true" ]]; then
+  COMPILER_FLAGS+=( "-fanalyzer" )
+fi
 
 if [[ "$BUILD_TYPE" == "app" ]]; then
   NAME="desktop"
@@ -170,6 +176,9 @@ COMPILER_FLAGS+=( "-fdiagnostics-show-option")
 # NOTE(Ryan): Ignored warnings
 COMPILER_FLAGS+=( "-Wno-unknown-pragmas" "-Wno-missing-field-initializers" "-Wno-cast-align" "-Wno-useless-cast" "-Wno-comment" "-Wno-missing-declarations" )
 COMPILER_FLAGS+=( "-Wno-parentheses" "-Wno-conversion" "-Wno-padded" "-Wno-write-strings" )
+COMPILER_FLAGS+=("-Wno-unused-function" "-Wno-unused-variable"  "-Wno-unused-but-set-variable" )
+COMPILER_FLAGS+=("-Wno-unused-parameter" "-Wno-unused-result" "-Wno-vla" )
+COMPILER_FLAGS+=("-Wno-double-promotion" "-Wno-sign-conversion" "-Wno-strict-aliasing" )
 # NOTE(Ryan): C++ specific
 COMPILER_FLAGS+=( "-std=c++2a" "-fno-exceptions" "-fno-rtti" "-Wctor-dtor-privacy" )
 COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
@@ -205,24 +214,17 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
-  COMPILER_FLAGS+=("-Wno-unused-function" "-Wno-unused-variable"  "-Wno-unused-but-set-variable" )
-  COMPILER_FLAGS+=("-Wno-unused-parameter" "-Wno-unused-result" "-Wno-vla" )
-  COMPILER_FLAGS+=("-Wno-double-promotion" "-Wno-sign-conversion" )
 
   # NOTE(Ryan): Sanitisers
   # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
-  # NOTE(Ryan): Static analyser
-  # COMPILER_FLAGS+=( "-fanalyzer" )
 elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DRELEASE_BUILD" )
   COMPILER_FLAGS+=( "-O3" )
-  COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
 
   COMPILER_FLAGS+=( "-flto" )
   # NOTE(Ryan): Pointer analysis; large compile times
   COMPILER_FLAGS+=( "-fipa-pta" )
   COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
-  LINKER_FLAGS+=( "-Wl,--gc-sections" )
 fi
 
 $PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
@@ -235,7 +237,9 @@ print_end_time
 # arm-none-eabi-objcopy -O ihex build/${BINARY_NAME}.elf build/${BINARY_NAME}.bin
 # cp build/${BINARY_NAME}.map misc/console/{BINARY_NAME}.ino
 
-# NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
-build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+if [[ "$param_run" == "true" ]]; then
+  # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
+  build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+fi
 
 # insert_metrics_db

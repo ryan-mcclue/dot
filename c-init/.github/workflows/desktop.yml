@@ -11,7 +11,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Obtain deps
-        run: sudo apt -y install libcmocka0
+        run: sudo apt -y install libcmocka-dev
       - name: Setup release build
         run: |
           mkdir private
