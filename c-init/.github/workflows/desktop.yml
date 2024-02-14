@@ -11,7 +11,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Obtain deps
-        run: sudo apt -y install libcmocka-dev
+        run: sudo apt -y install libcmocka-dev gcovr
       - name: Setup release build
         run: |
           mkdir private
@@ -19,7 +19,13 @@ jobs:
       - name: Build tests
         run: bash misc/build "tests"
       - name: Run tests
-        run: ./build/desktop-tests-release
+        run: |
+          ./build/desktop-tests-release
+          # TODO(Ryan): Why gcov CI name files differently to local?
+          mv -f build/desktop-tests-release-desktop-tests.gcno build/desktop-tests.gcno
+          mv -f build/desktop-tests-release-desktop-tests.gcda build/desktop-tests.gcda
+          gcov -b -o build/ code/desktop-tests.cpp >/dev/null
+          gcovr -e "code/base/.*\.h" 
       - name: Build app
         run: bash misc/build "app"
       - name: Run app

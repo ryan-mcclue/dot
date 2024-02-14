@@ -156,7 +156,10 @@ else
   NAME="desktop-tests"
   BINARY_ARGS=()
 
-  COMPILER_FLAGS+=( "-DTEST_BUILD" )
+  # IMPORTANT(Ryan): For true coverage don't have optimisations, as may merge lines
+  # --coverage to generate .gcno
+  # running generate .gcda
+  COMPILER_FLAGS+=( "-DTEST_BUILD" "--coverage" )
   LINKER_FLAGS+=( "-lcmocka" )
 fi
 
@@ -178,14 +181,14 @@ COMPILER_FLAGS+=( "-Wno-unknown-pragmas" "-Wno-missing-field-initializers" "-Wno
 COMPILER_FLAGS+=( "-Wno-parentheses" "-Wno-conversion" "-Wno-padded" "-Wno-write-strings" )
 COMPILER_FLAGS+=("-Wno-unused-function" "-Wno-unused-variable"  "-Wno-unused-but-set-variable" )
 COMPILER_FLAGS+=("-Wno-unused-parameter" "-Wno-unused-result" "-Wno-vla" )
-COMPILER_FLAGS+=("-Wno-double-promotion" "-Wno-sign-conversion" "-Wno-strict-aliasing" )
+COMPILER_FLAGS+=("-Wno-double-promotion" "-Wno-sign-conversion" )
 # NOTE(Ryan): C++ specific
 COMPILER_FLAGS+=( "-std=c++2a" "-fno-exceptions" "-fno-rtti" "-Wctor-dtor-privacy" )
-COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" )
-# NOTE(Ryan): Generate preprocessed files
-COMPILER_FLAGS+=( "-save-temps=obj" )
-COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" ) 
-
+COMPILER_FLAGS+=( "-Wstrict-null-sentinel" "-Wzero-as-null-pointer-constant" "-Wno-strict-aliasing" )
+# NOTE(Ryan): Generate preprocessed files                                      
+COMPILER_FLAGS+=( "-save-temps=obj" )                                          
+COMPILER_FLAGS+=( "-ffunction-sections" "-fdata-sections" )                    
+                                                                               
 COMPILER_FLAGS+=( "-Icode" )
 printf -v build_date '\"%s\"' $(date '+%c(%:z%Z)' | tr ' ' '-')
 # TODO(Ryan): Derive version programmatically
@@ -214,7 +217,6 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
-
   # NOTE(Ryan): Sanitisers
   # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
 elif [[ "$PARAM_MODE" == "release" ]]; then
@@ -238,8 +240,21 @@ print_end_time
 # cp build/${BINARY_NAME}.map misc/console/{BINARY_NAME}.ino
 
 if [[ "$PARAM_RUN" == "true" ]]; then
+  # NOTE(Ryan): gcov gives profiler error if overriding file
+  rm -f build/"$BINARY_NAME".gcda 2>/dev/null
+
   # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
   build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+
+  # NOTE(Ryan): gcov requires name to be same as source file
+  mv -f build/"$BINARY_NAME".gcno build/"$NAME".gcno 2>/dev/null
+  mv -f build/"$BINARY_NAME".gcda build/"$NAME".gcda 2>/dev/null
+
+  if [[ "$BUILD_TYPE" == "tests" ]]; then
+    gcov -b -o build/ code/"$NAME".cpp >/dev/null
+    gcovr -e "code/base/.*\.h" 
+    rm -f *.gcov
+  fi
 fi
 
 # insert_metrics_db
