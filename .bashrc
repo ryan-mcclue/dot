@@ -381,7 +381,7 @@ run_cscope()
       fi
     fi
     rm -f cscope.out
-    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" > cscope.files && cscope -b
+    find $* -type f -iname "*.[chS]" -o -iname "*.cpp" > cscope.files && cscope -bq
     printf "Created database file.\n"
   else
     printf "Usage: run_cscope <folder1> [folder2] ...\n" >&2
