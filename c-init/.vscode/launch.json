@@ -6,6 +6,7 @@
             "name": "esp32debug",
             "type": "cppdbg",
             "request": "launch",
+            "args": [],
             "cwd": "${workspaceFolder}/build",
             "program": "${workspaceFolder}/build/hello_world.elf",
             "miDebuggerPath": "${userHome}/.espressif/tools/xtensa-esp-elf-gdb/12.1_20231023/xtensa-esp-elf-gdb/bin/xtensa-esp32-elf-gdb",
