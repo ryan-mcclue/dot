@@ -534,64 +534,94 @@ str8_to_int(String8 s)
   return result;
 }
 
-typedef String8 U8Buf;
-#define u8buf(buf, size) str8((u8 *)(buf), (size))
+// TODO(Ryan): Tree traversal: https://hero.handmade.network/episode/code/day202/#1985 
 
-typedef struct RingBuf RingBuf;
-struct RingBuf 
+#define ring_write_ptr(base, size, pos, ptr) ring_write((base), (size), (pos), (ptr), sizeof(*(ptr)))
+#define ring_read_ptr(base, size, pos, ptr) ring_read((base), (size), (pos), (ptr), sizeof(*(ptr)))
+
+INTERNAL memory_index
+ring_write(u8 *ring_base, memory_index ring_size, memory_index pos, void *src, memory_index write_size)
 {
-  union {
-    U8Buf buf;
-    ISO_EXTENSION struct 
-    {
-      u8 *content;
-      memory_index size;
-    };
-  };
-
-  memory_index write_pos; 
-};
-
-INTERNAL RingBuf
-ring_buf_create(MemArena *arena, memory_index size)
-{
-  RingBuf result = ZERO_STRUCT;
-
-  result.content = MEM_ARENA_PUSH_ARRAY_ZERO(arena, u8, size);
-  result.size = size;
-  result.write_pos = 0;
-
-  return result;
+  write_size = MIN(write_size, ring_size);
+  memory_index first_part_write_off = pos % ring_size;
+  memory_index second_part_write_off = 0;
+  String8 first_part = str8((u8 *)src, write_size);
+  String8 second_part = str8_lit("");
+  if (first_part_write_off + write_size > ring_size)
+  {
+    first_part.size = ring_size - first_part_write_off;
+    second_part = str8((u8 *)src + first_part.size, write_size - first_part.size);
+  }
+  if (first_part.size != 0)
+  {
+    MEMORY_COPY(ring_base + first_part_write_off, first_part.str, first_part.size);
+  }
+  if (second_part.size != 0)
+  {
+    MEMORY_COPY(ring_base + second_part_write_off, second_part.str, second_part.size);
+  }
+  return write_size;
 }
 
 INTERNAL memory_index
-ring_buf_write(RingBuf *ring_buf, U8Buf buf)
+ring_read(u8 *ring_base, memory_index ring_size, memory_index pos, void *dst, memory_index read_size)
 {
-  if (buf.size > ring_buf->size) return 0;
-
-  U8Buf block1 = buf;
-  memory_index block1_offset = ring_buf->write_pos % ring_buf->size;
-
-  U8Buf block2 = ZERO_STRUCT;
-  if (block1_offset + block1.size > ring_buf->size)
+  read_size = MIN(read_size, ring_size);
+  memory_index first_part_read_off = pos % ring_size;
+  memory_index second_part_read_off = 0;
+  memory_index first_part_read_size = read_size;
+  memory_index second_part_read_size = 0;
+  if (first_part_read_off + read_size > ring_size)
   {
-    memory_index block2_advance = ring_buf->size - block1_offset;
-    block2 = str8_advance(block1, block2_advance);
-    block1.size = block2_advance;
+    first_part_read_size = ring_size - first_part_read_off;
+    second_part_read_size = read_size - first_part_read_size;
   }
-
-  if (block1.size != 0)
+  if (first_part_read_size != 0)
   {
-    // IMPORTANT(Ryan): Confusion with stdlib bytes, elements, etc. Encouraging buffer overflows!
-    MEMORY_COPY(ring_buf->content + block1_offset, block1.content, block1.size);
-    ring_buf->write_pos += block1.size;
+    MEMORY_COPY(dst, ring_base + first_part_read_off, first_part_read_size);
   }
-
-  if (block2.size != 0)
+  if (second_part_read_size != 0)
   {
-    MEMORY_COPY(ring_buf->content, block2.content, block2.size);
-    ring_buf->write_pos = block2.size;
+    MEMORY_COPY((u8 *)dst + first_part_read_size, ring_base + second_part_read_off, second_part_read_size);
   }
-
-  return buf.size;
+  return read_size;
 }
+
+#if 0
+INTERNAL void
+ring_queue_thread(u32 val)
+{
+ MUTEX_SCOPE(ring_mutex) while (1)
+ {
+   if ((ring_write_pos - ring_read_pos) <= ring_size - sizeof(ring_elem))
+   {
+    memory_index write_pos = ring_write_pos;
+    write_pos += RING_WRITE_PTR(ring_base, ring_size, write_pos, &elem);
+    ring_write_pos = write_pos;
+    break;
+   }
+   thread_cv_wait(ring_cv, ring_mutex);
+ }
+ thread_cv_signal_all(ring_cv);
+}
+
+INTERNAL u32
+ring_dequeue_thread(void)
+{
+ u32 elem = 0;
+ MUTEX_SCOPE(ring_mutex) while (1)
+ {
+   if (ring_write_pos >= ring_read_pos + sizeof(elem))
+   {
+     memory_index read_pos = ring_read_pos;
+     read_pos += RING_READ_PTR(ring_base, ring_size, read_pos, &elem);
+     ring_read_pos = read_pos;
+     break;
+   }
+   thread_cv_wait(ring_cv, ring_mutex);
+ }
+ thread_cv_signal_all(ring_cv);
+ return elem;
+}
+#endif
+

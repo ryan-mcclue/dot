@@ -124,6 +124,43 @@ atomic_u32_load(atomic_u32 *a)
   return ret;
 }
 
+typedef pthread_cond_t thread_cv;
+INTERNAL void
+thread_cv_init(thread_cv *cv)
+{
+  if (pthread_cond_init(cv, NULL) != 0)
+    WARN("Failed to initialise cv.");
+}
+
+INTERNAL void
+thread_cv_destroy(thread_cv *cv)
+{
+  if (pthread_cond_destroy(cv) != 0)
+    WARN("Failed to destroy cv.");
+}
+
+INTERNAL void
+thread_cv_wait(thread_cv *cv, thread_mutex *mutex)
+{
+  if (pthread_cond_wait(cv, mp) != 0)
+    WARN("Failed to wait on cv.");
+}
+
+INTERNAL void
+thread_cv_signal(thread_cv *cv)
+{
+  if (pthread_cond_signal(&cv) != 0)
+    WARN("Failed to signal cv");
+}
+
+INTERNAL void
+thread_cv_signal_all(thread_cv *cv)
+{
+  if (pthread_cond_broadcast(&cv) != 0)
+    WARN("Failed to broadcast cv");
+}
+
+
 // __thread is gcc using linux tls (so tls is OS functionality?)
 
 // pthread_cond_t is condition variable
