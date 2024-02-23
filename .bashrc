@@ -469,6 +469,30 @@ ssh_tunnel() {
   fi
 } && export -f
 
+libc_version() {
+  [[ ! $# -eq 1 ]] && printf "Usage: libc_version <binary>\n" >&2 && return
+  local binary_name="$1"
+
+  local glibc_version=$(ldd --version | grep -Po 'GLIBC \d{1,2}[.]\d{1,2}')
+  printf "System libc is: %s\n" "$glibc_version"
+
+  local max_binary_glibc=$(objdump -T "$binary_name" | grep -Eo 'GLIBC_\S+' | sort -uVr | head -n 1)
+  printf "%s max. libc is: %s\n" "$binary_name" "$max_binary_glibc"
+
+  read -sn1 -p "Print related symbols? (y/n): " confirm
+  echo
+  if [[ "$confirm" == "y" ]]; then
+    objdump -T "$binary_name" | grep "$max_binary_glibc"
+    printf "Earlier symbols: objdump -T /lib/x86_64-linux-gnu/libc.so.6 | grep <symbol>\n"
+    printf "Change: __asm__(\".symver <symbol>,<symbol>@GLIBC_2.2.5\");\n"
+    printf "Running in container might be necessary\n"
+  fi
+} && export -f
+
+bat() {
+  local rows="(state)|(percentage)|(capacity)|(time to empty)"
+  upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep --color=never -E "$rows"
+} && export -f
 
 export SSH_UNSW="z5346008@login.cse.unsw.edu.au"
 export SSH_UNSW_DB="z5346008@d2.cse.unsw.edu.au"
