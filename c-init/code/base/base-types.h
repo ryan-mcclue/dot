@@ -211,6 +211,9 @@ struct SourceLoc
 #define PropArrayRemove(arr, prop)    ((arr)[(prop) / (sizeof((arr)[0])*8)] &= ~(((U64)1) << ((prop) % (sizeof((arr)[0])*8))))
 #define PropArrayGet(arr, prop)    (!!((arr)[(prop) / (sizeof((arr)[0])*8)] &   (((U64)1) << ((prop) % (sizeof((arr)[0])*8)))))
 
+#define EACH_ENUM(type, it) type it = (type)0; it < type##_COUNT; it = (type)(it+1)
+#define EACH_NONZERO_ENUM(type, it) type it = (type)1; it < type##_COUNT; it = (type)(it+1)
+
 // TODO(Ryan): Date/time helpers?
 
 // type-limits, unused-value
@@ -288,6 +291,29 @@ struct SourceLoc
 #define DLL_PUSH_BACK(first, last, node) \
   __DLL_PUSH_BACK(first, last, node, next, prev)
 
+#define __DLL_INSERT(first, last, insert, node, next, prev) \
+(\
+  ((first) == NULL) ? \
+  (\
+    ((first) = (last) = (node)), \
+    ((node)->next = (node)->prev = NULL) \
+  )\
+  : \
+  (\
+    ((insert) == NULL) ? \
+    (\
+      ((node)->prev = NULL, (node)->next = (first), \
+        ((first) == NULL ? (NULL) : (first)->prev = (node)), (first) = (node)) \
+      :\
+      ((insert)->next == NULL ? (NULL) : \
+       ((insert)->next->prev = (node), (node)->next = (insert)->next, (node)->prev = (insert), (insert)->next=(node)), \
+         ((insert) == (last) ? (last) = (node) : (NULL)))\
+    )\
+  )\
+)
+#define DLL_INSERT(first, last, insert, node) \
+  __DLL_INSERT(first, last, insert, node, next, prev)
+
 #define __DLL_REMOVE(first, last, node, next, prev) \
 (\
   ((node) == (first)) ? \
@@ -318,6 +344,8 @@ struct SourceLoc
 )
 #define DLL_REMOVE(first, last, node) \
   __DLL_REMOVE(first, last, node, next, prev) 
+
+// TODO(Ryan): DLLInsert()
 
 #define __SLL_QUEUE_PUSH(first, last, node, next) \
 (\

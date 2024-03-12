@@ -16,8 +16,10 @@
 #define MEMORY_ZERO_ARRAY(a) MEMORY_ZERO((a), sizeof(a[0]))
 
 #define MEMORY_COPY(d, s, n) memmove((d), (s), (n))
-#define MEMORY_COPY_STRUCT(d, s, n) MEMORY_COPY((d), (s), sizeof(*(s)))
-#define MEMORY_COPY_ARRAY(d, s, n) MEMORY_COPY((d), (s), sizeof((s)))
+#define MEMORY_COPY_STRUCT(dst, src) do { \
+  ASSERT(sizeof(*(dst)) == sizeof(*(src))); MEMORY_COPY((dst), (src), sizeof(*(dst))); } while(0)
+#define MEMORY_COPY_ARRAY(dst, src) do { \
+  ASSERT(sizeof(dst) == sizeof(src)); MEMORY_COPY((dst), (src), sizeof(src)); } while(0)
 
 #define MEMORY_MATCH(a, b, n) (memcmp((a), (b), (n)) == 0)
 
