@@ -399,3 +399,28 @@ struct SourceLoc
 )
 #define SLL_STACK_POP(first) \
   __SLL_STACK_POP(first, next)
+
+INTERNAL u64
+hash_str(String8 string)
+{
+  u64 result = 5381;
+
+  for (u64 i = 0; i < string.size; i += 1)
+  {
+    result = ((result << 5) + result) + string.content[i];
+  }
+
+  return result;
+}
+
+INTERNAL u64 
+hash_ptr(void *p)
+{
+  u64 h = (u64)p;
+
+  h = (h ^ (h >> 30)) * 0xbf58476d1ce4e5b9;
+  h = (h ^ (h >> 27)) * 0x94d049bb133111eb;
+  h = h ^ (h >> 31);
+
+  return h;
+}
