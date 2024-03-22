@@ -12,53 +12,43 @@ int main(int argc, char *argv[])
 #endif
 {
   global_debugger_present = linux_was_launched_by_gdb();
-  MemArena *perm_arena = mem_arena_allocate(GB(8), MB(64));
+  MemArena *arena = mem_arena_allocate(GB(8), MB(64));
   // MemArena *frame_arena = mem_arena_allocate(GB(8), MB(64));
 
   // command line arguments
-  // for (int i = 0; i < argc; i += 1){
-  //   String8 arg = str8_cstring((U8*)argv[i]);
-  //   str8_list_push(w32_perm_arena, &w32_cmd_line, arg);
+  //
+  // String8List cmd_line = ZERO_STRUCT;
+  // for (u32 i = 0; i < argc; i += 1)
+  // {
+  //   String8 arg = str8_cstr(argv[i]);
+  //   str8_list_push(arena, &cmd_line, arg);
   // }
   
-  // U32 speaker_count = (args.node_count - 1)/2;
-  // Speaker *speakers = push_array_zero(arena, Speaker, speaker_count);
-  // String8Node *first_arg = args.first;
-   
-  // for(B32 quit = 0; quit == 0; frame_idx += 1)
-  // for (true)
-  // {  arena_pop_to(frame_arena, 0);
-  //    frame_counter += 1;
-  //    F32 wiggle_time = ((params->frame_counter%60)/60.f);
+  // for (b32 quit = false; !quit; frame_counter += 1)
+  // {  
+  //    mem_arena_clear(frame_arena);
   //
+  //    f32 wiggle_time = (frame_counter%60)/60.f);
   // }
-  //
 
-  // start with state and frame. add more when get areas that want there memory localised, e.g. processing over large groups
- Arena *state_arena = ArenaAlloc(Gigabytes(2));
- State *state = PushArray(state_arena, State, 1);
- state->arena = state_arena;
- state->name_chunk_arena = ArenaAlloc(Gigabytes(64));
- state->entities_arena = ArenaAlloc(Gigabytes(64));
- state->entities_base = PushArray(state->entities_arena, Entity, 0);
- UI_State *ui = UI_StateAlloc();
+ // start with state and frame. add more when get areas that want their memory localised, e.g. processing over large groups entities
 
+ // start with list, then a chunked list for large amounts or if want array indexing
 
-  // passed a frame arena
-function void
-rectangle_push(M_Arena *arena, RectList *list,
-               I2F32 rect, V4F32 top_color, V4F32 bot_color){
-  RectNode *node = push_array(arena, RectNode, 1);
-  SLLQueuePush(list->first, list->last, node);
-  list->count += 1;
-  node->rect = rect;
-  node->top_color = top_color;
-  node->bot_color = bot_color;
-}
-function void
-draw_rectangle_list(RectList *list, V2F32 windim)
-
-
+// passed a frame arena
+// INTERNAL void
+// rectangle_push(MemArena *arena, RectList *list,
+//                I2F32 rect, V4F32 top_color, V4F32 bot_color)
+// {
+//   RectNode *node = push_array(arena, RectNode, 1);
+//   SLLQueuePush(list->first, list->last, node);
+//   list->count += 1;
+//   node->rect = rect;
+//   node->top_color = top_color;
+//   node->bot_color = bot_color;
+// }
+// function void
+// draw_rectangle_list(RectList *list, V2F32 windim)
 
   ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
   tctx.is_main_thread = true;
