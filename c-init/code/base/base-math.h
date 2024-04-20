@@ -114,6 +114,7 @@ memory_index_round_to_nearest(memory_index val, memory_index near)
   return result;
 }
 
+// Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs"
 INTERNAL u32 
 u32_rand(u32 *seed)
 {

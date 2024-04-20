@@ -325,6 +325,7 @@ c_init()
   esac
 
   mkdir -p "$name/code/base"
+  mkdir "$name/assets"
 
   local path="$HOME/prog/personal/dot/c-init"
   for f in "${files[@]}"; do
@@ -526,6 +527,20 @@ copyfrom_unsw_db() {
     printf "Usage: copyfrom_unsw_db <remote_file> <destination>\n" >&2
   fi
 } && export -f
+
+download_playlist() {
+  #(requires ffmpeg)
+  #--recode-video "mp4"
+  [[ ! $# -eq 2 ]] && printf "Usage: ${FUNCNAME[0]} <music|video> <url>\n" >&2 && return
+  local type="$1"
+  local url="$2"
+  if [[ "$type" == "music" ]]; then
+    "$HOME"/Downloads/yt-dlp --ignore-errors --restrict-filenames --extract-audio --audio-format "mp3" \
+      --output '%(title)s.%(ext)s' "$url"
+  else
+    printf "Type must be music currently\n" >&2 && return
+  fi
+}
 
 # IMPORTANT(Ryan): This path will likely change with postgresql ubuntu repository updates
 PGBIN=/usr/lib/postgresql/12/bin

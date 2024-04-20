@@ -1,0 +1,36 @@
+#!/bin/sh
+# SPDX-License-Identifier: zlib-acknowledgement 
+
+glibc_debugging="libc6-dbg glibc-source"
+# udevamd --query=all -n input/event10
+device_debugging="evtest udevadm fftest"
+# NOTE(Ryan): Principally xrandr, xdpyinfo, xwininfo
+x11_debugging="x11-xserver-utils"
+# NOTE(Ryan): Principally aplay cmd-line tool
+alsa_debugging="alsa-utils"
+# NOTE(Ryan): Ensure cpu virtualisation flags set from BIOS
+# Inside of VM: $(mount -t 9p -o trans=virtio /virt-targetpoint-folder /actual-folder)
+system_debugging="virt-manager qemu-kvm htop"
+
+essential="libx11-dev libxcursor-dev libxrender-dev libxrandr-dev libxpresent-dev libudev-dev libpulse-dev"
+
+sudo apt install $essential
+
+# NOTE(Ryan): Remove user from group with $(deluser ryan input)
+member_of_input="$(id -nG "$USER" | grep "input")"
+if test ! "$member_of_input"; then
+  usermod -a "$USER" -G input
+  printf "\n\nMust reboot for user to access evdev (logging out might work)\n"
+fi
+
+# NOTE(Ryan): For intel vtune
+# sudo sh -c 'echo kernel.perf_event_paranoid=0 >> /etc/sysctl.d/local.conf'
+# sudo sh -c 'echo kernel.yama.ptrace_scope=0 >> /etc/sysctl.d/local.conf'
+# sudo sh -c 'echo kernel.kptr_restrict=0 >> /etc/sysctl.d/local.conf'
+
+# NOTE(Ryan): This won't really have an affect it seems 
+# sudo sed -i 's/load-module module-udev-detect/load-module module-udev-detect tsched=0/g' /etc/pulse/default.pa
+# /etc/pulse/daemon.conf
+# default-fragments = 4
+# default-fragment-size-msec = 25
+# systemctl --user restart pulseaudio.service

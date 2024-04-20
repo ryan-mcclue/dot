@@ -400,6 +400,7 @@ struct SourceLoc
 #define SLL_STACK_POP(first) \
   __SLL_STACK_POP(first, next)
 
+// djb2
 INTERNAL u64
 hash_str(String8 string)
 {
