@@ -28,3 +28,13 @@ read_cpu_timer(void)
 {
   return DWT->CYCCNT;
 }
+
+INTERNAL void 
+qemu_arm_exit(void) 
+{
+  register u32 r0 __asm__("r0");
+  r0 = 0x18;
+  register u32 r1 __asm__("r1");
+  r1 = 0x20026;
+  __asm__ volatile("bkpt #0xAB");
+}

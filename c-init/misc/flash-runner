@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: zlib-acknowledgement 
+
+JLinkExe -commanderscript misc/flash

@@ -31,6 +31,12 @@ typedef size_t memory_index;
 #define ASC_WHITE "\x1B[97m"
 #define ASC_CLEAR "\033[0m"
 
+// NOTE(Ryan): PCLinting markup
+// IMPORTANT(Ryan): Ignore integer constant used as NULL pointer
+//#define ZERO_STRUCT_INIT /*lint -e9080*/ {0} /*lint +e9080*/
+// IMPORTANT(Ryan): Ignore having no side-effects
+//lint -esym(522 523, DEBUGGER_BREAK)
+
 // C++ and C complex differently
 #if defined(LANG_CPP)
   #include <complex>
