@@ -21,6 +21,14 @@ NVM_SIZE = 0x0
 /* define with -DSTACK_SIZE=, as will play around with stack size */
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x800;
 
+/* FLASH-REGIONS:
+ * Designated region of flash (global struct->serialize->store):
+   - heartbeat metrics 
+   - execution flow/state (crashes, etc.)
+   Periodically send to server database
+   - device serial number (if OTP not available)
+ */
+
 MEMORY 
 {
   bootloader (rx) : ORIGIN = 0x00000000, LENGTH = BOOTLOADER_SIZE
