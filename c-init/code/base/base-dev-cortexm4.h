@@ -3,6 +3,9 @@
 
 #include "external/cmsis/core_cm4.h"
 
+// TODO(Ryan): cmsis uses dsp for simd? (__ARM_FEATURE_DSP) && (__ARM_FEATURE_DSP == 1))
+// uqadd8, so can do parallel 8-bit math?
+
 #if defined(DEBUG_BUILD)
   #define BP() \
   do \
@@ -28,6 +31,9 @@ read_cpu_timer(void)
 {
   return DWT->CYCCNT;
 }
+
+#define cli() nvic_globalirq_disable()
+#define sei() nvic_globalirq_enable()
 
 INTERNAL void 
 qemu_arm_exit(void) 

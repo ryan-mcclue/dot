@@ -27,6 +27,9 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x800;
    - execution flow/state (crashes, etc.)
    Periodically send to server database
    - device serial number (if OTP not available)
+
+.noinit section in RAM is useful to preserve values on software reset.
+e.g. on startup, mcu will typically set areas to 0
  */
 
 MEMORY 
