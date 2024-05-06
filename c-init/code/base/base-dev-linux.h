@@ -187,7 +187,6 @@ __fatal_error(SourceLoc source_loc, const char *fmt, ...)
   #define NO_DEFAULT_CASE default: { UNREACHABLE(); } break
 #endif
 
-#define STATIC_ASSERT(cond) typedef u8 UNIQUE_NAME(v) [(cond)?1:-1]
 #define NOT_IMPLEMENTED() ASSERT(!"NOT_IMPLEMENTED")
 #define TODO() ASSERT(!"TODO")
 

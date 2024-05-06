@@ -238,6 +238,9 @@ struct SourceLoc
 #define ALIGN_POW2_UP(x, p)       (-(-(x) & -(p)))
 #define ALIGN_POW2_INCREASE(x, p)         (-(~(x) & -(p)))
 
+#define STATIC_ASSERT(cond) typedef u8 UNIQUE_NAME(v) [(cond)?1:-1]
+// Static array size checking:	STATIC_ASSERT((sizeof(a) / sizeof(*a)) >= 4)
+
 #define THOUSAND(x) ((x)*1000LL)
 #define MILLI_TO_SEC(x) ((x)*1000ULL)
 #define MILLION(x)  ((x)*1000000LL)
