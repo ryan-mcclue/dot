@@ -367,6 +367,8 @@ echo_cmd(char **argv)
   }
 }
 
+// IMPORTANT(Ryan): Potentially have to handle signals to not crash from external command
+// sigaction(SIGPIPE, &act, NULL);
 INTERNAL String8 
 linux_read_entire_cmd(MemArena *arena, char *args[], b32 echo)
 {

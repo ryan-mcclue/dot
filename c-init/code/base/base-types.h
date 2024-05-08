@@ -250,6 +250,12 @@ struct SourceLoc
 #define TRILLION(x) ((x)*1000000000000LL)
 #define PICO_TO_SEC(x) ((x)*1000000000000ULL)
 
+// Pre-compilation parses annotated structs and writes them to a header file
+#define INTROSPECT(params)
+// INTROSPECT(category:"something") typedef struct ParseThis
+
+#define RETURN_DEFER(val) do { result = (val); goto defer; } while (0)
+
 #define INC_SATURATE_U8(x) ((x) = ((x) >= (U8_MAX) ? (U8_MAX) : (x + 1)))
 #define INC_SATURATE_U16(x) ((x) = ((x) >= (U16_MAX) ? (U16_MAX) : (x + 1)))
 #define INC_SATURATE_U32(x) ((x) = ((x) >= (U32_MAX) ? (U32_MAX) : (x + 1)))

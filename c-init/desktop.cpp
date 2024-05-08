@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     putchar((_ >> ((((__ >>= 3) & 7) << 3) & 0xFF)));
 
   profiler_end_and_print();
+  // PROFILE_BANDWIDTH(), PROFILE_BLOCK(), PROFILE_FUNCTION(), 
 
   return 0;
 }
