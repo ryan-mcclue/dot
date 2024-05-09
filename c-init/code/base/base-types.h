@@ -239,7 +239,7 @@ struct SourceLoc
 #define ALIGN_POW2_INCREASE(x, p)         (-(~(x) & -(p)))
 
 #define STATIC_ASSERT(cond) typedef u8 UNIQUE_NAME(v) [(cond)?1:-1]
-// Static array size checking:	STATIC_ASSERT((sizeof(a) / sizeof(*a)) >= 4)
+// NOTE(Ryan): Static array size checking:	STATIC_ASSERT((sizeof(a) / sizeof(*a)) >= 4)
 
 #define THOUSAND(x) ((x)*1000LL)
 #define MILLI_TO_SEC(x) ((x)*1000ULL)
@@ -250,9 +250,13 @@ struct SourceLoc
 #define TRILLION(x) ((x)*1000000000000LL)
 #define PICO_TO_SEC(x) ((x)*1000000000000ULL)
 
-// Pre-compilation parses annotated structs and writes them to a header file
+// NOTE(Ryan): Pre-compilation parses annotated structs and writes them to a header file
 #define INTROSPECT(params)
 // INTROSPECT(category:"something") typedef struct ParseThis
+
+// NOTE(Ryan): Designated initialisers allow repetition and ZII
+#define draw_rect(r, ...) \
+  draw_rect_((r), &(DrawRectParams){.color = {1,1,1,1}, __VA_ARGS__})
 
 #define RETURN_DEFER(val) do { result = (val); goto defer; } while (0)
 
@@ -416,6 +420,24 @@ struct SourceLoc
 )
 #define SLL_STACK_POP(first) \
   __SLL_STACK_POP(first, next)
+
+#if 0
+INTERNAL void
+concat_list(List *a, List *b)
+{
+ if (a->last == NULL)
+ {
+  MEMORY_COPY_STRUCT(a, b);
+ }
+ else if (b->first != NULL)
+ {
+  a->last->next = b->first;
+  a->last = b->last;
+  a->count += b->count;
+ }
+ MEMORY_ZERO_STRUCT(b);
+}
+#endif
 
 // djb2
 INTERNAL u64

@@ -54,16 +54,6 @@
   INTERNAL u64 u64_endianness_swap(u64 val) { return __builtin_bswap64(val); }
 #endif
 
-// IMPORTANT(Ryan): Animations:
-// ease_in accelerates at end
-// ease_out accelerates at start
-// ease_in_out accelerates at middle
-// Often want non-linear to display smaller values (easings.net)
-//   1. Static 
-//       hot_t += ((f32)!!is_hot - hot_t) * rate; 
-//       lerp(start, end, hot_t);
-//   2. Dynamic
-//       val += (dst - val) * rate;
 INTERNAL f32
 f32_sin_in(f32 t) 
 {
