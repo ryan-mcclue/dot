@@ -78,6 +78,8 @@ typedef size_t memory_index;
 #endif
 
 #if defined(SIMULATOR_BUILD) || defined(TEST_BUILD)
+  // IMPORTANT(Ryan): For a function to be mocked/wrapped, it must be in a separate translation unit
+  // For unity build, only function declaration can be present
   #define WANT_MOCKS 1
 #endif
 

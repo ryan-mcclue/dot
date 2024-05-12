@@ -8,3 +8,5 @@
 # also include performance metrics, e.g. cpu load, ram snapshots, battery life etc.
 
 # Prioritise testing features, and risky code (battery, firmware update, factory reset)
+
+# Startup test could be checking if writing to external SDRAM works

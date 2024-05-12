@@ -182,6 +182,7 @@ INTERNAL void
 soft_reset(void) 
 {
 	NVIC_SystemReset();
+  // blink_led()
 }
 
 INTERNAL void 
