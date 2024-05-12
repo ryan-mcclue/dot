@@ -8,15 +8,25 @@ system_init()
    rcc_apb_clock_init();
    rcc_periph_clock_init();
 
+
+    NVIC_SetPriority(USART3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+
    // gpio clock and pins -> uart clock -> nvic priority and interrupt enable
 }
 
 // TODO(Ryan): red-jellies code for software debouncing, i.e. hold for 2seconds
 
+#if defined(TEST_BUILD)
+int testable_main(void)
+#else
 int main(void)
+#endif
 {
   if (system_init())
     while (1);
+
+  // check_reset_reboot_reason();
+  // enable_hardware_watchdog();
 
   // init peripherals
   debug_led_gpio_init();
@@ -26,7 +36,7 @@ int main(void)
 	new_tick = HAL_GetTick();
 	old_tick = new_tick;
 
-  while (1) {
+  while (FOREVER) {
   	cur_tick = HAL_GetTick();
   	// check more than 1ms elapsed since previous loop iteration
   	if (cur_tick != new_tick) {

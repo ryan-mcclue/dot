@@ -82,6 +82,7 @@ str8_to_cstr(String8 s, char *buffer, memory_index buffer_size)
 
 // NOTE(Ryan): Embedded
 // #define MAX_LIT_LEN 64
+// #define str8_lit(s) str8(sizeof(s) < MAX_LIT_LEN ? (u8 *)(s) : 0, sizeof(s) - 1)
 #define str8_lit(s) str8((u8 *)(s), sizeof(s) - 1)
 #define str8_cstr(s) str8((u8 *)(s), strlen((char *)s))
 // IMPORTANT(Ryan): When substringing will run into situations where not null terminated.
