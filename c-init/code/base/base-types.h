@@ -258,6 +258,9 @@ struct SourceLoc
 #define draw_rect(r, ...) \
   draw_rect_((r), &(DrawRectParams){.color = {1,1,1,1}, __VA_ARGS__})
 
+// NOTE(Ryan): Memory mapped address hierarchy typically 'bus + peripheral + register' 
+#define MMIO_32(addr) (*(volatile u32 *)(addr))
+
 #define RETURN_DEFER(val) do { result = (val); goto defer; } while (0)
 
 #define INC_SATURATE_U8(x) ((x) = ((x) >= (U8_MAX) ? (U8_MAX) : (x + 1)))

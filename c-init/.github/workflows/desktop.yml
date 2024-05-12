@@ -2,8 +2,10 @@ name: desktop
 run-name: ${{ github.actor }} run
 on: [push]
 
+
 jobs:
   ubuntu:
+    # Once build system stabilises, set up own docker image for speed
     runs-on: ubuntu-latest
     steps:
       - run: echo "${{ runner.os }}->${{ github.event_name }}->${{ github.ref }}"

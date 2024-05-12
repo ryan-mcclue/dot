@@ -288,6 +288,86 @@ linux_was_launched_by_gdb(void)
   return result;
 }
 
+INTERNAL void
+initialise_serial_port(char *serial_port, u32 baud_rate, u32 read_timeout)
+{
+  // IMPORTANT(Ryan): If specifying non-blocking arguments in here can affect VTIM
+  // and result in 'resource temporarily unavaiable'
+	global_serial_fd = open(serial_port, O_RDWR);
+	if (global_serial_fd < 0) 
+  {
+
+    WARN("opening serial port %s failed (%s)\n", serial_port, strerror(errno));
+		return;
+	}
+
+	struct termios serial_options = {0};
+	if (tcgetattr(global_serial_fd, &serial_options) == -1)
+  {
+    WARN("obtaining original serial port settings failed (%s)\n", strerror(errno));
+		return;
+  }
+
+  // NOTE(Ryan): Important to alter specific bits to avoid undefined behaviour 
+
+  // CONTROL MODES
+  // disable parity
+  serial_options.c_cflag &= ~PARENB;
+
+  // one stop bit
+  serial_options.c_cflag &= ~CSTOPB;
+
+  serial_options.c_cflag &= ~CSIZE;
+  serial_options.c_cflag |= CS8;
+
+  // disable hardware flow control
+  serial_options.c_cflag &= ~CRTSCTS;
+
+  // allow reads
+  // no carrier detect if removed
+  serial_options.c_cflag |= (CREAD | CLOCAL);
+
+  // LOCAL MODES
+  // disable canonical mode so as to recieve all raw bytes and say not interpret backspace specially
+  serial_options.c_lflag &= ~ICANON;
+
+  serial_options.c_lflag &= ~ECHO; // Disable echo
+  serial_options.c_lflag &= ~ECHOE; // Disable erasure
+  serial_options.c_lflag &= ~ECHONL; // Disable new-line echo
+
+  // disable interpretation of certain signals
+  serial_options.c_lflag &= ~ISIG;
+
+  // INPUT MODES
+  // disable software flow control
+  serial_options.c_iflag &= ~(IXON | IXOFF | IXANY);
+  // disble special handling of bytes
+  serial_options.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
+
+  // OUTPUT MODES
+  // disable special handling of bytes
+  serial_options.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+  serial_options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+
+  // whther blocking or not determined with VMIN and VTIME
+  serial_options.c_cc[VTIME] = (read_timeout * 10);    // Wait for up to deciseconds, returning as soon as any data is received.
+  serial_options.c_cc[VMIN] = 0;
+
+  cfsetspeed(&serial_options, BAUD_RATE);
+
+	if (tcsetattr(global_serial_fd, TCSANOW, &serial_options) == -1)
+  {
+    WARN("setting serial port baud rate to %d failed (%s)\n", baud_rate, strerror(errno));
+		return;
+  }
+
+  if (flock(global_serial_fd, LOCK_EX | LOCK_NB) == -1)
+  {
+    WARN("obtaining exclusive access to %s failed (%s)\n", serial_port, strerror(errno));
+  }
+}
+
+
 
 INTERNAL b32
 char_is_shell_safe(char ch)

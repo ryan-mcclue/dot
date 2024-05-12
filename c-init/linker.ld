@@ -26,7 +26,7 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x800;
    - heartbeat metrics 
    - execution flow/state (crashes, etc.)
    Periodically send to server database
-   - device serial number (if OTP not available)
+   - device serial number (if OTP memory not available)
  */
 
 /* RAM-REGIONS:

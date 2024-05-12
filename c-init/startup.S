@@ -8,6 +8,8 @@
 // indicative bit set in CPSR (Current Program State Register)
 // IT instruction, instead of conditional instructions, e.g. ADDNE R1, R1, #1
 
+// IMPORTANT: find interrupt names from startup.s
+
 .global  g_pfnVectors
 .global  Default_Handler
 
