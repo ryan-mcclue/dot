@@ -426,3 +426,77 @@ clamp01(LaneR32 a)
 }
 
 #endif
+
+// nice that intel defined intrinsics, so same across compilers
+
+// TODO: do multithreading first
+
+// simd optimisation is about 'preamble', i.e how to reorganise data 
+// 1. convert variables used into wide equivalent (a struct would have all members be individual variables)
+//    convert any constants to wide equivalent (includes function parameters)
+//    inline and convert to scalar math, e.g. V2 p; f32 x = ; f32 y = ;
+//    IMPORTANT: easier to loop over simd variable as array if get stuck on conversion
+//    __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
+//    for (x = 0; x += 4)
+//    {
+//      r32 a[4]; // __m128 a;
+//      r32 b[4];
+//      b32 c[i];
+//      r32 d[i];
+//      for (i = 0; i < 4; i++)
+//      {
+//        LANE_F32_ARR(a, i) = ;
+//        b[i] = ;
+//      }
+//
+//      for (i = 0; i < 4; i++)
+//      {
+//        if (c[i])
+//        {
+//          d[i] = a[i] + b[i];
+//        }
+//      }
+//    }
+//  3. take out of for loop, and replace '+', '*', etc. with simd operations (so, shouldn't be seeing '+' operators)
+//     easier to nest simd calls
+//  a = _mm_mul_add(_mm_mul_ps(constant_wide, a), b);
+//  4. handle unpacking (loading) and unpacking (writing)
+//  5. handle conditionals?
+//
+
+// xmm registers hold any 32bit value
+// movss xmm1, dword ptr []
+// comiss xmm0, xmm7
+// movaps xmm0, xmmword ptr []
+#define LANE_F32_SS(a) _mm_set_ps1(a)
+#define LANE_F32_PS(a, b, c, d) _mm_set_ps(a, b, c, d)
+
+#define LANE_F32_SQRT(a) _mm_sqrt_ps(a)
+
+#define LANE_F32_SQUARE(a) LANE_F32_MUL(a, a)
+
+#define LANE_F64_SET(a) _mm_set_pd()
+
+#define LANE_F32_ARRAY(l, i) ((* f32)(&l))[i]
+
+#define LANE_F32_CLAMP01(a) _mm_min_ps(_mm_max_ps(a, zero_wide), one_wide)
+
+// addps
+#define LANE_F32_ADD(a, b) _mm_add_ps(a, b)
+
+lane_f32 a = LANE_F32_SET(1.0f);
+lane_f32 b = LANE_F32_SET(2.0f);
+lane_f32 c = LANE_F32_ADD(a, b);
+
+for (y < h)
+  for (x < w)
+{
+
+}
+
+for (y < h)
+  for (x < w; x += 4)
+    for (i < 4)
+    {
+
+    }
