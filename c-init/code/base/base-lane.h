@@ -435,8 +435,8 @@ clamp01(LaneR32 a)
 // 1. convert variables used into wide equivalent (a struct would have all members be individual variables)
 //    convert any constants to wide equivalent (includes function parameters)
 //    inline and convert to scalar math, e.g. V2 p; f32 x = ; f32 y = ;
-//    IMPORTANT: easier to loop over simd variable as array if get stuck on conversion
-//    __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
+//    unpacking: __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
+//    packing: for (i < 4) out[i] = LANE_ARR(x, i) << 4;
 //    for (x = 0; x += 4)
 //    {
 //      r32 a[4]; // __m128 a;
@@ -460,7 +460,21 @@ clamp01(LaneR32 a)
 //  3. take out of for loop, and replace '+', '*', etc. with simd operations (so, shouldn't be seeing '+' operators)
 //     easier to nest simd calls
 //  a = _mm_mul_add(_mm_mul_ps(constant_wide, a), b);
-//  4. handle unpacking (loading) and unpacking (writing)
+//  4. handle packing (writing)
+//  if want to combine smaller sizes, e.g. 8-bit values, shift and or
+//  __m128i rounded_int = _mm_cvtps_epi32();
+//  _mm_or_si128(rounded_int, _mm_slli_epi32(b, 8));
+//  *(__m128i *)pixel = ;
+//
+//  want output to be say 8-bit rgba.
+//  _mm_unpackhi_epi32() will interleave. 
+//  __m128i br = _mm_unpacklo_epi32(_mm_castps_si128(b), r);
+//  __m128i ag = _mm_unpacklo_epi32(a, g);
+//  __m128i argb = _mm_unpack_lo_epi32(br, ag);
+//  __m128i argb1 = _mm_unpack_hi_epi32(br, ag);
+//
+//  would arrange various interleaves of various sizes to get output order desired
+//  4. handle unpacking (loading) 
 //  5. handle conditionals?
 //
 
