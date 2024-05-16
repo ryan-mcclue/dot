@@ -462,9 +462,13 @@ clamp01(LaneR32 a)
 //  a = _mm_mul_add(_mm_mul_ps(constant_wide, a), b);
 //  4. handle packing (writing)
 //  if want to combine smaller sizes, e.g. 8-bit values, shift and or
-//  __m128i rounded_int = _mm_cvtps_epi32();
+//  __m128i rounded_int = _mm_cvttps_epi32(); (this variant ensures truncation, so no need to mess with rounding mode)
 //  _mm_or_si128(rounded_int, _mm_slli_epi32(b, 8));
+//
+//   movdqa xmmword ptr [rdx-10h],xmm3
+//   requires 16byte aligned memory (bottom 4 bits 1), so in debugger see ((rdx-10) & 15 == 0)
 //  *(__m128i *)pixel = ;
+//  so, to allow unaligned: _mm_storeu_si128((__m128i *)pixel, out)
 //
 //  want output to be say 8-bit rgba.
 //  _mm_unpackhi_epi32() will interleave. 
@@ -477,6 +481,7 @@ clamp01(LaneR32 a)
 //  4. handle unpacking (loading) 
 //  5. handle conditionals?
 //
+
 
 // xmm registers hold any 32bit value
 // movss xmm1, dword ptr []
