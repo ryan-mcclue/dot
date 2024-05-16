@@ -435,6 +435,7 @@ clamp01(LaneR32 a)
 // 1. convert variables used into wide equivalent (a struct would have all members be individual variables)
 //    convert any constants to wide equivalent (includes function parameters)
 //    inline and convert to scalar math, e.g. V2 p; f32 x = ; f32 y = ;
+//    may be necessary for loads/writes:
 //    unpacking: __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
 //    packing: for (i < 4) out[i] = LANE_ARR(x, i) << 4;
 //    for (x = 0; x += 4)
@@ -462,7 +463,7 @@ clamp01(LaneR32 a)
 //  a = _mm_mul_add(_mm_mul_ps(constant_wide, a), b);
 //  4. handle packing (writing)
 //  if want to combine smaller sizes, e.g. 8-bit values, shift and or
-//  __m128i rounded_int = _mm_cvttps_epi32(); (this variant ensures truncation, so no need to mess with rounding mode)
+//  __m128i rounded_int = _mm_cvtps_epi32(); (round to nearest is default)
 //  _mm_or_si128(rounded_int, _mm_slli_epi32(b, 8));
 //
 //   movdqa xmmword ptr [rdx-10h],xmm3
@@ -476,12 +477,29 @@ clamp01(LaneR32 a)
 //  __m128i ag = _mm_unpacklo_epi32(a, g);
 //  __m128i argb = _mm_unpack_lo_epi32(br, ag);
 //  __m128i argb1 = _mm_unpack_hi_epi32(br, ag);
-//
 //  would arrange various interleaves of various sizes to get output order desired
 //  4. handle unpacking (loading) 
-//  5. handle conditionals?
-//
+//  5. handle conditionals
+//  mask generation:
+//  if () write_mask[i] = 0xffffffff;
+//  write_mask = _mm_and_ps(_mm_cmpge_ps(U, Zero), _mm_cmple_ps(U, One));
+//  original_dest = _mm_loadu_si128((__m128i *)pixel);
+//  using write mask:
+//  zero out places wanting to write to
+//  a = _mm_andnot_si128(write_mask, original_dest)
+//  zero out places we don't want to write
+//  b = _mm_and_si128(write_mask, out)
+//  fuse
+//  c = _mm_or_si128(a, b)
+//  _mm_storeu_si128(pixel, c)
 
+// clamps are helpful to ensure inbounds and remove an if check
+// if (cond) { op1; } else { op2; }
+// we are always doing every aspect of if statement. 
+// just selecting per lane
+// a = op1;
+// b = op2;
+// write_mask(a, b)
 
 // xmm registers hold any 32bit value
 // movss xmm1, dword ptr []
