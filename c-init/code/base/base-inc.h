@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_INC_H)
+#define BASE_INC_H
 
 #include "base/base-context.h"
 
@@ -31,3 +32,5 @@
 
 // TODO(Ryan):
 // #include "base-thread.h"
+
+#endif

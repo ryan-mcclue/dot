@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_PROFILER_H)
+#define BASE_PROFILER_H
 
 #if defined(PROFILER)
   typedef struct ProfileSlot ProfileSlot;
@@ -157,4 +158,6 @@
       printf("\nTotal time: %0.4fms (CPU freq %lu)\n", 1000.0 * (f64)total/(f64)cpu_freq, cpu_freq);
     }
   }
+#endif
+
 #endif

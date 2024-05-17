@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_THREAD_H)
+#define BASE_THREAD_H
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -1157,4 +1158,6 @@ main(int argc, char *argv[])
 
   return 0;
 }
+#endif
+
 #endif

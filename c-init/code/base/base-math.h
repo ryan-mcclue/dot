@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_MATH_H)
+#define BASE_MATH_H
+
 
 // TODO(Ryan): sse_mathfun.h
 
@@ -809,3 +811,5 @@ rect_f32_dim(RectF32 r)
 { 
   return vec2_f32(r.size.x, r.size.y); 
 }
+
+#endif

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_TYPES_H)
+#define BASE_TYPES_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -469,3 +470,5 @@ hash_ptr(void *p)
 
   return h;
 }
+
+#endif

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_LANE_H)
+#define BASE_LANE_H
 
 // NOTE(Ryan): Steam Hardware Survey as of March 2022: 
 //  SSE4.1 (99.06%)
@@ -435,6 +436,10 @@ clamp01(LaneR32 a)
 
 // nice that intel defined intrinsics, so same across compilers
 
+// TODO: how to ensure buffer is of appropriate lane multiple?
+// align buffer?
+// https://hero.handmade.network/episode/code/day144/#131
+
 // TODO: do multithreading first
 
 // simd optimisation is about 'preamble', i.e how to reorganise data 
@@ -547,3 +552,5 @@ for (y < h)
     {
 
     }
+
+#endif

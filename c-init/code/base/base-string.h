@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_STRING_H)
+#define BASE_STRING_H
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -626,3 +627,4 @@ ring_dequeue_thread(void)
 }
 #endif
 
+#endif

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_REPETITION_H)
+#define BASE_REPETITION_H
 
 typedef enum
 {
@@ -138,3 +139,5 @@ tester_count_bytes(RepetitionTester *tester, u64 byte_count)
 {
   tester->bytes_accumulated_on_this_test += byte_count;
 }
+
+#endif

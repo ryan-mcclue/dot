@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_DEV_LINUX_H)
+#define BASE_DEV_LINUX_H
 
 #include <stdarg.h>
 
@@ -814,3 +815,5 @@ linux_does_file_exist(String8 path)
 
 	return (access(buf, F_OK) == 0);
 }
+
+#endif

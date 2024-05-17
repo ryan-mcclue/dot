@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_MEMORY_H)
+#define BASE_MEMORY_H
 
 // IMPORTANT(Ryan): Although using memory arenas restricts arbitrary lifetimes, this provides more benefits than negatives.
 // In majority of cases, a large number of allocations can be bucketed into same arena
@@ -246,3 +247,4 @@ mem_arena_temp_end(MemArenaTemp temp)
 // gpt4 plus with web requests plugin
 // python server on source folder
 // ngrok http 8000
+#endif

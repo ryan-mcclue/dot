@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_DEV_CORTEXM4_H)
+#define BASE_DEV_CORTEXM4_H
 
 #include "external/cmsis/core_cm4.h"
 
@@ -194,12 +195,8 @@ force_hard_fault(void)
 }
 
 
-
-
 #define cli() nvic_globalirq_disable()
 #define sei() nvic_globalirq_enable()
-
-
 
 INTERNAL void 
 qemu_arm_exit(void) 
@@ -210,3 +207,5 @@ qemu_arm_exit(void)
   r1 = 0x20026;
   __asm__ volatile("bkpt #0xAB");
 }
+
+#endif

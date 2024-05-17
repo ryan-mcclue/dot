@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#pragma once
+#if !defined(BASE_FILE_H)
+#define BASE_FILE_H
 
 INTERNAL String8 
 str8_read_entire_file(MemArena *arena, String8 file_name)
@@ -74,3 +75,5 @@ str8_copy_file(MemArena *arena, String8 source_file, String8 dest_file)
   String8 source_file_data = str8_read_entire_file(arena, source_file);
   str8_write_entire_file(dest_file, source_file_data);
 }
+
+#endif
