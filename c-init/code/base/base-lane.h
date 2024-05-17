@@ -427,6 +427,12 @@ clamp01(LaneR32 a)
 
 #endif
 
+// we are removing the actual function calls with just counting
+// may have to redefine types for it to work
+#if COUNT_FUNCTION_CALLS
+#define _mm_add_ps(a, b) ++Counts.mm_add_ps; a; (a is only thing want to count)
+#endif
+
 // nice that intel defined intrinsics, so same across compilers
 
 // TODO: do multithreading first
@@ -437,6 +443,10 @@ clamp01(LaneR32 a)
 //    inline and convert to scalar math, e.g. V2 p; f32 x = ; f32 y = ;
 //    may be necessary for loads/writes:
 //    unpacking: __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
+//    so, have rgba | rgba | rgba | rgba
+//    wrnt, rrrr | rrrr | rrrr | rrrr
+//    r = _mm_and_ps(_mm_srli_epi(original_dest, 24), mask_ff)
+//
 //    packing: for (i < 4) out[i] = LANE_ARR(x, i) << 4;
 //    for (x = 0; x += 4)
 //    {
