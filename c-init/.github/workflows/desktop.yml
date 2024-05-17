@@ -2,14 +2,12 @@ name: desktop
 run-name: ${{ github.actor }} run
 on: [push]
 
-
+# Once build system stabilises, set up own docker image for speed
 jobs:
   ubuntu:
-    # Once build system stabilises, set up own docker image for speed
     runs-on: ubuntu-latest
     steps:
       - run: echo "${{ runner.os }}->${{ github.event_name }}->${{ github.ref }}"
-
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Obtain deps
@@ -41,3 +39,30 @@ jobs:
         run: |
           echo 'param_analyse="true"' >> private/build-params
           bash misc/build "app"
+
+# macos:
+#   runs-on: macos-latest
+#   steps:
+#     - name: Clone repo
+#       uses: actions/checkout@v4
+#     - name: Build
+#       run: clang -o nob nob.c
+#     - name: Upload build folder
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: macos-build-folder
+#         path: build/
+# ubuntu:
+#   strategy:
+#     matrix:
+#       cc: [gcc, clang]
+# windows:
+#   runs-on: windows-latest
+#   steps:
+#     - name: Clone repo
+#       uses: actions/checkout@v4
+#     - name: Build
+#       shell: cmd
+#       run: |
+#         call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+#         cl.exe -o nob.exe nob.c

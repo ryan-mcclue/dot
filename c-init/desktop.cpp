@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   thread_context_set(&tctx);
   thread_context_set_name("Main Thread");
 
-#if defined(RELEASE_BUILD)
+#if RELEASE_BUILD
   linux_set_cwd_to_self();
 #else
   linux_append_ldlibrary(str8_lit("./build"));

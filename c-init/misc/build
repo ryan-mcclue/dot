@@ -127,8 +127,6 @@ print_flash_usage() {
   printf "Flash usage: %d / %d (%d%%)\n" $flash_usage $FLASH_SIZE $flash_percentage
 }
 
-[[ "$OSTYPE" != "linux-gnu" ]] && error "Currently only support linux as build machine"
-
 # NOTE(Ryan): This file is ignored by source control to allow tweaking of build params without affecting history
 set +e
 source "private/build-params" 2>/dev/null
@@ -152,6 +150,7 @@ fi
 if [[ "$BUILD_TYPE" == "app" ]]; then
   NAME="desktop"
   BINARY_ARGS=("-decode" "i-12e")
+  COMPILER_FLAGS+=( "-DTEST_BUILD=0" )
 else
   NAME="desktop-tests"
   BINARY_ARGS=()
@@ -159,7 +158,7 @@ else
   # IMPORTANT(Ryan): For true coverage don't have optimisations, as may merge lines
   # --coverage to generate .gcno
   # running generate .gcda
-  COMPILER_FLAGS+=( "-DTEST_BUILD" "--coverage" )
+  COMPILER_FLAGS+=( "-DTEST_BUILD=1" "--coverage" )
   LINKER_FLAGS+=( "-lcmocka" )
 fi
 
@@ -213,14 +212,14 @@ LINKER_FLAGS+=( "-lc" "-lm" "-ldl" )
 # LINKER_FLAGS+=( "-lnosys" "-Wl,-Map=build/${BINARY_NAME}.map,--cref" )
 
 if [[ "$PARAM_MODE" == "debug" ]]; then
-  COMPILER_FLAGS+=( "-DDEBUG_BUILD" )
+  COMPILER_FLAGS+=( "-DDEBUG_BUILD=1 -DRELEASE_BUILD=0" )
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
   # NOTE(Ryan): Sanitisers
   # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
 elif [[ "$PARAM_MODE" == "release" ]]; then
-  COMPILER_FLAGS+=( "-DRELEASE_BUILD" )
+  COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
   COMPILER_FLAGS+=( "-O3" )
 
   COMPILER_FLAGS+=( "-flto" )
