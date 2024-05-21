@@ -42,7 +42,7 @@
 #define F64_DEG_TO_TURNS(v) ((v) / 360.0)
 #define F64_RAD_TO_TURNS(v) ((v) / F64_TAU)
 
-#if defined(COMPILER_GCC) && defined(ARCH_X86_64)
+#if COMPILER_GCC && ARCH_X64
   INTERNAL f32 f32_pow(f32 x, f32 y) { return __builtin_powf(x, y); }
   INTERNAL f32 f32_fmodf(f32 x, f32 y) { return __builtin_fmodf(x, y); }
   INTERNAL f32 f32_acos(f32 x) { return __builtin_acosf(x); }

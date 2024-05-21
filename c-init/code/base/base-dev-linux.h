@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <dirent.h> 
 #include <fcntl.h> 
+#include <termios.h>
 
 // NOTE(Ryan): Allow for simple runtime debugger attachment
 GLOBAL b32 global_debugger_present;
@@ -294,8 +295,8 @@ initialise_serial_port(char *serial_port, u32 baud_rate, u32 read_timeout)
 {
   // IMPORTANT(Ryan): If specifying non-blocking arguments in here can affect VTIM
   // and result in 'resource temporarily unavaiable'
-	global_serial_fd = open(serial_port, O_RDWR);
-	if (global_serial_fd < 0) 
+	int serial_fd = open(serial_port, O_RDWR);
+	if (serial_fd < 0) 
   {
 
     WARN("opening serial port %s failed (%s)\n", serial_port, strerror(errno));
@@ -303,7 +304,7 @@ initialise_serial_port(char *serial_port, u32 baud_rate, u32 read_timeout)
 	}
 
 	struct termios serial_options = {0};
-	if (tcgetattr(global_serial_fd, &serial_options) == -1)
+	if (tcgetattr(serial_fd, &serial_options) == -1)
   {
     WARN("obtaining original serial port settings failed (%s)\n", strerror(errno));
 		return;
@@ -354,18 +355,18 @@ initialise_serial_port(char *serial_port, u32 baud_rate, u32 read_timeout)
   serial_options.c_cc[VTIME] = (read_timeout * 10);    // Wait for up to deciseconds, returning as soon as any data is received.
   serial_options.c_cc[VMIN] = 0;
 
-  cfsetspeed(&serial_options, BAUD_RATE);
+  cfsetspeed(&serial_options, 9600);
 
-	if (tcsetattr(global_serial_fd, TCSANOW, &serial_options) == -1)
+	if (tcsetattr(serial_fd, TCSANOW, &serial_options) == -1)
   {
     WARN("setting serial port baud rate to %d failed (%s)\n", baud_rate, strerror(errno));
 		return;
   }
 
-  if (flock(global_serial_fd, LOCK_EX | LOCK_NB) == -1)
-  {
-    WARN("obtaining exclusive access to %s failed (%s)\n", serial_port, strerror(errno));
-  }
+  //if (flock(serial_fd, LOCK_EX | LOCK_NB) == -1)
+  //{
+  //  WARN("obtaining exclusive access to %s failed (%s)\n", serial_port, strerror(errno));
+  //}
 }
 
 
@@ -815,5 +816,897 @@ linux_does_file_exist(String8 path)
 
 	return (access(buf, F_OK) == 0);
 }
+
+#endif
+
+#if 0
+
+typedef void (*dbus_callback_t)(struct l_dbus_message *msg);
+
+INTERNAL void
+dbus_callback_wrapper(struct l_dbus_message *reply_message, void *user_data)
+{
+  const char *path = l_dbus_message_get_path(reply_message);
+  const char *interface = l_dbus_message_get_interface(reply_message);
+  const char *member = l_dbus_message_get_member(reply_message);
+  const char *destination = l_dbus_message_get_destination(reply_message);
+  const char *sender = l_dbus_message_get_sender(reply_message);
+  const char *signature = l_dbus_message_get_signature(reply_message);
+
+  const char *error_name = NULL;
+  const char *error_text = NULL;
+
+  if (l_dbus_message_is_error(reply_message))
+  {
+    l_dbus_message_get_error(reply_message, &error_name, &error_text);
+
+    char error_message[128] = {0};
+    snprintf(error_message, sizeof(error_message), "%s: %s", error_name, 
+             error_text);
+    BP_MSG(error_message);
+
+    l_free(error_name);
+    l_free(error_text);
+  }
+  else
+  {
+    dbus_callback_t callback = (dbus_callback_t)user_data;
+    callback(reply_message);
+  }
+}
+
+INTERNAL void 
+dbus_request_name_callback(struct l_dbus *dbus_connection, bool success, bool queued, void *user_data)
+{
+  if (!success)
+  {
+    BP_MSG("Failed to acquire dbus name"); 
+  }
+}
+
+typedef struct BluetoothDevice
+{
+  char dbus_path[128];
+  char address[128];
+  s32 rssi;
+} BluetoothDevice;
+
+GLOBAL b32 global_want_to_run = true;
+
+GLOBAL struct l_hashmap *global_bluetooth_devices_map = NULL;
+#define MAX_BLUETOOTH_DEVICES_COUNT 16
+GLOBAL BluetoothDevice global_bluetooth_devices[MAX_BLUETOOTH_DEVICES_COUNT];
+GLOBAL u32 global_bluetooth_device_count = 0;
+
+GLOBAL struct l_dbus *global_dbus_connection = NULL;
+
+
+INTERNAL void 
+bluez_interfaces_added_callback(struct l_dbus_message *reply_message)
+{
+  BluetoothDevice *active_bluetooth_device = NULL;
+
+  struct l_dbus_message_iter root_dict_keys_iter, root_dict_values_iter = {0};
+  const char *dbus_path = NULL;
+  if (l_dbus_message_get_arguments(reply_message, "oa{sa{sv}}", &dbus_path, &root_dict_keys_iter))
+  {
+    printf("Found device: %s\n", dbus_path);
+    const char *root_dict_key = NULL;
+    while (l_dbus_message_iter_next_entry(&root_dict_keys_iter, &root_dict_key, &root_dict_values_iter))
+    {
+      if (strcmp(root_dict_key, "org.bluez.Device1") == 0)
+      {
+        const char *device_dict_key = NULL;
+        struct l_dbus_message_iter device_dict_values_iter = {0};
+        while (l_dbus_message_iter_next_entry(&root_dict_values_iter, &device_dict_key, &device_dict_values_iter))
+        {
+          if (strcmp(device_dict_key, "Address") == 0)
+          {
+            const char *address = NULL;
+            l_dbus_message_iter_get_variant(&device_dict_values_iter, "s", &address);
+            printf("Found device: %s\n", address);
+            
+            ASSERT(global_bluetooth_device_count != MAX_BLUETOOTH_DEVICES_COUNT);
+            active_bluetooth_device = &global_bluetooth_devices[global_bluetooth_device_count++];
+            strcpy(active_bluetooth_device->dbus_path, dbus_path); 
+            strcpy(active_bluetooth_device->address, address); 
+
+            bool bluetooth_device_insert_status = l_hashmap_insert(global_bluetooth_devices_map, address, active_bluetooth_device);
+            ASSERT(bluetooth_device_insert_status);
+          }
+          if (strcmp(device_dict_key, "RSSI") == 0)
+          {
+            s16 rssi = 0;
+            l_dbus_message_iter_get_variant(&device_dict_values_iter, "n", &rssi);
+
+            ASSERT(active_bluetooth_device != NULL);
+            active_bluetooth_device->rssi = rssi;
+          }
+        }
+      }
+      else if (strcmp(root_dict_key, "org.bluez.GattService1") == 0)
+      {
+        const char *service_dict_key = NULL;
+        struct l_dbus_message_iter service_dict_values_iter = {0};
+        while (l_dbus_message_iter_next_entry(&root_dict_values_iter, &service_dict_key, &service_dict_values_iter))
+        {
+// SIG UUIDs --> 0000xxxx-0000-1000-8000-00805f9b34fb (https://www.bluetooth.com/specifications/assigned-numbers/)
+// 0x2a05 --> 00002a05-0000-1000-8000-00805f9b34fb
+// 0x1801 -- > 00001801-0000-1000-8000-00805f9b34fb
+          // probably want dbus path as well
+          // NOTE(Ryan): We could determine UUID from d-feet (allows calling methods as well)
+          if (strcmp(service_dict_key, "UUID") == 0)
+          {
+            
+          }
+          // TODO(Ryan): ServicesResolved when done
+        }
+      }
+      else if (strcmp(root_dict_key, "org.bluez.GattCharacteristic1") == 0)
+      {
+        // UUID and Flags (ensure has 'read' flag)
+        // ReadValue({})
+        // WriteValue(bytes, {}) (if throughput becomes an issue, may have to specify write command instead of request?)
+        // better to just write less than 20 bytes at a time?
+      }
+      else if (strcmp(root_dict_key, "org.bluez.GattDescriptor1") == 0)
+      {
+        // UUID
+      }
+    }
+  }
+  else
+  {
+    BP_MSG("InterfacesAdded dict expected but not recieved");
+  }
+}
+
+INTERNAL void 
+bluez_start_discovery_callback(struct l_dbus_message *reply_message)
+{
+  printf("Searching for unmanaged bluetooth devices...\n");
+}
+
+INTERNAL void
+bluez_connect_callback(struct l_dbus_message *reply_message)
+{
+}
+
+
+INTERNAL void 
+bluez_stop_discovery_callback(struct l_dbus_message *reply_message)
+{
+  printf("Found devices:\n");
+
+  BluetoothDevice *device = l_hashmap_lookup(global_bluetooth_devices_map, "E4:15:F6:5F:FA:9D");
+  if (device != NULL)
+  {
+    // TODO(Ryan): Ensure connection successful by looking at Connected property
+    struct l_dbus_message *bluez_connect_msg = l_dbus_message_new_method_call(global_dbus_connection, "org.bluez", device->dbus_path, 
+                                                                              "org.bluez.Device1", "Connect");
+    ASSERT(bluez_connect_msg != NULL);
+
+    bool bluez_connect_msg_set_argument_status = l_dbus_message_set_arguments(bluez_connect_msg, "");
+    ASSERT(bluez_connect_msg_set_argument_status);
+
+    l_dbus_send_with_reply(global_dbus_connection, bluez_connect_msg, dbus_callback_wrapper, bluez_connect_callback, NULL);
+  }
+  else
+  {
+    printf("HMSoft not found!\n");
+  }
+
+  global_want_to_run = false;
+}
+
+INTERNAL void
+bluez_get_managed_objects_callback(struct l_dbus_message *reply_message)
+{
+  struct l_dbus_message_iter root_dict_keys_iter = {0}, root_dict_values_iter = {0};
+  if (l_dbus_message_get_arguments(reply_message, "a{oa{sa{sv}}}", &root_dict_keys_iter))
+  {
+    const char *root_dict_key = NULL;
+    while (l_dbus_message_iter_next_entry(&root_dict_keys_iter, &root_dict_key, &root_dict_values_iter))
+    {
+      // IMPORTANT(Ryan): Our device: /org/bluez/hci0, remote device: /org/bluez/hci0/dev_*
+      if (strncmp(root_dict_key, "/org/bluez/hci0/", sizeof("/org/bluez/hci0/") - 1) == 0)
+      {
+        const char *objects_dict_key = NULL;
+        struct l_dbus_message_iter objects_dict_values_iter = {0};
+        while (l_dbus_message_iter_next_entry(&root_dict_values_iter, &objects_dict_key, &objects_dict_values_iter))
+        {
+          if (strcmp(objects_dict_key, "org.bluez.Device1") == 0)
+          {
+            const char *properties_dict_key = NULL;
+            struct l_dbus_message_iter properties_dict_values_iter = {0};
+            while (l_dbus_message_iter_next_entry(&objects_dict_values_iter, &properties_dict_key, &properties_dict_values_iter))
+            {
+              if (strcmp(properties_dict_key, "Address") == 0)
+              {
+                const char *address = NULL;
+                l_dbus_message_iter_get_variant(&properties_dict_values_iter, "s", &address);
+
+                ASSERT(global_bluetooth_device_count != MAX_BLUETOOTH_DEVICES_COUNT);
+                BluetoothDevice *bluetooth_device = &global_bluetooth_devices[global_bluetooth_device_count++];
+                strcpy(bluetooth_device->dbus_path, root_dict_key); 
+                strcpy(bluetooth_device->address, address); 
+
+                bool bluetooth_device_insert_status = l_hashmap_insert(global_bluetooth_devices_map, address, bluetooth_device);
+                ASSERT(bluetooth_device_insert_status);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    BP_MSG("GetManagedObjects dict expected but not recieved");
+  }
+}
+
+
+INTERNAL void
+falsify_global_want_to_run(int signum)
+{
+  global_want_to_run = false;
+}
+
+// IMPORTANT(Ryan): If we want to inspect the type information of a message, use
+// $(sudo dbus-monitor --system)
+
+// IMPORTANT(Ryan): Don't have $(bluetoothctl) open when running application, as it will intercept bluez devices first!!!
+
+// IMPORTANT(Ryan): $(usermod -a -G dialout ryan) to get access to serial port
+
+int main(int argc, char *argv[])
+{
+  if (l_main_init())
+  {
+    global_dbus_connection = l_dbus_new_default(L_DBUS_SYSTEM_BUS);
+    if (global_dbus_connection != NULL)
+    { 
+      __sighandler_t prev_signal_handler = signal(SIGINT, falsify_global_want_to_run);
+      ASSERTE(prev_signal_handler != SIG_ERR);
+
+      global_bluetooth_devices_map = l_hashmap_string_new();
+      ASSERT(global_bluetooth_devices_map != NULL);
+
+      // NOTE(Ryan): Cannot acquire name on system bus without altering dbus permissions  
+      // l_dbus_name_acquire(global_dbus_connection, "my.bluetooth.app", false, false, false, dbus_request_name_callback, NULL);
+      
+      // TODO(Ryan): Watch for InterfacesRemoved and PropertiesChanged during discovery phase
+      unsigned int bluez_interfaces_added_id = l_dbus_add_signal_watch(global_dbus_connection, "org.bluez", "/", 
+                                                                       "org.freedesktop.DBus.ObjectManager", "InterfacesAdded", 
+                                                                       L_DBUS_MATCH_NONE, dbus_callback_wrapper, bluez_interfaces_added_callback);
+      ASSERT(bluez_interfaces_added_id != 0);
+
+      struct l_dbus_message *bluez_start_discovery_msg = l_dbus_message_new_method_call(global_dbus_connection, "org.bluez", "/org/bluez/hci0", 
+                                                                                       "org.bluez.Adapter1", "StartDiscovery");
+      ASSERT(bluez_start_discovery_msg != NULL);
+
+      bool bluez_start_discovery_msg_set_argument_status = l_dbus_message_set_arguments(bluez_start_discovery_msg, "");
+      ASSERT(bluez_start_discovery_msg_set_argument_status);
+
+      l_dbus_send_with_reply(global_dbus_connection, bluez_start_discovery_msg, dbus_callback_wrapper, bluez_start_discovery_callback, NULL);
+
+
+      struct l_dbus_message *bluez_get_managed_objects_msg = l_dbus_message_new_method_call(global_dbus_connection, "org.bluez", "/", 
+                                                                                            "org.freedesktop.DBus.ObjectManager", 
+                                                                                            "GetManagedObjects");
+      ASSERT(bluez_get_managed_objects_msg != NULL);
+
+      bool bluez_get_managed_objects_msg_set_argument_status = l_dbus_message_set_arguments(bluez_get_managed_objects_msg, "");
+      ASSERT(bluez_get_managed_objects_msg_set_argument_status);
+
+      l_dbus_send_with_reply(global_dbus_connection, bluez_get_managed_objects_msg, dbus_callback_wrapper, bluez_get_managed_objects_callback, NULL);
+
+
+      u64 start_time = get_ns();
+      u64 discovery_time = SECONDS_NS(5);
+      b32 are_discovering = true;
+      while (global_want_to_run)
+      {
+        if (are_discovering)
+        {
+          if (get_ns() - start_time >= discovery_time)
+          {
+            are_discovering = false;
+
+            struct l_dbus_message *bluez_stop_discovery_msg = l_dbus_message_new_method_call(global_dbus_connection, "org.bluez", "/org/bluez/hci0", 
+                                                                                            "org.bluez.Adapter1", "StopDiscovery");
+            ASSERT(bluez_stop_discovery_msg != NULL);
+
+            bool bluez_stop_discovery_msg_set_argument_status = l_dbus_message_set_arguments(bluez_stop_discovery_msg, "");
+            ASSERT(bluez_stop_discovery_msg_set_argument_status);
+
+            l_dbus_send_with_reply(global_dbus_connection, bluez_stop_discovery_msg, dbus_callback_wrapper, bluez_stop_discovery_callback, NULL);
+
+            l_dbus_remove_signal_watch(global_dbus_connection, bluez_interfaces_added_id);
+          }
+        }
+
+        // NOTE(Ryan): This will hang when no events left, i.e. return -1
+        // int timeout = l_main_prepare();
+        l_main_iterate(0);
+      }
+
+      l_dbus_destroy(global_dbus_connection);
+      l_main_exit();
+    }
+    else
+    {
+      BP_MSG("Unable to create dbus connection");
+      l_main_exit();
+    }
+
+  }
+  else
+  {
+    BP_MSG("Unable to initialise ELL main loop");
+  }
+
+}
+
+/*
+ *
+UUID_NAMES = {
+    "00001801-0000-1000-8000-00805f9b34fb" : "Generic Attribute Service",
+    "0000180a-0000-1000-8000-00805f9b34fb" : "Device Information Service",
+    "e95d93b0-251d-470a-a062-fa1922dfa9a8" : "DFU Control Service",
+    "e95d93af-251d-470a-a062-fa1922dfa9a8" : "Event Service",
+    "e95d9882-251d-470a-a062-fa1922dfa9a8" : "Button Service",
+    "e95d6100-251d-470a-a062-fa1922dfa9a8" : "Temperature Service",
+    "e95dd91d-251d-470a-a062-fa1922dfa9a8" : "LED Service",
+    "00002a05-0000-1000-8000-00805f9b34fb" : "Service Changed",
+    "e95d93b1-251d-470a-a062-fa1922dfa9a8" : "DFU Control",
+    "00002a05-0000-1000-8000-00805f9b34fb" : "Service Changed",
+    "00002a24-0000-1000-8000-00805f9b34fb" : "Model Number String",
+    "00002a25-0000-1000-8000-00805f9b34fb" : "Serial Number String",
+    "00002a26-0000-1000-8000-00805f9b34fb" : "Firmware Revision String",
+    "e95d9775-251d-470a-a062-fa1922dfa9a8" : "micro:bit Event",
+    "e95d5404-251d-470a-a062-fa1922dfa9a8" : "Client Event",
+    "e95d23c4-251d-470a-a062-fa1922dfa9a8" : "Client Requirements",
+    "e95db84c-251d-470a-a062-fa1922dfa9a8" : "micro:bit Requirements",
+    "e95dda90-251d-470a-a062-fa1922dfa9a8" : "Button A State",
+    "e95dda91-251d-470a-a062-fa1922dfa9a8" : "Button B State",
+    "e95d9250-251d-470a-a062-fa1922dfa9a8" : "Temperature",
+    "e95d93ee-251d-470a-a062-fa1922dfa9a8" : "LED Text",
+    "00002902-0000-1000-8000-00805f9b34fb" : "Client Characteristic Configuration",
+}    
+
+DEVICE_INF_SVC_UUID = "0000180a-0000-1000-8000-00805f9b34fb"
+MODEL_NUMBER_UUID    = "00002a24-0000-1000-8000-00805f9b34fb"
+
+TEMPERATURE_SVC_UUID = "e95d6100-251d-470a-a062-fa1922dfa9a8"
+TEMPERATURE_CHR_UUID = "e95d9250-251d-470a-a062-fa1922dfa9a8"
+
+LED_SVC_UUID = "e95dd91d-251d-470a-a062-fa1922dfa9a8"
+LED_TEXT_CHR_UUID = "e95d93ee-251d-470a-a062-fa1922dfa9a8"
+ *
+ * HM-10 capabilties: http://www.martyncurrey.com/hm-10-bluetooth-4ble-modules/#HM-10_Services_and_Characteristics
+ *
+ * Values to TX/RX are only interpreted as AT commands prior to connection 
+ *
+ * On device connect, recieve: OK+CONN
+ * 
+ * AT+ADDR? 
+ * AT+VERR?
+ * AT+NAME? (AT+NAMERYAN)
+ * AT+PASS? (AT+PASS123456)
+ * AT+ROLE? (0 for peripheral, 1 for central). AT+ROLE0 to set
+ *
+ * AT+TYPE2 (set bond mode to authorise, i.e. require password and pair to connect)
+ *
+ * AT+UUID? (service UUID)
+ * AT+CHAR? (characteristic value)
+ *
+ * So, if just reading bytes from TX/RX this is the default characteristic, i.e. can only have 1 characteristic on HM-10?
+ * When writing raw bytes to the TX/RX we are altering the value of the default characteristic (however, does this send it or will remote only get it if they subscribe?)
+ * (remote can directly read, however notification of change also)
+ */
+
+      // this won't work if device requires pairing or isn't advertising
+      // IMPORTANT: Once connected, the Connected property of the device will be set, as will be seen in device PropertiesChanged
+      // We could check the Connected property prior to attempting a connection using an appropriate Get()
+
+      /*
+        l_dbus_add_signal_watch(global_dbus_connection, "org.bluez", "/", 
+                                "org.freedesktop.DBus.ObjectManager", "InterfacesRemoved", 
+                                L_DBUS_MATCH_NONE, dbus_interfaces_removed_callback, NULL);
+        IMPORTANT: This PropertiesChanged is only during discovery phase
+        l_dbus_add_signal_watch(global_dbus_connection, "org.bluez", "/org/bluez/hci0", 
+                                "org.freedesktop.DBus.Properties", "PropertiesChanged", 
+                                L_DBUS_MATCH_NONE, dbus_properties_changed_callback, NULL);
+       */
+
+      // IMPORTANT(Ryan): InterfacesRemoved could be called during this discovery time
+      //if (dbus_interfaces_added_id != 0)
+      //{
+      //  l_dbus_remove_signal_watch(global_dbus_connection, dbus_interfaces_added_id);
+      //}
+
+
+
+// gateway --> $(route -n)
+// mac -> $(ip address show)
+// create static ip lease 
+// add in hostname in /etc/hosts (however if DHCP on server, just reconnect to get this?)
+
+// RFCOMM protocol. 
+// Serial Port Profile is based on RFCOMM protocol
+// profile will have a UUID
+//
+// to connect to bluetooth socket, require mac address like AB:12:4B:59:23:0A
+// so, convert from "Connecting to /org/bluez/hci0/dev_5C_03_39_C5_BA_C7"
+
+// L2CAP, MGMT, HCI sockets?
+
+// investigate $(btmon) $(btmgt)
+
+#include "types.h"
+
+#if defined(GUI_INTERNAL)
+  INTERNAL void __bp(char const *file_name, char const *func_name, int line_num,
+                     char const *optional_message)
+  { 
+    fprintf(stderr, "BREAKPOINT TRIGGERED! (%s:%s:%d)\n\"%s\"\n", file_name, func_name, 
+            line_num, optional_message);
+#if !defined(GUI_DEBUGGER)
+    exit(1);
+#endif
+  }
+  INTERNAL void __ebp(char const *file_name, char const *func_name, int line_num)
+  { 
+    char *errno_msg = strerror(errno);
+    fprintf(stderr, "ERRNO BREAKPOINT TRIGGERED! (%s:%s:%d)\n\"%s\"\n", file_name, 
+            func_name, line_num, errno_msg);
+#if !defined(GUI_DEBUGGER)
+    exit(1);
+#endif
+  }
+  #define BP_MSG(msg) __bp(__FILE__, __func__, __LINE__, msg)
+  #define BP() __bp(__FILE__, __func__, __LINE__, "")
+  #define EBP() __ebp(__FILE__, __func__, __LINE__)
+  #define ASSERT(cond) if (!(cond)) {BP();}
+#else
+  #define BP_MSG(msg)
+  #define BP()
+  #define EBP()
+  #define ASSERT(cond)
+#endif
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
+
+#include <time.h>
+
+#include <signal.h>
+
+#include <ell/ell.h>
+
+// IMPORTANT(Ryan): may have to "sudo chmod 666 /dev/ttyUSB*" 
+
+// Johannes 4GNU_Linux
+
+INTERNAL int
+obtain_serial_connection(char *path)
+{
+  int result = 0;
+
+  int fd = open(path, O_RDWR | O_NDELAY | O_NOCTTY);
+  if (fd > 0)
+  {
+    struct termios serial_options = {0};
+    u32 config_8n1 = CS8 | CLOCAL | CREAD;
+    serial_options.c_cflag = config_8n1 | B9600;
+    serial_options.c_iflag = IGNPAR;
+
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &serial_options);
+
+    //write(bluetooth_serial_fd, data, len);
+    //if (read(tty_fd,&c,1)>0)
+
+    ////read a webpage that i have downloaded link https://www.cmrr.umn.edu/~strupp/serial.html
+    //// 8n1, see termios.h for more 
+    //bluetooth_serial_port.c_cc[VMIN] = 1; //timeout period it should be set to zero if you want to print 0 if nothing is received before timeout, 
+    //bluetooth_serial_port.c_cc[VTIME] = 5; //time out period in units of 1/10th of a second, so here the period is 500ms
+  }
+  else
+  {
+    EBP();
+  }
+
+  result = fd;
+
+  return result;
+}
+
+INTERNAL void 
+proxy_added(struct l_dbus_proxy *proxy, void *user_data)
+{
+	const char *interface = l_dbus_proxy_get_interface(proxy);
+	const char *path = l_dbus_proxy_get_path(proxy);
+
+	printf("(PROXY ADDED) Path: %s, Interface: %s\n", path, interface);
+
+	//if (!strcmp(interface, "org.bluez.Adapter1") ||
+	//			!strcmp(interface, "org.bluez.Device1")) {
+	//	char *str;
+
+	//	if (!l_dbus_proxy_get_property(proxy, "Address", "s", &str))
+	//		return;
+
+	//	l_info("   Address: %s", str);
+	//}
+}
+
+INTERNAL void 
+proxy_removed(struct l_dbus_proxy *proxy, void *user_data)
+{
+	const char *interface = l_dbus_proxy_get_interface(proxy);
+	const char *path = l_dbus_proxy_get_path(proxy);
+	printf("(PROXY REMOVED) Path: %s, Interface: %s\n", path, interface);
+}
+
+INTERNAL void 
+property_changed(struct l_dbus_proxy *proxy, const char *name,
+				struct l_dbus_message *msg, void *user_data)
+{
+	const char *interface = l_dbus_proxy_get_interface(proxy);
+	const char *path = l_dbus_proxy_get_path(proxy);
+	printf("(PROPERTY CHANGED) Path: %s, Interface: %s\n", path, interface);
+
+	//if (!strcmp(name, "Address")) {
+	//	char *str;
+
+	//	if (!l_dbus_message_get_arguments(msg, "s", &str)) {
+	//		return;
+	//	}
+
+	//	l_info("   Address: %s", str);
+	//}
+}
+
+INTERNAL void
+get_hostname_cb(struct l_dbus_message *reply, void *user_data)
+{
+	struct l_dbus_message_iter iter = {0};
+	const char *hostname = NULL;
+
+	l_dbus_message_get_arguments(reply, "v", &iter);
+
+	l_dbus_message_iter_get_variant(&iter, "s", &hostname);
+
+  printf("Hostname: %s\n", hostname);
+
+  // l_free()
+}
+
+INTERNAL void
+parse_array(struct l_dbus_message *reply, void *user_data)
+{
+	struct l_dbus_message_iter iter = {0};
+	const char *arr = NULL;
+
+  l_dbus_message_get_arguments(reply, "as", &iter);
+
+  b32 elem_recieved = false;
+  do
+  {
+    elem_recieved = l_dbus_message_iter_next_entry(&iter, &arr);
+  } while (elem_recieved);
+
+  // need to l_dbus_message_unref(msg)?
+}
+
+GLOBAL b32 global_want_to_run = true;
+
+INTERNAL void
+falsify_global_want_to_run(int signum)
+{
+  global_want_to_run = false;
+}
+
+// TODO(Ryan): Proxies are for DBus.Properties? How?
+// Memory managed just will l_free() or also need message_unref()?
+
+#define KILO (1000LL)
+#define MEGA (KILO * 1000LL)
+#define GIGA (MEGA * 1000LL)
+#define TERA (GIGA * 1000LL)
+
+INTERNAL u64
+get_ns(void)
+{
+  u64 result = 0;
+
+  struct timespec cur_timespec = {0}; 
+
+  if (clock_gettime(CLOCK_MONOTONIC, &cur_timespec) != -1)
+  {
+    result = cur_timespec.tv_nsec + (cur_timespec.tv_sec * (1 * TERA));
+  }
+  else
+  {
+    EBP();
+  }
+
+  return result;
+}
+
+INTERNAL void 
+interfaces_added_cb(struct l_dbus_message *message, void *user_data)
+{
+  const char *unique_device_path = l_dbus_message_get_path(message);
+
+  // We know is dictionary of variants.
+  // So, print out top-level dictionary keys and progress further ...
+
+  // message is a dictionary:
+  // we know Address is first, however order of other items are not fixed
+  // so, iterate over whole dictionary...
+  // we expect "org.bluez.Device1" : {
+  //   "Address": ,
+  //   ....
+  //   "Name": ,
+  //   "RSSI": ,
+  // } 
+  l_dbus_message_get_arguments(message, "a{sv}",);
+
+	const char *interface, *property, *value;
+	struct l_dbus_message_iter variant, changed, invalidated;
+
+	if (!signal_timeout)
+		return;
+
+	test_assert(l_dbus_message_get_arguments(message, "sa{sv}as",
+							&interface, &changed,
+							&invalidated));
+
+	test_assert(l_dbus_message_iter_next_entry(&changed, &property,
+							&variant));
+	test_assert(!strcmp(property, "String"));
+	test_assert(l_dbus_message_iter_get_variant(&variant, "s", &value));
+	test_assert(!strcmp(value, "foo"));
+
+	test_assert(!l_dbus_message_iter_next_entry(&changed, &property,
+							&variant));
+	test_assert(!l_dbus_message_iter_next_entry(&invalidated,
+							&property));
+
+	test_assert(!new_signal_received);
+	new_signal_received = true;
+
+	test_check_signal_success();
+}
+
+//GLOBAL b32 global_dbus_name_has_been_acquired = false;
+//      //l_dbus_name_acquire(dbus_conn, "my.bluetooth.app", false, false, false, 
+//      //                  set_name, NULL);
+//INTERNAL void 
+//request_name_callback(struct l_dbus *dbus, bool success, bool queued, void *user_data)
+//{
+//  global_dbus_name_has_been_acquired = success ? (queued ? "queued" : "success") : "failed";
+//}
+
+// $(d-feet) useful!!!!
+INTERNAL void
+dbus(void)
+{
+  if (l_main_init())
+  {
+    struct l_dbus *dbus_conn = l_dbus_new_default(L_DBUS_SYSTEM_BUS);
+    if (dbus_conn != NULL)
+    {
+      signal(SIGINT, falsify_global_want_to_run);
+
+      int ell_main_loop_timeout = l_main_prepare();
+      while (global_want_to_run)
+      {
+        // NOTE(Ryan): Be notified of advertising packets from unknown devices
+        // This will scan for both classic and le devices?
+        l_dbus_add_signal_watch(dbus_conn, "org.freedesktop.DBus.ObjectManager", 
+                                "/org/bluez/hci0", "InterfacesAdded", L_DBUS_MATCH_NONE, 
+                                interfaces_added_cb, NULL);
+
+        const char *service = "org.bluez";
+        // IMPORTANT(Ryan): More elegant to obtain adapter object from GetManagedObjects()
+        // However, this is the default in most circumstances 
+        const char *adapter_object = "/org/bluez/hci0";
+        const char *adapter_interface = "org.bluez.Adapter1";
+        const char *start_discovery_method = "StartDiscovery";
+
+        // StartDiscovery method
+        struct l_dbus_message *msg = \
+          l_dbus_message_new_method_call(dbus_conn, service, object, interface, method);
+
+        const char *get_interface = "org.freedesktop.hostname1"; 
+        const char *get_property = "Hostname";
+        l_dbus_message_set_arguments(msg, "ss", get_interface, get_property);
+
+        // this is where an error could occur?
+        l_dbus_send_with_reply(dbus_conn, msg, get_hostname_cb, NULL, NULL);
+
+        // l_free()
+
+        l_main_iterate(ell_main_loop_timeout);
+      }
+
+      //const char *err_name, *err_text = NULL;
+      //if (l_dbus_message_is_error(reply_msg))
+      //{
+      //  printf("error\n");
+      //  l_dbus_message_get_error(reply_msg, &err_name, &err_text);
+      //}
+
+      printf("Exiting...\n");
+
+      l_dbus_destroy(dbus_conn);
+      l_main_exit();
+    }
+    else
+    {
+      EBP();
+    }
+  }
+}
+
+int 
+main(int argc, char *argv[])
+{
+  dbus();
+// build from Makefile.am: $(autoreconf -f -i; ./configure)
+
+// FROM BLUETOOTH SIG
+// profile is method of obtaining data from device
+// GATT (Generic Attribute Profile) defines a table of data that lists
+// state and operations that can be performed on them (Attribute Table)
+// service -> characteristic -> optional descriptor  
+// server and client
+
+// GAP (Generic Access Profile) is how devices discover and connect to each other
+// peripheral -> advertises and accepts
+// broadcaster -> advertises
+// observer -> scans and processes
+// central -> scans and connects
+
+// ATT (Attribute Protocol) is how GATT client and server communicate
+
+// HCI is how to interact with bluetooth adapter directly.
+// However, we want BlueZ to handle things like GATT/GAP for us
+
+// Could also be part of a bluetooth mesh network
+
+// Once connected to bus, get name starting with colon, e.g. :1.16 (bluetoothd has well known name org.bluez)
+// Objects (/org/bluez/...) -> interfaces (org.bluez.GattManager1) -> methods
+// Data returned is in another message
+// interfaces can return signals (unprompted messages)
+// interfaces also have properties which are interacted with Get() and Set() methods
+
+// A proxy object emulates a remote object, and handles routing for us
+
+// DBus messages also have data types
+
+// Will have to explicitly allow connection to DBus bus in a configuration file
+
+// could use the ELL (embedded linux library for use with DBUS)
+
+// stackoverflow user: ukBaz
+
+// systemctl status bluetooth (determine actual binary from /lib/systemd/system/bluetooth.service, so $(man bluetoothd). might have to pass --experimental?)
+// $(sudo bluetoothctl; list; show; select; power on;)
+// 'devices' command will list devices found through 'scan on/off'. then do a 'connect' to list peripheral characteristics.
+// Once we are connected, will print out DBUS paths to the characteristics and services we want 
+// (or just do 'menu gatt' then 'list-attributes <dev>')
+// Now do 'select-attribute <dbus-path>'. Subsequently running 'attribute-info' will give UUID and flags
+// DBUS tree view $(busctl tree org.bluez)
+// Now could do 'write 0x12 0x23 ...'
+// Finally run 'disconnect'
+// For more informative error information use $(sudo btmgmt)
+// Discover that by default bluetooth is soft blocked by rfkill $(sudo rfkill list), so $(sudo rfkill unblock bluetooth), 
+// $(sudo systemctl restart bluetooth). For some reason this might require $(pulseaudio -k)
+
+// bluetooth LE was a part of 4.0 specification 
+// used for control signals or sensor data.
+
+// Classic bluetooth requires a connection to send data. used for mice, keyboards, etc.
+// Has fixed set of profiles to use, e.g. serial, audio, etc.
+
+// Does BLE only advertise or can it connect directly?
+// GATT is a hierarchy of data a device exposes (profile -> service -> characteristic (actual data))
+// So when talking to a device, we are really dealing with a particular characteristic of a service
+// So, we say our central looks at a peripherals GATT services that it exposes.
+// TODO(Ryan): GATT is a type of service? Other types of services may include 'Tx Power', 'Battery Service'
+// We will modify the characteristics of that service
+// There are standard services that we would expect to find
+
+// Interestingly, without extensions, bluetooth has no encryption or authentication so can just connect to any?
+
+// BLE transmitter only on if being read or written to (so it just broadcasts data that others listen to?)
+// subscribe to data changes in GATT database?
+// e.g. GATT keys are 128bit UUIDs, 95DDA90-251D-470A-A062-FA1922DFA9A8
+// peripheral advertises; central scans and connects
+// also have Beacon (only transmitting) and Observer
+// can create custom profiles (generic architecture; is this a gatt?)
+
+// Special interest group has reserved values for official profiles
+// Serial port profile referred to by 0x1101 (in actuality 128bits, just shortened because official)
+
+// async by nature?
+
+// pairing only for secure connection, not necessary
+
+// little-endian except for beacons?
+  
+// dbus service (org.bluez), object path (/org/bluez/hci0)
+
+  return 0;
+}
+
+#if 0
+
+#define BT_BLUEZ_NAME "org.bluez"
+#define BT_MANAGER_PATH "/"
+#define BT_ADAPTER_INTERFACE    "org.bluez.Adapter1"
+#define BT_DEVICE_IFACE     "org.bluez.Device1"
+#define BT_MANAGER_INTERFACE "org.freedesktop.DBus.ObjectManager"
+#define BT_PROPERTIES_INTERFACE "org.freedesktop.DBus.Properties"
+
+int main(void)
+{
+    char *known_address = "2C:F0:A2:26:D7:F5"; /*This is your address to search */
+
+        conn = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
+        proxy =  g_dbus_proxy_new_sync(conn, G_DBUS_PROXY_FLAGS_NONE, NULL, BT_BLUEZ_NAME, BT_MANAGER_PATH, BT_MANAGER_INTERFACE, NULL, &err);
+        result = g_dbus_proxy_call_sync(proxy, "GetManagedObjects", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
+
+    g_variant_get(result, "(a{oa{sa{sv}}})", &iter);
+
+        char *device_path = NULL;
+        char device_address[18] = { 0 };
+        /* Parse the signature:  oa{sa{sv}}} */
+        while (g_variant_iter_loop(iter, "{&oa{sa{sv}}}", &device_path, NULL)) {
+        {
+            char address[BT_ADDRESS_STRING_SIZE] = { 0 };
+            char *dev_addr;
+
+            dev_addr = strstr(device_path, "dev_");
+            if (dev_addr != NULL) {
+                char *pos = NULL;
+                dev_addr += 4;
+                g_strlcpy(address, dev_addr, sizeof(address));
+
+                while ((pos = strchr(address, '_')) != NULL) {
+                    *pos = ':';
+                }
+
+                g_strlcpy(device_address, address, BT_ADDRESS_STRING_SIZE);
+            }
+
+        }
+
+        if (g_strcmp0(known_address, device_address) == 0) {
+            /* Find the name of the device */
+            device_property_proxy = g_dbus_proxy_new_sync(conn, G_DBUS_PROXY_FLAGS_NONE, NULL, BT_BLUEZ_NAME, &device_path, BT_PROPERTIES_INTERFACE, NULL, NULL);
+            result = g_dbus_proxy_call_sync(proxy, "Get", g_variant_new("(ss)", BT_DEVICE_IFACE, "Alias"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
+
+            const char *local = NULL;
+            g_variant_get(result, "(v)", &temp);
+            local = g_variant_get_string(temp, NULL);
+            printf("Your desired name : %s\n", local);
+        }
+        }
+}
+
+#endif
+
+
 
 #endif

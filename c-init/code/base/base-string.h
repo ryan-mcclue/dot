@@ -556,11 +556,11 @@ ring_write(u8 *ring_base, memory_index ring_size, memory_index pos, void *src, m
   }
   if (first_part.size != 0)
   {
-    MEMORY_COPY(ring_base + first_part_write_off, first_part.str, first_part.size);
+    MEMORY_COPY(ring_base + first_part_write_off, first_part.content, first_part.size);
   }
   if (second_part.size != 0)
   {
-    MEMORY_COPY(ring_base + second_part_write_off, second_part.str, second_part.size);
+    MEMORY_COPY(ring_base + second_part_write_off, second_part.content, second_part.size);
   }
   return write_size;
 }
@@ -587,6 +587,20 @@ ring_read(u8 *ring_base, memory_index ring_size, memory_index pos, void *dst, me
     MEMORY_COPY((u8 *)dst + first_part_read_size, ring_base + second_part_read_off, second_part_read_size);
   }
   return read_size;
+}
+
+// djb2
+INTERNAL u64
+hash_str(String8 string)
+{
+  u64 result = 5381;
+
+  for (u64 i = 0; i < string.size; i += 1)
+  {
+    result = ((result << 5) + result) + string.content[i];
+  }
+
+  return result;
 }
 
 #if 0

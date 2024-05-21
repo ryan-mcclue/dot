@@ -64,8 +64,14 @@ if (err_list.max_err_kind == NOTHING)
 err_list_concat(r.errors, r2.errors);
 // no code bifurcation
 for (Err *e = errors.first; e != NULL; e = e->next)
+
 /**** Macro Codegen ****/
-// NOTE(rjf): For-Loop Helpers
+// we are removing the actual function calls with just counting
+// may have to redefine types for it to work
+#if COUNT_FUNCTION_CALLS
+#define _mm_add_ps(a, b) ++Counts.mm_add_ps; a; (a is only thing want to count)
+#endif
+
 #define MD_EachNode(it, first) MD_Node *it = (first); !MD_NodeIsNil(it); it = it->next
 
 // Enum print
@@ -181,6 +187,102 @@ Arena *entity_arena;
 Arena *name_arena;
 
 /**** SIMD ****/
+// ensure buffer is of appropriate lane multiple, i.e. align buffer
+
+// simd optimisation is about 'preamble', i.e how to reorganise data 
+// 1. convert variables used into wide equivalent (a struct would have all members be individual variables)
+//    convert any constants to wide equivalent (includes function parameters)
+//    inline and convert to scalar math, e.g. V2 p; f32 x = ; f32 y = ;
+//
+// 2. loads:
+//
+//    writes:
+//
+//    may be necessary for loads/writes:
+//    unpacking: __m128 x = _mm_set_ps(x + 3, x + 2, x + 1, x + 0);
+//    so, have rgba | rgba | rgba | rgba
+//    wrnt, rrrr | rrrr | rrrr | rrrr
+//    r = _mm_and_ps(_mm_srli_epi(original_dest, 24), mask_ff)
+//
+//    packing: for (i < 4) out[i] = LANE_ARR(x, i) << 4;
+//    for (x = 0; x += 4)
+//    {
+//      r32 a[4]; // __m128 a;
+//      r32 b[4];
+//      b32 c[i];
+//      r32 d[i];
+//      for (i = 0; i < 4; i++)
+//      {
+//        LANE_F32_ARR(a, i) = ;
+//        b[i] = ;
+//      }
+//
+//      for (i = 0; i < 4; i++)
+//      {
+//        if (c[i])
+//        {
+//          d[i] = a[i] + b[i];
+//        }
+//      }
+//    }
+//  3. take out of for loop, and replace '+', '*', etc. with simd operations (so, shouldn't be seeing '+' operators)
+//     easier to nest simd calls
+//  a = _mm_mul_add(_mm_mul_ps(constant_wide, a), b);
+//  4. handle packing (writing)
+//  if want to combine smaller sizes, e.g. 8-bit values, shift and or
+//  __m128i rounded_int = _mm_cvtps_epi32(); (round to nearest is default)
+//  _mm_or_si128(rounded_int, _mm_slli_epi32(b, 8));
+//
+//   movdqa xmmword ptr [rdx-10h],xmm3
+//   requires 16byte aligned memory (bottom 4 bits 1), so in debugger see ((rdx-10) & 15 == 0)
+//  *(__m128i *)pixel = ;
+//  so, to allow unaligned: _mm_storeu_si128((__m128i *)pixel, out)
+//
+//  want output to be say 8-bit rgba.
+//  _mm_unpackhi_epi32() will interleave. 
+//  __m128i br = _mm_unpacklo_epi32(_mm_castps_si128(b), r);
+//  __m128i ag = _mm_unpacklo_epi32(a, g);
+//  __m128i argb = _mm_unpack_lo_epi32(br, ag);
+//  __m128i argb1 = _mm_unpack_hi_epi32(br, ag);
+//  would arrange various interleaves of various sizes to get output order desired
+//  4. handle unpacking (loading) 
+//  5. handle conditionals
+//  mask generation:
+//  if () write_mask[i] = 0xffffffff;
+//  write_mask = _mm_and_ps(_mm_cmpge_ps(U, Zero), _mm_cmple_ps(U, One));
+//  original_dest = _mm_loadu_si128((__m128i *)pixel);
+//  using write mask:
+//  zero out places wanting to write to
+//  a = _mm_andnot_si128(write_mask, original_dest)
+//  zero out places we don't want to write
+//  b = _mm_and_si128(write_mask, out)
+//  fuse
+//  c = _mm_or_si128(a, b)
+//  _mm_storeu_si128(pixel, c)
+
+// clamps are helpful to ensure inbounds and remove an if check
+// if (cond) { op1; } else { op2; }
+// we are always doing every aspect of if statement. 
+// just selecting per lane
+// a = op1;
+// b = op2;
+// write_mask(a, b)
+
+// addps
+
+// xmm registers hold any 32bit value
+// movss xmm1, dword ptr []
+// comiss xmm0, xmm7
+// movaps xmm0, xmmword ptr []
+#define LANE_F32_SS(a) _mm_set_ps1(a)
+#define LANE_F32_PS(a, b, c, d) _mm_set_ps(a, b, c, d)
+#define LANE_F32_SQRT(a) _mm_sqrt_ps(a)
+#define LANE_F32_SQUARE(a) LANE_F32_MUL(a, a)
+#define LANE_F64_SET(a) _mm_set_pd()
+#define LANE_F32_ARRAY(l, i) ((* f32)(&l))[i]
+#define LANE_F32_CLAMP01(a) _mm_min_ps(_mm_max_ps(a, zero_wide), one_wide)
+#define LANE_F32_ADD(a, b) _mm_add_ps(a, b)
+
 
 /**** Threading ****/
 // Background
@@ -327,20 +429,24 @@ length_sq(mouse - origin);
 // Circle
 step = TAU32 / ARRAY_COUNT(items);
 p = origin + r * v2_arm(angle);
-// Cycle
-t = cos_f32(ms - last_pressed);
-t *= t;
-t = 0.4f + 0.58f * t;
-c = lerp(white, non_white, t);
 // Gradient
 c = rgba(r, g, b, t)
 // Color Wheel
 rgb_to_hsv(); 
 // Animation
-dynamic += (dst - val) * dt;
 fast = 1 - pow(2.f, -50.f * dt);
 static_hot_t = ((f32)!!is_hot - static_hot_t) * fast; 
 lerp(start, end, static_hot_t);
+
+t = cos_f32(ms - last_pressed);
+t *= t;
+t = 0.4f + 0.58f * t;
+c = lerp(white, non_white, t);
+
+dynamic += (dst - val) * t;
+
+
+
 /**** Math ****/
 // Momentum
 a += (+-)1.0f - friction * v;

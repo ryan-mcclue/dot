@@ -16,7 +16,7 @@ system_init()
 
 // TODO(Ryan): red-jellies code for software debouncing, i.e. hold for 2seconds
 
-#if defined(TEST_BUILD)
+#if TEST_BUILD
 int testable_main(void)
 #else
 int main(void)

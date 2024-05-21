@@ -445,20 +445,6 @@ concat_list(List *a, List *b)
 }
 #endif
 
-// djb2
-INTERNAL u64
-hash_str(String8 string)
-{
-  u64 result = 5381;
-
-  for (u64 i = 0; i < string.size; i += 1)
-  {
-    result = ((result << 5) + result) + string.content[i];
-  }
-
-  return result;
-}
-
 INTERNAL u64 
 hash_ptr(void *p)
 {

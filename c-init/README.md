@@ -1,5 +1,6 @@
 <!-- SPDX-License-Identifier: zlib-acknowledgement -->
 # Desktop 
+![Desktop Lint and Test](https://github.com/ryan-mcclue/desktop/actions/workflows/desktop.yml/badge.svg)
 Desktop application
 
 ## Linux

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #if !defined(TEST_BUILD)
-#define PROFILER
+#define PROFILER 1
 #endif
 
 #include "base/base-inc.h"
 
-#if defined(TEST_BUILD)
+#if TEST_BUILD
 int testable_main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
@@ -15,8 +15,6 @@ int main(int argc, char *argv[])
   MemArena *arena = mem_arena_allocate(GB(8), MB(64));
   // MemArena *frame_arena = mem_arena_allocate(GB(8), MB(64));
 
-  // command line arguments
-  //
   // String8List cmd_line = ZERO_STRUCT;
   // for (u32 i = 0; i < argc; i += 1)
   // {
@@ -30,25 +28,6 @@ int main(int argc, char *argv[])
   //
   //    f32 wiggle_time = (frame_counter%60)/60.f);
   // }
-
- // start with state and frame. add more when get areas that want their memory localised, e.g. processing over large groups entities
-
- // start with list, then a chunked list for large amounts or if want array indexing
-
-// passed a frame arena
-// INTERNAL void
-// rectangle_push(MemArena *arena, RectList *list,
-//                I2F32 rect, V4F32 top_color, V4F32 bot_color)
-// {
-//   RectNode *node = push_array(arena, RectNode, 1);
-//   SLLQueuePush(list->first, list->last, node);
-//   list->count += 1;
-//   node->rect = rect;
-//   node->top_color = top_color;
-//   node->bot_color = bot_color;
-// }
-// function void
-// draw_rectangle_list(RectList *list, V2F32 windim)
 
   ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
   tctx.is_main_thread = true;

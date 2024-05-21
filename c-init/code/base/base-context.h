@@ -141,11 +141,11 @@
 
 // NOTE(Ryan): Thread local
 #if COMPILER_MSVC
-  #define PER_THREAD __declspec(thread)
+  #define THREAD_LOCAL __declspec(thread)
 #elif PLATFORM_LINUX || PLATFORM_MAC
-  #define PER_THREAD __thread
+  #define THREAD_LOCAL __thread
 #else
-  #define PER_THREAD
+  #define THREAD_LOCAL
 #endif
 
 // NOTE(Ryan): Sanitisers
@@ -169,11 +169,22 @@
   #define ISO_EXTENSION __extension__
   // NOTE(Ryan): Used to ensure .text/program-memory aligned on ARM
   #define PROGMEM const __attribute__((aligned(4)))
+  #define SECTION(x) __attribute__((section(x)))
+
+  // NOTE(Ryan): ISO C++ doesn't like anonymous structs
+  #define IGNORE_WARNING_PEDANTIC() \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+  #define IGNORE_WARNING_POP() \
+    _Pragma("GCC diagnostic pop")
 #else
   #define LIKELY(x)
   #define UNLIKELY(x)
   #define ISO_EXTENSION
   #define PROGMEM
+  #define SECTION(x) __declspec(allocate(x))
+  #define IGNORE_WARNING_PEDANTIC()
+  #define IGNORE_WARNING_POP()
 #endif
 
 #endif
