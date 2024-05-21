@@ -341,6 +341,7 @@ c_init()
   cp -r "$path/.github" "$name"
 
   cp "$path/.gitignore.copy" "$name"/.gitignore
+  cp "$path/.gitattributes.copy" "$name"/.gitattributes
   cp "$path/LICENSE" "$name"
   cp "$path/README.md" "$name"
 } && export -f

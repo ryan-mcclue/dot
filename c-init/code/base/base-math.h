@@ -29,6 +29,10 @@
 #define F32_LN(x) logf(x)
 #define F32_LOG(b, a) (F32_LN(a) / F32_LN(b))
 #define F32_MOD(x, y) fmodf(x, y)
+#define F32_POW(x, y) powf(x, y)
+#define F32_FMODF(x, y) fmodf(x, y) 
+#define F32_ACOS(x) acosf(x)
+#define F32_POWI(x, y) powf(x, y)
 
 #define F64_SQRT(x) sqrt(x)
 #define F64_SIN(x) sin(x) 
@@ -43,10 +47,6 @@
 #define F64_RAD_TO_TURNS(v) ((v) / F64_TAU)
 
 #if COMPILER_GCC && ARCH_X64
-  INTERNAL f32 f32_pow(f32 x, f32 y) { return __builtin_powf(x, y); }
-  INTERNAL f32 f32_fmodf(f32 x, f32 y) { return __builtin_fmodf(x, y); }
-  INTERNAL f32 f32_acos(f32 x) { return __builtin_acosf(x); }
-  INTERNAL f32 f32_powi(f32 x, s32 y) { return __builtin_powif(x, y); }
   INTERNAL u32 u32_count_bits_set(u32 val) { return (u32)__builtin_popcount(val); }
   INTERNAL u32 u32_count_leading_zeroes(u32 val) { return (u32)__builtin_clz(val); }
   INTERNAL u32 u32_count_trailing_zeroes(u32 val) { return (u32)__builtin_ctz(val); }
@@ -54,6 +54,15 @@
   INTERNAL u16 u16_endianness_swap(u16 val) { return __builtin_bswap16(val); }
   INTERNAL u32 u32_endianness_swap(u32 val) { return __builtin_bswap32(val); }
   INTERNAL u64 u64_endianness_swap(u64 val) { return __builtin_bswap64(val); }
+#else
+  #warn Byte manipulation builtins not implemented
+  INTERNAL u32 u32_count_bits_set(u32 val) { return 0; }
+  INTERNAL u32 u32_count_leading_zeroes(u32 val) { return 0; }
+  INTERNAL u32 u32_count_trailing_zeroes(u32 val) { return 0; }
+  INTERNAL u32 u32_get_parity(u32 val) { return 0; }
+  INTERNAL u16 u16_endianness_swap(u16 val) { return 0; }
+  INTERNAL u32 u32_endianness_swap(u32 val) { return 0; }
+  INTERNAL u64 u64_endianness_swap(u64 val) { return 0; }
 #endif
 
 INTERNAL f32
@@ -77,13 +86,13 @@ f32_sin_in_out(f32 t)
 INTERNAL f32
 f32_exp_out_fast(f32 t)
 {
-  return 1.0f - f32_pow(2.0f, -50.f * t);
+  return 1.0f - F32_POW(2.0f, -50.f * t);
 }
 
 INTERNAL f32
 f32_exp_out_slow(f32 t)
 {
-  return 1.0f - f32_pow(2.0f, -20.f * t);
+  return 1.0f - F32_POW(2.0f, -20.f * t);
 }
 
 INTERNAL f32

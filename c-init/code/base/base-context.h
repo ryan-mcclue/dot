@@ -170,19 +170,29 @@
   // NOTE(Ryan): Used to ensure .text/program-memory aligned on ARM
   #define PROGMEM const __attribute__((aligned(4)))
   #define SECTION(x) __attribute__((section(x)))
-
   // NOTE(Ryan): ISO C++ doesn't like anonymous structs
   #define IGNORE_WARNING_PEDANTIC() \
     _Pragma("GCC diagnostic push") \
     _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
   #define IGNORE_WARNING_POP() \
     _Pragma("GCC diagnostic pop")
-#else
+#elif COMPILER_MSVC
   #define LIKELY(x)
   #define UNLIKELY(x)
   #define ISO_EXTENSION
   #define PROGMEM
   #define SECTION(x) __declspec(allocate(x))
+  #define IGNORE_WARNING_PEDANTIC() \
+    __pragma(warning(push)) \
+    __pragma(warning(disable:4668))
+  #define IGNORE_WARNING_POP() \
+    __pragma(warning(pop))
+#else
+  #define LIKELY(x)
+  #define UNLIKELY(x)
+  #define ISO_EXTENSION
+  #define PROGMEM
+  #define SECTION(x)
   #define IGNORE_WARNING_PEDANTIC()
   #define IGNORE_WARNING_POP()
 #endif
