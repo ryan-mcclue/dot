@@ -21,13 +21,6 @@ int main(int argc, char *argv[])
   //   String8 arg = str8_cstr(argv[i]);
   //   str8_list_push(arena, &cmd_line, arg);
   // }
-  
-  // for (b32 quit = false; !quit; frame_counter += 1)
-  // {  
-  //    mem_arena_clear(frame_arena);
-  //
-  //    f32 wiggle_time = (frame_counter%60)/60.f);
-  // }
 
   ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
   tctx.is_main_thread = true;
@@ -41,6 +34,28 @@ int main(int argc, char *argv[])
 #endif
 
   profiler_init();
+
+  //u32 screen_width = 1080;
+  //u32 screen_height = 720;
+  //InitWindow(screen_width, screen_height, "title");
+  //SetTargetFPS(60);
+  //u64 frame_counter = 0;
+  //for (b32 quit = false; !quit; frame_counter += 1)
+  //{  
+  //    mem_arena_clear(frame_arena);
+  //    f32 wiggle_time = (frame_counter%60)/60.f);
+  //  BeginDrawing();
+  //  ClearBackground(RAYWHITE);
+  //  DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+  //  EndDrawing();
+
+  //#if ASAN_ENABLED
+  //  if (GetTime() >= 5.0) quit = true;
+  //#else
+  //  quit = WindowShouldClose();
+  //#endif
+  //}
+  //CloseWindow();
 
   u64 _ = 0x7400747269686520;
   u32 __ = 0x18550d0;

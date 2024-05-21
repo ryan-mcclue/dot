@@ -207,8 +207,9 @@ COMPILER_FLAGS+=( "-DBUILD_VERSION_STR=$build_version" "-DBUILD_DATE_STR=$build_
 # IMPORTANT(Ryan): Seems have to specify library location for lld
 # COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
 
-# COMPILER_FLAGS+=( "-isystem code/external/raylib/src" )
-# COMPILER_FLAGS+=( "-Lexternal/raylib/src" "-Wl,-rpath=external/raylib/src" )
+# COMPILER_FLAGS+=( "-isystem code/external/raylib-5.0/src" )
+# COMPILER_FLAGS+=( "-Lbuild/raylib" "-Wl,-rpath=build/raylib" )
+# LINKER_FLAGS+=( "-lraylib" )
 
 LINKER_FLAGS+=( "-Tcode/linker.ld" )
 LINKER_FLAGS+=( "-Wl,--gc-sections" "-Wl,--build-id" "-Wl,--warn-unresolved-symbols" )
