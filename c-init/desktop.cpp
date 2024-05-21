@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
   profiler_end_and_print();
   // PROFILE_BANDWIDTH(), PROFILE_BLOCK(), PROFILE_FUNCTION(), 
 
+  LSAN_RUN();
   return 0;
 }
 

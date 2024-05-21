@@ -156,10 +156,14 @@
 #endif
 #if ASAN_ENABLED && COMPILER_MSVC
   #define NO_ASAN __declspec(no_sanitize_address)
+  #define LSAN_RUN()
 #elif ASAN_ENABLED && (PLATFORM_LINUX || PLATFORM_MAC)
+  #include <sanitizer/lsan_interface.h>
   #define NO_ASAN __attribute__((no_sanitize("address")))
+  #define LSAN_RUN() __lsan_do_leak_check(); __lsan_disable()
 #else
   #define NO_ASAN
+  #define LSAN_RUN()
 #endif
 
 // NOTE(Ryan): Extensions

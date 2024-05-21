@@ -28,17 +28,20 @@ jobs:
           gcovr -e "code/base/.*\.h" 
       - name: Build app
         run: bash misc/build "app"
-      - name: Run app
-        run: ./build/desktop-release
-      # |
-      # ./build/desktop-release &
-      # pid=$!
-      # sleep 3
-      # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
       - name: Run analyser
         run: |
           echo 'param_analyse="true"' >> private/build-params
           bash misc/build "app"
+      - name: Run sanitiser
+        run: |
+          echo 'param_release="true"' > private/build-params
+          echo 'param_sanitiser="true"' >> private/build-params
+          bash misc/build "app"
+          # ./build/desktop-release &
+          # pid=$!
+          # sleep 3
+          # kill $pid 2>/dev/null || echo "Running app failed" && exit 1
+
 
 # macos:
 #   runs-on: macos-latest

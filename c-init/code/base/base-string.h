@@ -429,8 +429,11 @@ str8_list_join(MemArena *arena, String8List list, String8Join *join_ptr)
 
   // fill
   u8 *ptr = result.content;
-  MEMORY_COPY(ptr, join.pre.content, join.pre.size);
-  ptr += join.pre.size;
+  if (join.pre.size > 0)
+  {
+    MEMORY_COPY(ptr, join.pre.content, join.pre.size);
+    ptr += join.pre.size;
+  }
 
   for (String8Node *node = list.first; node; node = node->next)
   {

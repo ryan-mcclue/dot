@@ -137,6 +137,7 @@ PARAM_MODE=${param_mode:-"debug"}
 PARAM_ARCH=${param_arch:-"x86_64"}
 PARAM_ANALYSE=${param_analyse:-"false"}
 PARAM_RUN=${param_run:-"false"}
+PARAM_SANITISE=${param_sanitise:-"false"}
 
 mkdir -p build
 
@@ -145,6 +146,10 @@ LINKER_FLAGS=()
 
 if [[ "$PARAM_ANALYSE" == "true" ]]; then
   COMPILER_FLAGS+=( "-fanalyzer" )
+fi
+
+if [[ "$PARAM_SANITISE" == "true" ]]; then
+  COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" )
 fi
 
 if [[ "$BUILD_TYPE" == "app" ]]; then
@@ -216,8 +221,6 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
-  # NOTE(Ryan): Sanitisers
-  # COMPILER_FLAGS+=( "-fsanitize=address,undefined" "-fno-sanitize=float-divide-by-zero,float-cast-overflow" "-fno-sanitize-recover=all" )
 elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
   COMPILER_FLAGS+=( "-O3" )

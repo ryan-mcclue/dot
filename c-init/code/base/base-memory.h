@@ -67,13 +67,9 @@ mem_arena_deallocate(MemArena *arena)
 #define MEM_ARENA_PUSH_STRUCT(a,T) (T*)mem_arena_push((a), sizeof(T))
 #define MEM_ARENA_PUSH_STRUCT_ZERO(a,T) (T*)mem_arena_push_zero((a), sizeof(T))
 
-
-// TODO(Ryan): Handle out-of-memory (conceivable on say limited VPS, etc.)
 INTERNAL void *
 mem_arena_push_aligned(MemArena *arena, memory_index size, memory_index align)
 {
-  void *result = NULL;
-
   memory_index clamped_align = CLAMP_BOTTOM(align, arena->align);
 
   memory_index pos = arena->pos;
@@ -84,13 +80,16 @@ mem_arena_push_aligned(MemArena *arena, memory_index size, memory_index align)
 
   if (pos + alignment_size + size <= arena->max)
   {
-    u8 *mem_base = (u8 *)arena;
-    result = mem_base + pos + alignment_size;
     memory_index new_pos = pos + alignment_size + size;
     arena->pos = new_pos;
-  }
 
-  return result;
+    return (u8 *)arena + pos + alignment_size;
+  }
+  else
+  {
+    // TODO(Ryan): Handle out-of-memory (conceivable on say limited VPS, etc.)
+    return (u8 *)arena + pos;
+  }
 }
 
 INTERNAL void *
