@@ -144,6 +144,14 @@ mkdir -p build
 COMPILER_FLAGS=()
 LINKER_FLAGS=()
 
+set +u
+if [[ -n "$GITHUB_ACTIONS" ]]; then
+  COMPILER_FLAGS+=( "-DRUNNING_ON_CI=1" )
+else
+  COMPILER_FLAGS+=( "-DRUNNING_ON_CI=0" )
+fi
+set -u
+
 if [[ "$PARAM_ANALYSE" == "true" ]]; then
   COMPILER_FLAGS+=( "-fanalyzer" )
 fi
@@ -207,9 +215,9 @@ COMPILER_FLAGS+=( "-DBUILD_VERSION_STR=$build_version" "-DBUILD_DATE_STR=$build_
 # IMPORTANT(Ryan): Seems have to specify library location for lld
 # COMPILER_FLAGS+=( "-Wl,-fuse-ld=lld" "-Lexternal/raylib/src" )
 
-# COMPILER_FLAGS+=( "-isystem code/external/raylib-5.0/src" )
-# COMPILER_FLAGS+=( "-Lbuild/raylib" "-Wl,-rpath=build/raylib" )
-# LINKER_FLAGS+=( "-lraylib" )
+#COMPILER_FLAGS+=( "-isystem code/external/raylib-5.0/src" )
+#COMPILER_FLAGS+=( "-Lbuild/raylib" "-Wl,-rpath=build/raylib" )
+#LINKER_FLAGS+=( "-lraylib" )
 
 LINKER_FLAGS+=( "-Tcode/linker.ld" )
 LINKER_FLAGS+=( "-Wl,--gc-sections" "-Wl,--build-id" "-Wl,--warn-unresolved-symbols" )
@@ -222,6 +230,7 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
 
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
+  # IMPORTANT(Ryan): Seems having debug flags on prevents sanitisers from running
 elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
   COMPILER_FLAGS+=( "-O3" )

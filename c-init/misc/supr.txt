@@ -1,0 +1,3 @@
+leak:_XimOpenIM
+leak:radeonsi_dri
+leak:libLLVM

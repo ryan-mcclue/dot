@@ -49,11 +49,10 @@ int main(int argc, char *argv[])
   //  DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
   //  EndDrawing();
 
-  //#if ASAN_ENABLED
-  //  if (GetTime() >= 5.0) quit = true;
-  //#else
   //  quit = WindowShouldClose();
-  //#endif
+  //  #if ASAN_ENABLED
+  //    if (GetTime() >= 5.0) quit = true;
+  //  #endif
   //}
   //CloseWindow();
 
@@ -65,6 +64,7 @@ int main(int argc, char *argv[])
   profiler_end_and_print();
   // PROFILE_BANDWIDTH(), PROFILE_BLOCK(), PROFILE_FUNCTION(), 
 
+  // NOTE(Ryan): Run explicitly so as to not register a leak for arenas
   LSAN_RUN();
   return 0;
 }
