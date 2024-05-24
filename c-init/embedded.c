@@ -14,6 +14,11 @@ system_init()
    // gpio clock and pins -> uart clock -> nvic priority and interrupt enable
 }
 
+// each driver should be non-blocking, logging, console commands for testing, debugging (dump state) and measurement readings (start/stop)
+
+// IMPORTANT: embedded 24/7 devices, so logging and defensive programming critical for robustness 
+// detect (watchdog, exception) -> collect (log, error counter/registers) -> handle (automatic/manual restart; make decisions to store resumption state in flash)
+
 // TODO(Ryan): red-jellies code for software debouncing, i.e. hold for 2seconds
 
 #if TEST_BUILD

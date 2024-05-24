@@ -104,6 +104,7 @@ typedef size_t memory_index;
 #define F32_PI 3.1415926f // F32_ATAN2(1, 1) * 4, vector(1, 1) of 45°
 #define F32_PI_DIV_180 0.0174532f
 #define F32_180_DIV_PI 57.2957795f
+// NOTE(Ryan): radian is arc length distance of 1 radius. 2pi/tau radians for circumference of circle. 
 #define F32_TAU 6.2831853f
 #define F32_HALF_PI 1.5707963f
 #define F32_E 2.7182818f
