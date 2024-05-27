@@ -256,6 +256,9 @@ git_msg()
 
 git_squash()
 {
+  # copy and paste 'pick' to reorder
+  # change to 'reword' to alter commit message
+  # change to 'squash' to combine (git push --force)
   if [ $# -eq 1 ]; then
     git rebase -i HEAD~"$1"
   else
