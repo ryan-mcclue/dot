@@ -821,4 +821,21 @@ rect_f32_dim(RectF32 r)
   return vec2_f32(r.size.x, r.size.y); 
 }
 
+#if 0
+GLOBAL Vec4F32 WHITE_COLOUR = vec4_f32(1.0f, 1.0f, 1.0f, 1.0f);
+GLOBAL Vec4F32 OFFWHITE_COLOUR = vec4_f32_hex(0xfdf6e3);
+GLOBAL Vec4F32 BLACK_COLOUR = vec4_f32(0.0f, 0.0f, 0.0f, 1.0f);
+GLOBAL Vec4F32 OFFBLACK_COLOUR = vec4_f32_hex(0x002b36);
+GLOBAL Vec4F32 LIGHTGREY_COLOUR = vec4_f32(0.93f, 0.91f, 0.88f, 1.0f);
+GLOBAL Vec4F32 DARKGREY_COLOUR = vec4_f32(0.35f, 0.38f, 0.40f, 1.0f);
+GLOBAL Vec4F32 YELLOW_COLOUR = vec4_f32(0.71f, 0.54f, 0.00f, 1.0f);
+GLOBAL Vec4F32 ORANGE_COLOUR = vec4_f32(0.80f, 0.29f, 0.09f, 1.0f);
+GLOBAL Vec4F32 RED_COLOUR = vec4_f32(0.86f, 0.20f, 0.18f, 1.0f);
+GLOBAL Vec4F32 MAGENTA_COLOUR = vec4_f32(0.83f, 0.21f, 0.05f, 1.0f);
+GLOBAL Vec4F32 VIOLET_COLOUR =vec4_f32(0.42f, 0.44f, 0.77f, 1.0f);
+GLOBAL Vec4F32 BLUE_COLOUR = vec4_f32(0.15f, 0.55f, 0.82f, 1.0f);
+GLOBAL Vec4F32 CYAN_COLOUR = vec4_f32(0.16f, 0.63f, 0.60f, 1.0f);
+GLOBAL Vec4F32 GREEN_COLOUR = vec4_f32(0.52f, 0.60f, 0.00f, 1.0f);
+#endif
+
 #endif

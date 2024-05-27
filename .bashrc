@@ -567,6 +567,7 @@ __path_append \
   ~/prog/cross/arm/*/bin \
   ~/prog/personal/scripts \
   "$PGBIN" \
+  "/opt/gradle/gradle-8.5/bin" \
 
 __prefix='arm-none-eabi-'
 alias GCC="${__prefix}gcc"
