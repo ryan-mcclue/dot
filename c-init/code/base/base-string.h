@@ -539,6 +539,38 @@ str8_to_int(String8 s)
   return result;
 }
 
+INTERNAL String8 
+u32_to_str8(MemArena *arena, u32 x)
+{
+ LOCAL_PERSIST char int2char[] = "0123456789";
+ u8 buffer[10] = ZERO_STRUCT;
+ u32 it = sizeof(buffer) - 1;
+
+ if (x == 0)
+ {
+   buffer[it--] = '0';
+ }
+ else
+ {
+   u32 digit = x % 10;
+   buffer[it--] = int2char[digit]; 
+   u32 num = x / 10;
+   while (num != 0)
+   {
+     digit = num % 10;
+     buffer[it--] = int2char[digit]; 
+     num /= 10;
+   }
+ }
+ 
+ String8 result = ZERO_STRUCT;
+ result.size = (memory_index)(sizeof(buffer) - (it + 1));
+ result.content = MEM_ARENA_PUSH_ARRAY(arena, u8, result.size);
+ MEMORY_COPY(result.content, buffer + it + 1, result.size);
+ 
+ return result;
+}
+
 // TODO(Ryan): Tree traversal: https://hero.handmade.network/episode/code/day202/#1985 
 
 #define ring_write_ptr(base, size, pos, ptr) ring_write((base), (size), (pos), (ptr), sizeof(*(ptr)))
