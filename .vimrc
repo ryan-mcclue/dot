@@ -289,9 +289,9 @@ nnoremap <S-F> :call SearchAcrossAllFiles("<C-R>=expand("<cword>")<CR>")<Left><L
 nnoremap <C-F> :call ReplaceAcrossAllFiles("<C-R>=expand("<cword>")<CR>
 
 " NOTE(Ryan): Command Execution
-nnoremap <Leader>i :r!python -c 'from math import *; print()'<Left><Left>
-nnoremap <Leader>p :echo system("python -c 'from math import *; print()'")<Left><Left><Left><Left>
-xnoremap <Leader>s yPgv:!python<CR>
+nnoremap <Leader>i :r!python3 -c 'from math import *; print()'<Left><Left>
+nnoremap <Leader>p :echo system("python3 -c 'from math import *; print()'")<Left><Left><Left><Left>
+xnoremap <Leader>s yPgv:!python3<CR>
 
 " IMPORTANT(Ryan): Can only use bash variables if substituting due to dollar
 " sign
