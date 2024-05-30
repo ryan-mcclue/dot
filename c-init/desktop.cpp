@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#if !defined(TEST_BUILD)
+#if !TEST_BUILD
 #define PROFILER 1
 #endif
 

@@ -39,7 +39,7 @@ typedef size_t memory_index;
 //lint -esym(522 523, DEBUGGER_BREAK)
 
 // C++ and C complex differently
-#if defined(LANG_CPP)
+#if LANG_CPP
   #include <complex>
   typedef std::complex<float> f32z;
   #define f32z_I f32z(0.0f, 1.0f)
@@ -62,23 +62,23 @@ typedef size_t memory_index;
 
 #define GLOBAL static
 #define LOCAL_PERSIST static
-#if !defined(TEST_BUILD)
- #define INTERNAL static
-#else
+#if TEST_BUILD
  #define INTERNAL
+#else
+ #define INTERNAL static
 #endif
 
 #define GLOBAL_CONST PROGMEM
 
 // NOTE(Ryan): For finishing superloop in test build  
-#if defined(TEST_BUILD)
+#if TEST_BUILD
   GLOBAL u32 global_forever_counter = 1;
   #define FOREVER (global_forever_counter--) 
 #else
   #define FOREVER 1
 #endif
 
-#if defined(SIMULATOR_BUILD) || defined(TEST_BUILD)
+#if defined(SIMULATOR_BUILD) || TEST_BUILD
   // IMPORTANT(Ryan): For a function to be mocked/wrapped, it must be in a separate translation unit
   // For unity build, only function declaration can be present
   #define WANT_MOCKS 1

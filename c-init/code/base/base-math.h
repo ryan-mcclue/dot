@@ -10,6 +10,9 @@
 #define SQUARE(x) ((x) * (x))
 #define CUBE(x) ((x) * (x) * (x))
 
+#define F32_CEIL(real32) ceilf(real32)
+#define F32_ROUND(real32) roundf(real32)
+#define F32_FLOOR(real32) floorf(real32)
 #define F32_ROUND_U32(real32) (u32)roundf(real32)
 #define F32_ROUND_S32(real32) (s32)roundf(real32)
 #define F32_FLOOR_S32(real32) (s32)floorf(real32)
