@@ -4,7 +4,7 @@
 // get middle with slow and fast->next pointers
 // dynamic list to array
 
-// CPU retrieval 
+// CPU retrieval for order not important
 *opl = first + count;
 for(Entity *e = first; e < opl; e += 1)
 // dynamic alloc 
