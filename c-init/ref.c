@@ -6,7 +6,7 @@
 
 // CPU retrieval for order not important
 *opl = first + count;
-for(Entity *e = first; e < opl; e += 1)
+for(Entity *e = first; e < opl; e += 1) if (e->is_active)
 // dynamic alloc 
 if (first_free == NULL) r = MEM_PUSH();
 else
