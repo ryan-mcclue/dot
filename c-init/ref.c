@@ -434,17 +434,20 @@ c = rgba(r, g, b, t)
 // Color Wheel
 rgb_to_hsv(); 
 // Animation
-fast = 1 - pow(2.f, -50.f * dt);
-static_hot_t = ((f32)!!is_hot - static_hot_t) * fast; 
-lerp(start, end, static_hot_t);
+cur += (target - cur) * (rate * dt);
 
-t = cos_f32(ms - last_pressed);
+expo_in = pow(2.f, -50.f * dt);
+expo_out = 1 - pow(2.f, -50.f * dt); // (slow down)
+cur += ((f32)!!is_active - cur) * expo_out; 
+
+seconds = 1.0f;
+t = delta / seconds;
+t = sqrt(abs(t));
+t = 1 - s; // (ease_out)
+
+t = cos_f32((ms - last_pressed) * dt);
 t *= t;
 t = 0.4f + 0.58f * t;
-c = lerp(white, non_white, t);
-
-dynamic += (dst - val) * t;
-
 
 
 /**** Math ****/
