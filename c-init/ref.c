@@ -397,7 +397,7 @@ item_active = vec4_f32_whiten(item_default, 0.6f);
 if (mouse_over_rect(item)) if (mouse_down()) draw_rect();
 // Scrollbar
 scrollable_h = num_items * item_h; 
-t = r.h / scrollable_h;
+t = scrollable_h / r.h;
 scroll_h = r.h * t;
 off -= dampening_v * dt;
 if (off < 0) off = 0;
@@ -445,9 +445,16 @@ t = delta / seconds;
 t = sqrt(abs(t));
 t = 1 - s; // (ease_out)
 
+// interpolate range endpoints as well as range
+
 t = cos_f32((ms - last_pressed) * dt);
 t *= t;
 t = 0.4f + 0.58f * t;
+
+// Smooth movement
+v *= 0.9f;
+v += MouseWheel() * item_width * dt;
+p += v;
 
 
 /**** Math ****/
@@ -455,11 +462,6 @@ t = 0.4f + 0.58f * t;
 a += (+-)1.0f - friction * v;
 v += a * dt;
 p += 0.5f * a * dt * dt + v * dt;
-// Artificial
-a = MouseWheel() * h * 2.0f;
-v += a * dt;
-v *= d;
-p += v;
 // Angles
 x = cos(a);
 y = sin(a);

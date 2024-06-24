@@ -254,8 +254,12 @@ git_msg()
   fi
 } && export -f
 
+
 git_squash()
 {
+  # ^ - parent (so rebase -i <hash>^)
+  # ~ - ancestor
+
   # copy and paste 'pick' to reorder
   # change to 'reword' to alter commit message
   # change to 'squash' to combine (git push --force)
@@ -493,6 +497,9 @@ libc_version() {
     printf "Running in container might be necessary\n"
   fi
 } && export -f
+
+# imagemagick
+# convert -background None img.svg img.png
 
 bat() {
   local rows="(state)|(percentage)|(capacity)|(time to empty)"

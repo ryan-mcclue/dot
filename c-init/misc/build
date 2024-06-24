@@ -176,6 +176,8 @@ else
 fi
 
 BINARY_NAME="$NAME-$PARAM_MODE"
+RELOAD_NAME="${NAME}-reload"
+RELOAD_BINARY_NAME="$RELOAD_NAME-$PARAM_MODE.so"
 
 # NOTE(Ryan): Enable various warnings largely related to implicit signed, alignment, casting, promotion issues
 COMPILER_FLAGS+=( "-Wall" "-Wextra" "-Wshadow" "-Wconversion" "-Wdouble-promotion" "-Wformat=2" "-pedantic" )
@@ -241,6 +243,9 @@ elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
 fi
 
+# NOTE(Ryan): Hotreloading
+# $PARAM_COMPILER -fPIC -shared ${COMPILER_FLAGS[*]} code/"$RELOAD_NAME".cpp -o build/"$RELOAD_BINARY_NAME" ${LINKER_FLAGS[*]}
+
 $PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
 
 print_end_time
@@ -256,7 +261,7 @@ if [[ "$PARAM_RUN" == "true" ]]; then
   rm -f build/"$BINARY_NAME".gcda 2>/dev/null
 
   # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
-  build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+  $(pgrep "$BINARY_NAME" >/dev/null) || build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
 
   # NOTE(Ryan): gcov requires name to be same as source file
   mv -f build/"$BINARY_NAME".gcno build/"$NAME".gcno 2>/dev/null

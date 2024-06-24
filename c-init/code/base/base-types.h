@@ -231,6 +231,7 @@ struct SourceLoc
 #define EACH_ENUM(type, it) type it = (type)0; it < type##_COUNT; it = (type)(it+1)
 #define EACH_NONZERO_ENUM(type, it) type it = (type)1; it < type##_COUNT; it = (type)(it+1)
 
+
 // TODO(Ryan): Date/time helpers?
 
 #define SAT_ADD_U32(x, y) MIN((x + y), U32_MAX)
