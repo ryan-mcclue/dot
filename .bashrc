@@ -1,6 +1,14 @@
 #!/bin/bash
 # SPDX-License-Identifier: zlib-acknowledgement
 
+# IMPORTANT: kernel graphics issues
+# /etc/default/grub
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nomodeset"
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash amd_iommu=off"
+# update-grub
+# sudo apt install linux-image-5.15.0-58-generic linux-headers-5.15.0-58-generic 
+
+
 case $- in
   *i*) ;;
   *) return ;;

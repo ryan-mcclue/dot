@@ -626,7 +626,7 @@ ring_read(u8 *ring_base, memory_index ring_size, memory_index pos, void *dst, me
 
 // djb2
 INTERNAL u64
-hash_str(String8 string)
+str8_hash(String8 string)
 {
   u64 result = 5381;
 

@@ -105,7 +105,9 @@ MD_S8ListPush(arena, out, indent_string);\
 /**** Hashmap ****/
 struct NodeSlot { first, last; };
 NodeSlot *map = PUSH_ARRAY(arena, NodeSlot, 256);
-NodeSlot *search = hash_from_string(key) % 256;
+u64 i = hash_from_string(key) % 256;
+NodeSlot *s = &map[i];
+DLL_QUEUE_PUSH(s->first, s->last, node);
 
 /**** Struct Layout ****/
 // if literal combinations, use giant struct
