@@ -2,9 +2,13 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
 # IMPORTANT: kernel graphics issues
+# installed-kernels: ls /boot/vmlinuz-*
+# current-kernel: uname -r
+# list-menu: grep 'menuentry' /boot/grub/grub.cfg 
 # /etc/default/grub
 # GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nomodeset"
 # GRUB_CMDLINE_LINUX_DEFAULT="quiet splash amd_iommu=off"
+# GRUB_DEFAULT="1>2"
 # update-grub
 # sudo apt install linux-image-5.15.0-58-generic linux-headers-5.15.0-58-generic 
 
