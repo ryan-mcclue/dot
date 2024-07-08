@@ -65,7 +65,7 @@ err_list_concat(r.errors, r2.errors);
 // no code bifurcation
 for (Err *e = errors.first; e != NULL; e = e->next)
 
-/**** Macro Codegen ****/
+/**** Macro Codegen (compile time execution) ****/
 // we are removing the actual function calls with just counting
 // may have to redefine types for it to work
 #if COUNT_FUNCTION_CALLS
@@ -89,6 +89,17 @@ switch (e)
 	typedef return_type (* name##_t)(__VA_ARGS__);
 X_LIST
 #undef X
+// Meta-programming
+#include "generated/samples.meta.[hc]" // include generated code?
+if (TweakB32(draw_red_circle, 1)) {} // mark code for generation?
+// this will reference a global variable, tweak_draw_red_circle
+// this will generate a table of these variables, e.g. {"draw_red_circle", value, value_ptr}
+// for (u32 i = 0; i < ARRAY_COUNT(tweak_b32_info); i += 1) {
+//   slider(tweak->value_ptr, tweak->name)
+// }
+// EmbedFile(var_data, "filename")
+// @TweakStruct()
+
 // Indentation
 MD_FUNCTION void
 MD_DebugDumpFromNode(MD_Arena *arena, MD_String8List *out, MD_Node *node,
