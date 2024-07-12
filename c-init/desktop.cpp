@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
 
   //u32 screen_width = 1080;
   //u32 screen_height = 720;
+  //SetTraceLogLevel(LOG_ERROR); 
+  //SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
   //InitWindow(screen_width, screen_height, "title");
   //SetTargetFPS(60);
   //u64 frame_counter = 0;
@@ -47,6 +49,7 @@ int main(int argc, char *argv[])
   //  BeginDrawing();
   //  ClearBackground(RAYWHITE);
   //  DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+  //  DrawFPS(10, 10);
   //  EndDrawing();
 
   //  quit = WindowShouldClose();
