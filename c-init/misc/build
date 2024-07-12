@@ -233,6 +233,13 @@ if [[ "$PARAM_MODE" == "debug" ]]; then
   # NOTE(Ryan): -g3 gives macro definitions
   COMPILER_FLAGS+=( "-g3" "-gdwarf-2" "-O0" )
   # IMPORTANT(Ryan): Seems having debug flags on prevents sanitisers from running
+elif [[ "$PARAM_MODE" == "optimise" ]]; then
+  COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
+  COMPILER_FLAGS+=( "-g3" "-gdwarf-2" )
+  COMPILER_FLAGS+=( "-O3" )
+  COMPILER_FLAGS+=( "-flto" )
+  COMPILER_FLAGS+=( "-fipa-pta" )
+  COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
 elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
   COMPILER_FLAGS+=( "-O3" )
@@ -242,6 +249,10 @@ elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-fipa-pta" )
   COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
 fi
+
+# NOTE(Ryan): Metaprogram
+# gcc metagen.c -o metagen
+# ./metagen code/"$NAME".cpp
 
 # NOTE(Ryan): Hotreloading
 # $PARAM_COMPILER -fPIC -shared ${COMPILER_FLAGS[*]} code/"$RELOAD_NAME".cpp -o build/"$RELOAD_BINARY_NAME" ${LINKER_FLAGS[*]}
