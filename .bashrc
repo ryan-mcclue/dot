@@ -354,6 +354,13 @@ c_init()
   sudo mount --bind "$path/code/base" "$name/code/base"
 
   cp -r "$path/code/external" "$name/code"
+  if [[ "$type" == "desktop" ]]; then
+    local raylib_tar="raylib-5.0.tar.gz"
+    curl -L -o "$raylib_tar" "https://github.com/raysan5/raylib/archive/refs/tags/5.0.tar.gz"
+    tar -xf "$raylib_tar" -C "$name/code/external" 
+    rm -f "$raylib_tar"
+  fi
+
   cp -r "$path/misc" "$name"
   cp -r "$path/private" "$name"
   cp -r "$path/.vscode" "$name"
