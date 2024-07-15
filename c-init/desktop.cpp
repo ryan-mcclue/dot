@@ -5,12 +5,66 @@
 
 #include "base/base-inc.h"
 #include <raylib.h>
+#include "desktop.h"
 
-typedef struct State State;
-struct State {
-  MemArena *arena;
-  MemArena *frame_arena;
+#include <dlfcn.h>
+
+GLOBAL void *g_reload_handle = NULL;
+GLOBAL char g_nil_update_err_msg[128];
+INTERNAL void
+code_nil_update(State *state)
+{
+  BeginDrawing();
+  ClearBackground(BLACK);
+
+  char *err = dlerror();
+  if (err != NULL)
+  {
+    strncpy(g_nil_update_err_msg, err, sizeof(g_nil_update_err_msg));
+  }
+
+  f32 font_size = 64.0f;
+  Font f = GetFontDefault();
+  Vector2 size = MeasureTextEx(f, g_nil_update_err_msg, font_size, 0);
+  Vector2 pos = {
+    GetRenderWidth()/2.0f - size.x/2.0f,
+    GetRenderHeight()/2.0f - size.y/2.0f,
+  };
+  DrawTextEx(f, g_nil_update_err_msg, pos, font_size, 0, RED);
+
+  EndDrawing();
+}
+INTERNAL void code_nil(State *s) {}
+GLOBAL ReloadCode g_nil_code = {
+  .preload = code_nil,
+  .update = code_nil_update,
+  .postload = code_nil
 };
+
+INTERNAL ReloadCode 
+code_reload(void)
+{
+  if (g_code_reload_handle != NULL) dlclose(g_code_reload_handle);
+
+  g_reload_handle = dlopen(PASTE("build/", RELOAD_BINARY_NAME), RTLD_NOW);
+  if (g_reload_handle == NULL) return g_nil_code;
+
+  ReloadCode result = ZERO_STRUCT;
+  void *name = dlsym(g_reload_handle, "code_preload");
+  if (name == NULL) return g_nil_code;
+  result.preload = (code_preload_t)name;
+
+  void *name = dlsym(g_reload_handle, "code_update");
+  if (name == NULL) return g_nil_code;
+  result.update = (code_update_t)name;
+
+  void *name = dlsym(g_reload_handle, "code_postload");
+  if (name == NULL) return g_nil_code;
+  result.postload = (code_postload_t)name;
+
+  return result;
+}
+
 
 #if TEST_BUILD
 int testable_main(int argc, char *argv[])
@@ -44,13 +98,18 @@ int main(int argc, char *argv[])
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
   InitWindow(screen_width, screen_height, "title");
   SetTargetFPS(60);
-  u64 frame_counter = 0;
-  for (b32 quit = false; !quit; frame_counter += 1)
+
+  ReloadCode code = code_reload();
+  for (b32 quit = false; !quit; state->frame_counter += 1)
   {  
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawFPS(10, 10);
-    EndDrawing();
+    if (IsKeyPressed(KEY_R))
+    {
+      code.preload(state);
+      code = app_reload();
+      code.postload(state);
+    }
+
+    code.update(state);
 
     quit = WindowShouldClose();
     #if ASAN_ENABLED

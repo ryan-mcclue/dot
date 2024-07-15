@@ -2,6 +2,7 @@
 #if !defined(BASE_FILE_H)
 #define BASE_FILE_H
 
+// TODO(Ryan): str8_read_entire_file_null_terminate()
 INTERNAL String8 
 str8_read_entire_file(MemArena *arena, String8 file_name)
 {
