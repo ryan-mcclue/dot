@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
   state->arena = arena;
   state->frame_arena = mem_arena_allocate(GB(1), MB(64));
 
+  state->assets.arena = mem_arena_allocate(GB(1), MB(64));
+
   u32 screen_width = 1080;
   u32 screen_height = 720;
   SetTraceLogLevel(LOG_ERROR); 

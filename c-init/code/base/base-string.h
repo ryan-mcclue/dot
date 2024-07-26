@@ -48,6 +48,19 @@ struct String8Join
   String8 post;
 };
 
+INTERNAL bool
+is_numeric(char ch)
+{
+  return (ch >= 48 && ch <= 57);
+}
+
+INTERNAL bool
+is_alpha(char ch)
+{
+  ch &= ~0x20;
+  return (ch >= 65 && ch <= 90);
+}
+
 INTERNAL String8
 str8(u8 *str, memory_index size)
 {
@@ -214,13 +227,19 @@ str8_find_substring(String8 str, String8 substring, memory_index start_pos, MATC
   return found_idx;
 }
 
+INTERNAL bool
+is_whitespace(char ch)
+{
+  return (ch == ' ' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\r' || ch == '\n');
+}
+
 INTERNAL String8
 str8_trim_whitespace_left(String8 str)
 {
   u32 i = 0, ws_i = 0;
   while (i < str.size)
   {
-    if (str.content[i] == ' ')
+    if (is_whitespace(str.content[i]))
     {
       i++;
     }
@@ -240,7 +259,7 @@ str8_trim_whitespace_right(String8 str)
   s32 i = str.size - 1, ws_i = str.size - 1;
   while (i >= 0)
   {
-    if (str.content[i] == ' ')
+    if (is_whitespace(str.content[i]))
     {
       i--;
     }
@@ -637,6 +656,8 @@ str8_hash(String8 string)
 
   return result;
 }
+
+
 
 #if 0
 INTERNAL void

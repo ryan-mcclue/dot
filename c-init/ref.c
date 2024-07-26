@@ -155,6 +155,9 @@ trees if don't care loop with recursion
 however, loop is faster and more reliable
 https://www.youtube.com/watch?v=QkuNmL7tz08 
 
+/**** Lexing ****/
+
+
 /**** Parsing ****/
 struct Node { Type t; String8 v; Node *first_child; Node *next; }
 

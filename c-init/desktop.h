@@ -1,10 +1,16 @@
 #if !defined(DESKTOP_H)
 #define DESKTOP_H
 
-typedef struct State State;
+#include "base/base-inc.h"
+#include "desktop-assets.h"
 
+typedef struct State State;
 INTROSPECT() struct State
 {
+  b32 is_initialised;
+
+  Assets assets;
+
   MemArena *arena;
   MemArena *frame_arena;
   u64 frame_counter;
