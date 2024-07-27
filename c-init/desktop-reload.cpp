@@ -50,6 +50,8 @@ code_update(State *state)
   f32 font_size = 64.f;
   DrawTextEx(assets_get_font(str8_lit("assets/Alegreya-Regular.ttf")),
              "hi there", pos, font_size, 0.f, BLUE);
+  //DrawTextEx(assets_get_font(str8_lit("assets/Alegreya-BoldItalic.ttf")),
+  //           "hello there", pos, font_size, 0.f, ORANGE);
 
   //for (u32 i = 0; i < 1000; i += 1)
   //{
@@ -59,7 +61,9 @@ code_update(State *state)
   //  y -= (full_tile_height - tile_height);
   //  DrawTexture(assets_get_texture(str8_lit("assets/Male_3_Idle0.png")), 0, 0, WHITE); 
   //}
+  
   DrawTexture(assets_get_texture(str8_lit("assets/Male_3_Idle0.png")), 0, 0, WHITE); 
+  //DrawTexture(assets_get_texture(str8_lit("assets/Male_3_Run8.png")), 0, 0, WHITE); 
 
   EndDrawing();
 }
