@@ -11,7 +11,7 @@ GLOBAL State *g_state = NULL;
 EXPORT void 
 code_preload(State *state)
 {
-  assets_preload();
+  assets_preload(state);
 }
 
 EXPORT void 
@@ -21,10 +21,11 @@ code_postload(State *state)
 EXPORT void 
 code_update(State *state)
 { 
+  g_state = state;
+
   if (!state->is_initialised)
   {
     state->is_initialised = true;
-    g_state = state;
   }
 
   BeginDrawing();

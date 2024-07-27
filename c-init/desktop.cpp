@@ -9,7 +9,7 @@
 
 #include <dlfcn.h>
 
-GLOBAL void *g_reload_handle = NULL;
+GLOBAL void *g_code_reload_handle = NULL;
 GLOBAL char g_nil_update_err_msg[128];
 INTERNAL void
 code_nil_update(State *state)
@@ -46,19 +46,19 @@ code_reload(void)
 {
   if (g_code_reload_handle != NULL) dlclose(g_code_reload_handle);
 
-  g_reload_handle = dlopen(PASTE("build/", RELOAD_BINARY_NAME), RTLD_NOW);
-  if (g_reload_handle == NULL) return g_nil_code;
+  g_code_reload_handle = dlopen("build/" BINARY_RELOAD_NAME, RTLD_NOW);
+  if (g_code_reload_handle == NULL) return g_nil_code;
 
   ReloadCode result = ZERO_STRUCT;
-  void *name = dlsym(g_reload_handle, "code_preload");
+  void *name = dlsym(g_code_reload_handle, "code_preload");
   if (name == NULL) return g_nil_code;
   result.preload = (code_preload_t)name;
 
-  void *name = dlsym(g_reload_handle, "code_update");
+  name = dlsym(g_code_reload_handle, "code_update");
   if (name == NULL) return g_nil_code;
   result.update = (code_update_t)name;
 
-  void *name = dlsym(g_reload_handle, "code_postload");
+  name = dlsym(g_code_reload_handle, "code_postload");
   if (name == NULL) return g_nil_code;
   result.postload = (code_postload_t)name;
 
@@ -102,12 +102,13 @@ int main(int argc, char *argv[])
   SetTargetFPS(60);
 
   ReloadCode code = code_reload();
+  code.preload(state);
   for (b32 quit = false; !quit; state->frame_counter += 1)
   {  
     if (IsKeyPressed(KEY_R))
     {
       code.preload(state);
-      code = app_reload();
+      code = code_reload();
       code.postload(state);
     }
 

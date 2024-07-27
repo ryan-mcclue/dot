@@ -178,7 +178,7 @@ fi
 BINARY_NAME="$NAME-$PARAM_MODE"
 RELOAD_NAME="${NAME}-reload"
 RELOAD_BINARY_NAME="$RELOAD_NAME-$PARAM_MODE.so"
-COMPILER_FLAGS+=( "-DBINARY_NAME=$RELOAD_NAME" "-DBINARY_RELOAD_NAME=$BINARY_RELOAD_NAME" )
+COMPILER_FLAGS+=( "-DBINARY_RELOAD_NAME=\"$RELOAD_BINARY_NAME\"" )
 
 # NOTE(Ryan): Enable various warnings largely related to implicit signed, alignment, casting, promotion issues
 COMPILER_FLAGS+=( "-Wall" "-Wextra" "-Wshadow" "-Wconversion" "-Wdouble-promotion" "-Wformat=2" "-pedantic" )
