@@ -32,11 +32,6 @@ assets_find_(void *slots, String8 key, memory_index slot_size, memory_index key_
                OFFSET_OF_MEMBER(FontNode, key), \
                OFFSET_OF_MEMBER(FontNode, hash_chain_next), \
                OFFSET_OF_MEMBER(FontNode, value))
-#define ASSETS_FIND_IMAGE(slots, key) \
-  assets_find_(g_state->assets.image_assets.slots, key, sizeof(*slots), \
-               OFFSET_OF_MEMBER(ImageNode, key), \
-               OFFSET_OF_MEMBER(ImageNode, hash_chain_next), \
-               OFFSET_OF_MEMBER(ImageNode, value))
 #define ASSETS_FIND_TEXTURE(slots, key) \
   assets_find_(g_state->assets.texture_assets.slots, key, sizeof(*slots), \
                OFFSET_OF_MEMBER(TextureNode, key), \
@@ -70,31 +65,6 @@ assets_get_font(String8 key)
   }
 }
 
-INTERNAL Image
-assets_get_image(String8 key)
-{
-  Image *p = (Image *)ASSETS_FIND_IMAGE(key);
-  if (p != NULL) return *p;
-  else
-  {
-    char cpath[256] = ZERO_STRUCT;
-    str8_to_cstr(key, cpath, sizeof(cpath)); 
-
-    Image v = LoadImage(cpath);
-
-    ImageNode *n = MEM_ARENA_PUSH_STRUCT(g_state->assets.arena, ImageNode);
-    n->key = key;
-    n->value = v;
-
-    u64 slot_i = str8_hash(key) % ASSETS_NUM_SLOTS;
-    ImageSlot *s = &g_state->assets.images.slots[slot_i];
-    __SLL_QUEUE_PUSH(s->first, s->last, n, hash_chain_next);
-    __SLL_STACK_PUSH(g_state->assets.images.collection, n, hash_collection_next);
-
-    return v;
-  }
-}
-
 INTERNAL Texture
 assets_get_texture(String8 key)
 {
@@ -102,10 +72,10 @@ assets_get_texture(String8 key)
   if (p != NULL) return *p;
   else
   {
-    Image i = assets_get_image(key);
-    Texture v = LoadTextureFromImage(i);
+    char cpath[256] = ZERO_STRUCT;
+    str8_to_cstr(key, cpath, sizeof(cpath)); 
 
-    // if no texture
+    Texture v = LoadTexture(cpath);
 
     SetTextureFilter(v, TEXTURE_FILTER_BILINEAR);
 
@@ -129,22 +99,16 @@ assets_preload(void)
   {
     UnloadFont(n->value);
   }
-  for (ImageNode *n = g_state->assets.images.collection; n != NULL; n = n->hash_collection_next)
-  {
-    UnloadImage(n->value);
-  }
-  for (TextureNode *n = g_state->assets.fonts.collection; n != NULL; n = n->hash_collection_next)
+  for (TextureNode *n = g_state->assets.textures.collection; n != NULL; n = n->hash_collection_next)
   {
     UnloadTexture(n->value);
   }
 
   g_state->assets.fonts = ZERO_STRUCT;
-  g_state->assets.images = ZERO_STRUCT;
   g_state->assets.textures = ZERO_STRUCT;
 
   mem_arena_clear(g_state->assets.arena);
 
   g_state->assets.fonts.slots = MEM_ARENA_PUSH_ARRAY_ZERO(g_state->assets.arena, FontSlot, ASSETS_NUM_SLOTS);
-  g_state->assets.images.slots = MEM_ARENA_PUSH_ARRAY_ZERO(g_state->assets.arena, ImageSlot, ASSETS_NUM_SLOTS);
   g_state->assets.textures.slots = MEM_ARENA_PUSH_ARRAY_ZERO(g_state->assets.arena, TextureSlot, ASSETS_NUM_SLOTS);
 }

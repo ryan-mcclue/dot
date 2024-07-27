@@ -22,27 +22,6 @@ struct FontMap
   FontNode *collection;
 };
 
-typedef struct ImageNode ImageNode;
-struct ImageNode
-{
-  String8 key;
-  ImageNode *hash_chain_next;
-  ImageNode *hash_collection_next;
-  Image value;
-};
-typedef struct ImageSlot ImageSlot;
-struct ImageSlot
-{
-  ImageNode *first;
-  ImageNode *last;
-};
-typedef struct ImageMap ImageMap;
-struct ImageMap
-{
-  ImageSlot *slots;
-  ImageNode *collection;
-};
-
 typedef struct TextureNode TextureNode;
 struct TextureNode
 {
@@ -69,7 +48,6 @@ struct Assets
 {
   MemArena *arena;
   FontMap fonts;
-  ImageMap images;
   TextureMap textures;
 };
 

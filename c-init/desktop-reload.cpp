@@ -40,21 +40,25 @@ code_update(State *state)
     else MaximizeWindow();
   }
 
-  DrawText();
+  // TODO: more performant to auto-generate enum into array, instead of hashmap lookup every frame
 
-  Rectangle src = {icon_index * 225.f, icon_index * 225.f, 225.f, 225.f};
-  Rectangle dst = {
-    region.x + region.width/2.0f - (icon_size/2.0f)*btn_scale,
-    region.y + region.height/2.0f - (icon_size/2.0f)*btn_scale,
-    icon_size*btn_scale,
-    icon_size*btn_scale
-  };
-  Vector2 origin = {0.f, 0.f};
-  DrawTexturePro(assets_get_texture(str8_lit("assets/something.png")),
-                 src, dst, origin, 0.f, ColorBrightness(WHITE, -0.1f)); 
-  //draw_rect();
+  //Camera2D cam = ZERO_STRUCT;
+  //cam.zoom = 1.f;
 
-  DrawFPS(10, 10);
+  Vector2 pos = {50.f, 50.f};
+  f32 font_size = 64.f;
+  DrawTextEx(assets_get_font(str8_lit("assets/Alegreya-Regular.ttf")),
+             "hi there", pos, font_size, 0.f, BLUE);
+
+  //for (u32 i = 0; i < 1000; i += 1)
+  //{
+  //  u32 x = (i % 16), y = (i / 16);
+  //  x *= tile_width;
+  //  y *= tile_height;
+  //  y -= (full_tile_height - tile_height);
+  //  DrawTexture(assets_get_texture(str8_lit("assets/Male_3_Idle0.png")), 0, 0, WHITE); 
+  //}
+  DrawTexture(assets_get_texture(str8_lit("assets/Male_3_Idle0.png")), 0, 0, WHITE); 
 
   EndDrawing();
 }

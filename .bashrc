@@ -335,7 +335,7 @@ c_init()
       local files=("embedded.c" "system.c" "startup.S" "linker.ld")
       ;;
     "desktop")
-      local files=("desktop.cpp" "desktop-tests.cpp" "linker.ld")
+      local files=("desktop.cpp" "desktop-assets.h" "desktop-assets.cpp" "desktop-reload.cpp" "desktop-tests.cpp" "linker.ld")
       ;;
     *)
       printf "Usage: c_init <name> {desktop|embedded}\n" >&2 
@@ -344,23 +344,29 @@ c_init()
   esac
 
   mkdir -p "$name/code/base"
-  mkdir "$name/assets"
+  sudo mount --bind "$path/code/base" "$name/code/base"
 
   local path="$HOME/prog/personal/dot/c-init"
   for f in "${files[@]}"; do
     cp "$path/$f" "$name"/code
   done
 
-  sudo mount --bind "$path/code/base" "$name/code/base"
-
   cp -r "$path/code/external" "$name/code"
   if [[ "$type" == "desktop" ]]; then
+    printf "Downloading raylib\n"
     local raylib_tar="raylib-5.0.tar.gz"
     curl -L -o "$raylib_tar" "https://github.com/raysan5/raylib/archive/refs/tags/5.0.tar.gz"
     tar -xf "$raylib_tar" -C "$name/code/external" 
     rm -f "$raylib_tar"
+
+    printf "Building raylib-debug\n"
+    mkdir -p "$name/build"
+    cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -B "$name/build" -S "$name/code/external/raylib-5.0"
+    cmake --build "$name/build"
+    cmake --install "$name/build" 
   fi
 
+  cp -r "$path/assets" "$name"
   cp -r "$path/misc" "$name"
   cp -r "$path/private" "$name"
   cp -r "$path/.vscode" "$name"
@@ -579,6 +585,12 @@ PGHOST="$PGDATA"
 export PGDATA PGHOST
 alias p0="pg_ctl stop"
 alias p1="pg_ctl -l $PGDATA/log start"
+
+# TODO: Remove after comp2511
+export DUNGEONS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/dungeons"
+export CONFIGS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/configs"
+export ASRC="$HOME/Documents/java-projects/ass2/app/src/main/java/dungeonmania"
+export ADST="$HOME/Documents/java-projects/assignment-ii/app/src/main/java/dungeonmania"
 
 __path_append \
   /bin \
