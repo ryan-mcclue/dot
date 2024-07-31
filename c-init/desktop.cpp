@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
   u32 screen_width = 1080;
   u32 screen_height = 720;
-  SetTraceLogLevel(LOG_ERROR); 
+  SetTraceLogLevel(LOG_WARNING); 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
   InitWindow(screen_width, screen_height, "title");
   SetTargetFPS(60);

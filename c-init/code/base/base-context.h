@@ -129,6 +129,7 @@
   #define EXPORT extern "C"
   #define ZERO_STRUCT {}
   #define RESTRICT __restrict__
+  #define CCOMPOUND(type) type
 #else
   #define LANG_C 1
   #define LANG_CPP 0
@@ -137,6 +138,7 @@
   #define EXPORT
   #define ZERO_STRUCT {0}
   #define RESTRICT restrict
+  #define CCOMPOUND(type) (type)
 #endif
 
 // NOTE(Ryan): Thread local
