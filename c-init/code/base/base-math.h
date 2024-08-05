@@ -16,6 +16,7 @@
 #define F32_ROUND_U32(real32) (u32)roundf(real32)
 #define F32_ROUND_S32(real32) (s32)roundf(real32)
 #define F32_FLOOR_S32(real32) (s32)floorf(real32)
+#define F32_FLOOR_U32(real32) (u32)floorf(real32)
 #define F32_CEIL_U32(real32) (u32)ceilf(real32)
 #define F32_CEIL_S32(real32) (s32)ceilf(real32) 
 #define F32_DEG_TO_RAD(v) (F32_PI_DIV_180 * (v))
