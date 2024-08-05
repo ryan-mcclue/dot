@@ -2,10 +2,26 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "preRun",
+            "label": "compile",
+            "type": "shell",
+            "command": "${workspaceFolder}/misc/build app",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "presentation": {
+                "clear": true,
+                // "revealProblems": "onProblem",
+                // "close": false,
+                // "showReuseMessage": true,
+            }
+	},
+        {
+            "label": "initServer",
             "type": "shell",
             "isBackground": true,
-            "command": "clear && openocd -c \"set ESP_RTOS none\" -f board/esp32-wrover-kit-3.3v.cfg && exit"
+            "command": "clear && openocd -c \"set ESP_RTOS none\" -f board/esp32-wrover-kit-3.3v.cfg && exit",
             "problemMatcher": [
                 {
                   "pattern": [
@@ -19,7 +35,7 @@
                   "background": {
                     "activeOnStart": true,
                     "beginsPattern": ".",
-                    "endsPattern": ".",
+                    "endsPattern": "."
                   }
                 }
               ]

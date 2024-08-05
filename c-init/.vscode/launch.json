@@ -2,17 +2,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "preLaunchTask": "preRun",
-            "name": "esp32debug",
+            "name": "Launch Desktop",
+            "preLaunchTask": "compile",
             "type": "cppdbg",
             "request": "launch",
+            "stopAtEntry": false,
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/build/desktop-debug",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Launch Embedded",
+            "preLaunchTask": "initServer",
+            "type": "cppdbg",
+            "request": "launch",
+            "stopAtEntry": false,
             "args": [],
             "cwd": "${workspaceFolder}/build",
-            "program": "${workspaceFolder}/build/hello_world.elf",
+            "program": "${workspaceFolder}/build/hello-world-debug.elf",
             "miDebuggerPath": "${userHome}/.espressif/tools/xtensa-esp-elf-gdb/12.1_20231023/xtensa-esp-elf-gdb/bin/xtensa-esp32-elf-gdb",
             "setupCommands": [
                 {"text": "target remote 127.0.0.1:3333"},
-                {"text": "set remote hardware-watchpoint-limit 2"},
+                {"text": "set remote hardware-watchpoint-limit 2", "ignoreFailures": true},
                 {"text": "monitor reset halt"}, // non-standard command for embedded servers, e.g. openOCD to reset MCU
                 {"text": "flushregs"}, // ensure gdb has correct register values after MCU reset
                 {"text": "mon program_esp build/bootloader/bootloader.bin 0x1000 verify"},
