@@ -3,6 +3,26 @@
 #define BASE_PROFILER_H
 
 #if defined(PROFILER)
+  #if defined(__GNUC_INSTRUMENTATION__)
+    ProfileEphemeral ephemerals[4096];
+    GLOBAL AddressIndexSlot g_address_index_slots;
+    void __cyg_profile_func_enter(void *this_fn, void *call_site) __attribute__((no_instrument_function));
+    void __cyg_profile_func_enter(void *this_fn, void *call_site)
+    {
+      u32 ephemeral_slot = ptr_hash(this_fn) % ARRAY_COUNT(g_ephemerals);
+      ProfileEphemeral *e = g_ephemerals[ephemeral_slot];
+      ASSERT("Hash collision not encountered" && e->addr == this_fn);
+      profile_block_start(ephemeral_slot);
+    }   
+    void __cyg_profile_func_exit(void *this_fn, void *call_site) __attribute__((no_instrument_function));
+    void __cyg_profile_func_exit(void *this_fn, void *call_site)
+    {
+      u32 ephemeral_slot = ptr_hash(this_fn) % ARRAY_COUNT(g_ephemerals);
+      ProfileEphemeral *e = g_ephemerals[ephemeral_slot];
+      profile_block_end(e);
+    }
+ #endif
+
   typedef struct ProfileSlot ProfileSlot;
   struct ProfileSlot
   {

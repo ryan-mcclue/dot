@@ -61,13 +61,43 @@ print_tester_results(RepetitionTester *tester)
 }
 
 INTERNAL void
-tester_error(RepetitionTester *tester, const char *msg)
+tester_set_error(RepetitionTester *tester, const char *msg)
 {
   tester->state = TESTER_STATE_ERROR;
   WARN("%s", msg);
 }
 
-INTERNAL TESTER_STATE 
+INTERNAL void 
+tester_init_new_wave(RepetitionTester *tester, u64 target_bytes_processed, u64 cpu_timer_freq, u32 seconds_to_try = 10)
+{
+  if (tester->state == TESTER_STATE_UNINITIALISED)
+  {
+    tester->state = TESTER_STATE_TESTING;
+    tester->target_bytes_processed = target_bytes_processed;
+    tester->cpu_timer_freq = cpu_timer_freq;
+    tester->min_time = U64_MAX;
+  }
+  else if (tester->state == TESTER_STATE_COMPLETED)
+  {
+    tester->state = TESTER_STATE_TESTING;
+
+    if (tester->target_bytes_processed != target_bytes_processed)
+    {
+      tester_set_error(tester, "target_bytes_processed changed");
+    }
+
+    if(tester->cpu_timer_freq != cpu_timer_freq)
+    {
+      tester_set_error(tester, "CPU frequency changed");
+    }
+  }
+
+  tester->repeat_time = seconds_to_try * cpu_timer_freq;
+  tester->start = read_cpu_timer();
+}
+
+
+INTERNAL bool 
 update_tester(RepetitionTester *tester)
 {
   if (tester->state == TESTER_STATE_TESTING)
@@ -76,14 +106,14 @@ update_tester(RepetitionTester *tester)
 
     if (tester->bytes_accumulated_on_this_test != tester->target_bytes_processed)
     {
-      tester_error(tester, "Repetition tester did not accumulate target bytes");
+      tester_set_error(tester, "Repetition tester did not accumulate target bytes");
     }
-    
+
     if (tester->state == TESTER_STATE_TESTING)
     {
       u32 elapsed_time = tester->time_accumulated_on_this_test;
       tester->test_count += 1;
-      tester->total_time += tester->time_accumulated_on_this_test;
+      tester->total_time += elapsed_time;
       if (tester->max_time < elapsed_time)
       {
         tester->max_time = elapsed_time;
@@ -112,7 +142,7 @@ update_tester(RepetitionTester *tester)
     }
   }
 
-  return tester->state;
+  return (tester->state == TESTER_STATE_TESTING);
 }
 
 INTERNAL u32

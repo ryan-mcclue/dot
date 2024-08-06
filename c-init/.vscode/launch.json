@@ -9,8 +9,19 @@
             "stopAtEntry": false,
             "args": [],
             "cwd": "${workspaceFolder}",
-            "program": "${workspaceFolder}/build/desktop-debug",
-            "miDebuggerPath": "/usr/bin/gdb"
+            "program": "${workspaceFolder}/build/${input:getExecutable}",
+         "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Launch Tests",
+            "preLaunchTask": "tests",
+            "type": "cppdbg",
+            "request": "launch",
+            "stopAtEntry": false,
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/build/${input:getExecutable}",
+         "miDebuggerPath": "/usr/bin/gdb"
         },
         {
             "name": "Launch Embedded",
@@ -34,5 +45,18 @@
                 {"text": "flushregs"}
             ]
         }
-    ]
+    ],
+// Tasks Shell Input extension
+"inputs": [
+    {
+        "id": "getExecutable",
+        "type": "command",
+        "command": "shellCommand.execute",
+        "args": {
+            // NOTE(Ryan): Find most recently modified elf file; assumes shared objects will end with .so
+            "command": "find build/ -maxdepth 1 -type f -executable -not -name \"*.*\" -printf \"%T@ %P\\n\" | sort -n | tail -n1 | cut -d\" \" -f2",
+            "useFirstResult": true
+        }
+    }
+]
 }
