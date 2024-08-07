@@ -19,7 +19,7 @@
 // NOTE(Ryan): Allow for simple runtime debugger attachment
 GLOBAL b32 global_debugger_present;
 
-#if defined(DEBUG_BUILD)
+#if DEBUG_BUILD
   #define BP() \
   do \
   { \

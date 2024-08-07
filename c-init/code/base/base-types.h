@@ -266,6 +266,8 @@ struct SourceLoc
 // NOTE(Ryan): Pre-compilation parses annotated structs and writes them to a header file
 #define INTROSPECT(params)
 // INTROSPECT(category:"something") typedef struct ParseThis
+#define COUNTED_POINTER(count)
+// COUNTED_POINTER(10) u32 *array
 
 // NOTE(Ryan): Designated initialisers allow repetition and ZII
 #define draw_rect(r, ...) \

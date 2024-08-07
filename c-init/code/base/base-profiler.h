@@ -64,6 +64,8 @@
     for (struct {ProfileEphemeral e; u32 i;} UNIQUE_NAME(l) = {profile_block_start(name, __COUNTER__ + 1, byte_count), 0}; \
          UNIQUE_NAME(l).i == 0; \
          profile_block_end(&(UNIQUE_NAME(l)).e), UNIQUE_NAME(l).i++)
+  #define PROFILE_FUNCTION_BANDWIDTH(byte_count) \
+    PROFILE_BANDWIDTH(__func__, byte_count)
   #define PROFILER_END_OF_COMPILATION_UNIT \
     STATIC_ASSERT(__COUNTER__ <= ARRAY_COUNT(global_profiler.slots));
 
