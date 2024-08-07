@@ -571,7 +571,7 @@ diss() {
   local elf="$1"
   local function="$2"
 
-  objdump -M intel --disassemble="$function" "$elf"
+  objdump -M intel --insn-width=10 --disassemble="$function" "$elf"
 } && export -f
 
 download_playlist() {
