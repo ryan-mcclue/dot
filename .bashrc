@@ -565,6 +565,15 @@ copyfrom_unsw_db() {
   fi
 } && export -f
 
+# IMPORTANT: c++ function must have c linkage
+diss() {
+  [[ ! $# -eq 2 ]] && printf "Usage: ${FUNCNAME[0]} <elf> <function>\n" >&2 && return
+  local elf="$1"
+  local function="$2"
+
+  objdump -M intel --disassemble="$function" "$elf"
+} && export -f
+
 download_playlist() {
   #(requires ffmpeg)
   #--recode-video "mp4"
