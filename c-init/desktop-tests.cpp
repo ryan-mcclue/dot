@@ -5,27 +5,11 @@
 #include <setjmp.h>
 #include <limits.h>
 
-#include "desktop.cpp"
+#include "desktop-reload.cpp"
 
 EXPORT_BEGIN
 #include <cmocka.h>
 EXPORT_END
-
-#define TILE_HEIGHT 128
-#define FULL_TILE_HEIGHT 512
-#define TILE_WIDTH 256
-INTERNAL Vector2
-tile_to_world(Vector2 tile)
-{
-  Vector2 res = ZERO_STRUCT;
-  Vector2 origin = {0, 0};
-
-  res.x = (origin.x * TILE_WIDTH * 1.0f) + (tile.x - tile.y) * (TILE_WIDTH * 0.5f);
-  res.y = (origin.y * TILE_HEIGHT * 1.0f) + (tile.x + tile.y) * (TILE_HEIGHT * 0.5f);
-  res.y -= (FULL_TILE_HEIGHT - TILE_HEIGHT);
-
-  return res;
-}
 
 INTERNAL void
 tile_to_world_repeat(RepetitionTester *tester, Vector2 tile)
@@ -54,7 +38,7 @@ repetition_test(void)
   // NOTE(Ryan): Unique for each function to repeat on
   RepetitionTester tester = ZERO_STRUCT;
 
-  printf("\n--- tile_to_world ---\n");
+  printf("\n--- Repetition Test (tile_to_world) ---\n");
   tester_init_new_wave(&tester, sizeof(Vector2), linux_estimate_cpu_timer_freq());
   // this should run for 10 seconds
   tile_to_world_repeat(&tester, {5, 5});
@@ -70,8 +54,28 @@ int
 main(void)
 {
   global_debugger_present = linux_was_launched_by_gdb();
+
+  MemArena *arena = mem_arena_allocate(GB(8), MB(64));
+  ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
+  tctx.is_main_thread = true;
+  thread_context_set(&tctx);
+  thread_context_set_name("Main Thread");
+
+#if RELEASE_BUILD
+  linux_set_cwd_to_self();
+#else
+  linux_append_ldlibrary(str8_lit("./build"));
+#endif
+
+  State *state = MEM_ARENA_PUSH_STRUCT_ZERO(arena, State);
+  g_state = state;
+  state->arena = arena;
+  state->frame_arena = mem_arena_allocate(GB(1), MB(64));
+  state->assets.arena = mem_arena_allocate(GB(1), MB(64));
+
   #define REPETITION 1
   #if REPETITION
+    state->cam.zoom = 1.0f;
     repetition_test(); 
     return 0;
   #else

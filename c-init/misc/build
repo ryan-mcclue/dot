@@ -171,7 +171,8 @@ else
   # IMPORTANT(Ryan): For true coverage don't have optimisations, as may merge lines
   # --coverage to generate .gcno
   # running generate .gcda
-  COMPILER_FLAGS+=( "-DTEST_BUILD=1" "--coverage" )
+  #COMPILER_FLAGS+=( "-DTEST_BUILD=1" "--coverage" )
+  COMPILER_FLAGS+=( "-DTEST_BUILD=1" )
   LINKER_FLAGS+=( "-lcmocka" )
 fi
 
@@ -241,6 +242,8 @@ elif [[ "$PARAM_MODE" == "optimise" ]]; then
   COMPILER_FLAGS+=( "-flto" )
   COMPILER_FLAGS+=( "-fipa-pta" )
   COMPILER_FLAGS+=( "-fdevirtualize-at-ltrans" )
+  # NOTE(Ryan): remove stack guard loading from fs:0x28
+  # COMPILER_FLAGS+=( "-fno-stack-protector" ) 
 elif [[ "$PARAM_MODE" == "release" ]]; then
   COMPILER_FLAGS+=( "-DDEBUG_BUILD=0 -DRELEASE_BUILD=1" )
   COMPILER_FLAGS+=( "-O3" )
@@ -256,7 +259,9 @@ fi
 # ./build/meta-"$PARAM_MODE" code/meta.cpp | tee code/meta-gen.h
 
 # NOTE(Ryan): Hotreloading
-# $PARAM_COMPILER -fPIC -shared ${COMPILER_FLAGS[*]} code/"$RELOAD_NAME".cpp -o build/"$RELOAD_BINARY_NAME" ${LINKER_FLAGS[*]}
+# if [[ "$BUILD_TYPE" == "app" ]]; then
+#   $PARAM_COMPILER -fPIC -shared ${COMPILER_FLAGS[*]} code/"$RELOAD_NAME".cpp -o build/"$RELOAD_BINARY_NAME" ${LINKER_FLAGS[*]}
+# fi
 
 $PARAM_COMPILER ${COMPILER_FLAGS[*]} code/"$NAME".cpp -o build/"$BINARY_NAME" ${LINKER_FLAGS[*]}
 
@@ -268,22 +273,22 @@ print_end_time
 # arm-none-eabi-objcopy -O ihex build/${BINARY_NAME}.elf build/${BINARY_NAME}.bin
 # cp build/${BINARY_NAME}.map misc/console/{BINARY_NAME}.ino
 
-if [[ "$PARAM_RUN" == "true" ]]; then
-  # NOTE(Ryan): gcov gives profiler error if overriding file
-  rm -f build/"$BINARY_NAME".gcda 2>/dev/null
-
-  # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
-  $(pgrep "$BINARY_NAME" >/dev/null) || build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
-
-  # NOTE(Ryan): gcov requires name to be same as source file
-  mv -f build/"$BINARY_NAME".gcno build/"$NAME".gcno 2>/dev/null
-  mv -f build/"$BINARY_NAME".gcda build/"$NAME".gcda 2>/dev/null
-
-  if [[ "$BUILD_TYPE" == "tests" ]]; then
-    gcov -b -o build/ code/"$NAME".cpp >/dev/null
-    gcovr -e "code/base/.*\.h" 
-    rm -f *.gcov
-  fi
-fi
+#if [[ "$PARAM_RUN" == "true" ]]; then
+#  # NOTE(Ryan): gcov gives profiler error if overriding file
+#  rm -f build/"$BINARY_NAME".gcda 2>/dev/null
+#
+#  # NOTE(Ryan): Remove ascii colour escape sequences for Vim quickfix window
+#  $(pgrep "$BINARY_NAME" >/dev/null) || build/"$BINARY_NAME" ${BINARY_ARGS[@]} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+#
+#  # NOTE(Ryan): gcov requires name to be same as source file
+#  mv -f build/"$BINARY_NAME".gcno build/"$NAME".gcno 2>/dev/null
+#  mv -f build/"$BINARY_NAME".gcda build/"$NAME".gcda 2>/dev/null
+#
+#  if [[ "$BUILD_TYPE" == "tests" ]]; then
+#    gcov -b -o build/ code/"$NAME".cpp >/dev/null
+#    gcovr -e "code/base/.*\.h" 
+#    rm -f *.gcov
+#  fi
+#fi
 
 # insert_metrics_db

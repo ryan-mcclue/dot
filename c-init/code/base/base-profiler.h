@@ -153,6 +153,7 @@
   #define PROFILE_FUNCTION()
   #define PROFILE_BLOCK(name)
   #define PROFILE_BANDWIDTH(name, byte_count)
+  #define PROFILE_FUNCTION_BANDWIDTH(byte_count)
 
   typedef struct Profiler Profiler;
   struct Profiler
