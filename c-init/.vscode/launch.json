@@ -13,6 +13,11 @@
          "miDebuggerPath": "/usr/bin/gdb"
         },
         {
+          // add to ~/.config/Code/User/keybindings.json
+          //  {
+          //      "key": "ctrl+shift+t",
+          //      "command": "launches.LaunchTestsDebugger"
+          //  }
             "name": "Launch Tests",
             "preLaunchTask": "tests",
             "type": "cppdbg",

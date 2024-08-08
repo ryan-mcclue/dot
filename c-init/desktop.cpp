@@ -103,13 +103,24 @@ int main(int argc, char *argv[])
 
   ReloadCode code = code_reload();
   code.preload(state);
+  u64 prev_code_reload_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
+  f32 reload_time = 0.25f;
+  f32 reload_timer = reload_time;
   for (b32 quit = false; !quit; state->frame_counter += 1)
   {  
-    if (IsKeyPressed(KEY_R))
+    u64 code_modify_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
+    if (code_modify_time > prev_code_reload_time)
     {
-      code.preload(state);
-      code = code_reload();
-      code.postload(state);
+      // NOTE(Ryan): Prevent loading before object has been fully written
+      reload_timer += GetFrameTime();
+      if (reload_timer >= reload_time)
+      {
+        prev_code_reload_time = code_modify_time;
+        code.preload(state);
+        code = code_reload();
+        code.postload(state);
+        reload_timer = 0.f;
+      }
     }
 
     code.update(state);

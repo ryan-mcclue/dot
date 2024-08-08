@@ -18,11 +18,6 @@
             }
 	},
         {
-          // add to ~/.config/Code/User/keybindings.json
-          //  {
-          //      "key": "ctrl+shift+t",
-          //      "command": "launches.LaunchTestsDebugger"
-          //  }
             "label": "tests",
             "type": "shell",
             "command": "${workspaceFolder}/misc/build tests",
