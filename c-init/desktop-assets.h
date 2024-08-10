@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #if !defined(DESKTOP_ASSETS_H)
 
+#include <raylib.h>
+
 typedef struct FontNode FontNode;
 struct FontNode
 {

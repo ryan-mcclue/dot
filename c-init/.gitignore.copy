@@ -10,6 +10,7 @@
 
 !/code/**/*.cpp
 !/code/**/*.[chSs]
+!/code/**/*.asm
 !/code/**/*.ld
 !/code/**/*.py
 

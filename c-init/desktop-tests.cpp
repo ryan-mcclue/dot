@@ -12,26 +12,27 @@ EXPORT_BEGIN
 EXPORT_END
 
 EXPORT void mov_all_bytes_asm(u8 *data, u32 count);
-
 INTERNAL void
-tile_to_world_repeat(RepetitionTester *tester, Vector2 tile)
+mov_all_bytes_asm_repeat(RepetitionTester *tester, u32 count)
 {
   while (update_tester(tester))
   {
     TIME_TEST(tester)
     {
-      Vector2 res = tile_to_world(tile); 
-
-      if (!f32_eq(res.x, f32_inf()))
+      u8 *m = (u8 *)malloc(count);
+      if (m != NULL)
       {
-        tester_count_bytes(tester, sizeof(tile));
-      }
+        mov_all_bytes_asm(m, count);
+        tester_count_bytes(tester, count);
+        free(m);
+      } 
       else
       {
-        tester_set_error(tester, "tile_to_world failed");
+        tester_set_error(tester, "Malloc failed");
       }
     }
   }
+
 }
 
 INTERNAL void
@@ -40,10 +41,11 @@ repetition_test(void)
   // NOTE(Ryan): Unique for each function to repeat on
   RepetitionTester tester = ZERO_STRUCT;
 
-  printf("\n--- Repetition Test (tile_to_world) ---\n");
-  tester_init_new_wave(&tester, sizeof(Vector2), linux_estimate_cpu_timer_freq());
+  u32 count = 1000;
+  printf("\n--- Repetition Test (mov_all_bytes_asm) ---\n");
+  tester_init_new_wave(&tester, count, linux_estimate_cpu_timer_freq());
   // this should run for 10 seconds
-  tile_to_world_repeat(&tester, {5, 5});
+  mov_all_bytes_asm_repeat(&tester, count);
 }
 
 void
@@ -77,7 +79,6 @@ main(void)
 
   #define REPETITION 1
   #if REPETITION
-    state->cam.zoom = 1.0f;
     repetition_test(); 
     return 0;
   #else

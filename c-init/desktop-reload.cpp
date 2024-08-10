@@ -7,6 +7,8 @@
 
 GLOBAL State *g_state = NULL;
 
+#include "desktop-assets.cpp"
+
 EXPORT void 
 code_preload(State *state)
 {
