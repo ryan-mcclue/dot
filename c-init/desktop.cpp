@@ -3,8 +3,6 @@
 #define PROFILER 1
 #endif
 
-#include "base/base-inc.h"
-#include <raylib.h>
 #include "desktop.h"
 
 #include <dlfcn.h>
@@ -38,7 +36,8 @@ INTERNAL void code_nil(State *s) {}
 GLOBAL ReloadCode g_nil_code = {
   .preload = code_nil,
   .update = code_nil_update,
-  .postload = code_nil
+  .postload = code_nil,
+  .profiler_end_and_print = code_nil
 };
 
 INTERNAL ReloadCode 
@@ -61,6 +60,10 @@ code_reload(void)
   name = dlsym(g_code_reload_handle, "code_postload");
   if (name == NULL) return g_nil_code;
   result.postload = (code_postload_t)name;
+
+  name = dlsym(g_code_reload_handle, "code_profiler_end_and_print");
+  if (name == NULL) return g_nil_code;
+  result.profiler_end_and_print = (code_profiler_end_and_print_t)name;
 
   return result;
 }
@@ -86,7 +89,7 @@ int main(int argc, char *argv[])
   linux_append_ldlibrary(str8_lit("./build"));
 #endif
 
-  profiler_init();
+  //profiler_init();
 
   State *state = MEM_ARENA_PUSH_STRUCT_ZERO(arena, State);
   state->arena = arena;
@@ -94,11 +97,11 @@ int main(int argc, char *argv[])
 
   state->assets.arena = mem_arena_allocate(GB(1), MB(64));
 
-  u32 screen_width = 1080;
-  u32 screen_height = 720;
+  u32 screen_width = 1920;
+  u32 screen_height = 1080;
   SetTraceLogLevel(LOG_WARNING); 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
-  InitWindow(screen_width, screen_height, "title");
+  InitWindow(screen_width, screen_height, "Game");
   SetTargetFPS(60);
 
   ReloadCode code = code_reload();
@@ -108,20 +111,20 @@ int main(int argc, char *argv[])
   f32 reload_timer = reload_time;
   for (b32 quit = false; !quit; state->frame_counter += 1)
   {  
-    u64 code_modify_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
-    if (code_modify_time > prev_code_reload_time)
-    {
-      // NOTE(Ryan): Prevent loading before object has been fully written
-      reload_timer += GetFrameTime();
-      if (reload_timer >= reload_time)
+      u64 code_modify_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
+      if (code_modify_time > prev_code_reload_time)
       {
-        prev_code_reload_time = code_modify_time;
-        code.preload(state);
-        code = code_reload();
-        code.postload(state);
-        reload_timer = 0.f;
+        // NOTE(Ryan): Prevent loading before object has been fully written
+        reload_timer += GetFrameTime();
+        if (reload_timer >= reload_time)
+        {
+          prev_code_reload_time = code_modify_time;
+          code.preload(state);
+          code = code_reload();
+          code.postload(state);
+          reload_timer = 0.f;
+        }
       }
-    }
 
     code.update(state);
 
@@ -133,7 +136,9 @@ int main(int argc, char *argv[])
   }
   CloseWindow();
 
-  profiler_end_and_print();
+  code.profiler_end_and_print(state);
+
+  //profiler_end_and_print();
   // PROFILE_BANDWIDTH(), PROFILE_BLOCK(), PROFILE_FUNCTION(), 
 
   // NOTE(Ryan): Run explicitly so as to not register a leak for arenas
@@ -141,4 +146,3 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-PROFILER_END_OF_COMPILATION_UNIT

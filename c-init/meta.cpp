@@ -1,30 +1,17 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #include "base/base-inc.h"
 
-//typedef struct MD_ParseResult MD_ParseResult;
-//struct MD_ParseResult
-//{
-//    MD_Node *node;
-//    MD_u64 string_advance;
-//    MD_MessageList errors;
-//};
-//MD_ParseResult parse = MD_ParseWholeString(arena, filename, file_content);
-//
-//MD_FUNCTION MD_ParseResult
-//MD_ParseWholeString(MD_Arena *arena, MD_String8 filename, MD_String8 contents)
-//{
-//    MD_Node *root = MD_MakeNode(arena, MD_NodeKind_File, filename, contents, 0);
-//    MD_ParseResult result = MD_ParseNodeSet(arena, contents, 0, root, MD_ParseSetRule_Global);
-//    result.node = root;
-//    for(MD_Message *error = result.errors.first; error != 0; error = error->next)
-//    {
-//        if(MD_NodeIsNil(error->node->parent))
-//        {
-//            error->node->parent = root;
-//        }
-//    }
-//    return result;
-//}
+/*
+introspect("hi") struct Person
+{
+  u32 age;
+  f32 weight;
+  String8 name;
+  u32 count;
+  counted_pointer(count) u32 *array;
+};
+ */
+
 
 // IMPORTANT: this is just basic introspect; for full metaprogramming, generate AST and generate from that
 enum META_TYPE
@@ -431,5 +418,3 @@ main(int argc, char *argv[])
 
   return 0;
 }
-
-

@@ -332,10 +332,10 @@ c_init()
 
   case "$type" in
     "embedded")
-      local files=("embedded.c" "system.c" "startup.S" "linker.ld")
+      local files=("embedded.c" "system.c" "startup.S" "linker.ld" "meta.cpp")
       ;;
     "desktop")
-      local files=("desktop.cpp" "desktop.h" "desktop-assets.h" "desktop-assets.cpp" "desktop-reload.cpp" "desktop-tests.cpp" "linker.ld")
+      local files=("desktop.cpp" "desktop.h" "desktop-assets.h" "desktop-assets.cpp" "desktop-reload.cpp" "desktop-tests.cpp" "desktop-tests-assembly.asm" "linker.ld" "meta.cpp")
       ;;
     *)
       printf "Usage: c_init <name> {desktop|embedded}\n" >&2 

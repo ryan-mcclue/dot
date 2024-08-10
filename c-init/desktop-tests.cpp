@@ -11,6 +11,8 @@ EXPORT_BEGIN
 #include <cmocka.h>
 EXPORT_END
 
+EXPORT void mov_all_bytes_asm(u8 *data, u32 count);
+
 INTERNAL void
 tile_to_world_repeat(RepetitionTester *tester, Vector2 tile)
 {
