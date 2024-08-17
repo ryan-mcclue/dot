@@ -186,7 +186,7 @@ COMPILER_FLAGS+=( "-Wall" "-Wextra" "-Wshadow" "-Wconversion" "-Wdouble-promotio
 COMPILER_FLAGS+=( "-Wundef" "-Wshadow" "-Wpadded" "-fno-common" "-march=native" )
 COMPILER_FLAGS+=( "-Wfloat-equal" "-Wlogical-op" "-Wredundant-decls" "-Wstrict-overflow=2" "-Warray-bounds=2" )
 COMPILER_FLAGS+=( "-Wpointer-arith" "-Wformat-truncation" "-Wmissing-include-dirs" )
-COMPILER_FLAGS+=( "-Wcast-align" "-Wswitch-enum" "-Wsign-conversion" "-Wdisabled-optimization" )
+COMPILER_FLAGS+=( "-Wcast-align" "-Wno-switch" "-Wswitch-default" "-Wsign-conversion" "-Wdisabled-optimization" )
 COMPILER_FLAGS+=( "-Winline" "-Wmissing-declarations" "-Wdouble-promotion" "-Wshadow" "-Wtrampolines" )
 COMPILER_FLAGS+=( "-Wvector-operation-performance" "-Wnull-dereference" "-Winvalid-pch" )
 COMPILER_FLAGS+=( "-Wduplicated-cond" "-Wshift-overflow=2" "-Wcast-align=strict" )
