@@ -21,3 +21,5 @@
 !/assets/**/*
 
 !/.github/**/*.yml
+
+!/.vscode/**/*.json
