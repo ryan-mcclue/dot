@@ -126,10 +126,19 @@ mem_arena_pop(MemArena *arena, memory_index size)
 }
 
 INTERNAL void
-mem_arena_clear(MemArena *arena)
+mem_arena_reset(MemArena *arena)
 {
   mem_arena_pop(arena, arena->pos);
 }
+
+INTERNAL void
+mem_arena_clear(MemArena *arena)
+{
+  memory_index cur_pos = arena->pos;
+  mem_arena_pop(arena, cur_pos);
+  MEMORY_ZERO(arena->memory, cur_pos - arena->pos);
+}
+
 
 typedef struct ThreadContext ThreadContext;
 struct ThreadContext

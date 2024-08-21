@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "DEBUG"
+                "DEBUG_BUILD"
             ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
