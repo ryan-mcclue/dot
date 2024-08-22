@@ -57,7 +57,6 @@ typedef size_t memory_index;
   #define f32z_mag(z) cabsf(z)
 #endif
 
-
 #include <stdbool.h>
 
 #define GLOBAL static
@@ -173,6 +172,9 @@ struct Handle
   void *addr;
   u64 gen;
 };
+
+#define GET_HANDLE(t) \
+  (((t) != NULL) ? CCOMPOUND(Handle){(t), (t)->gen} : ZERO_STRUCT)
 
 typedef struct SourceLoc SourceLoc;
 struct SourceLoc

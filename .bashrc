@@ -362,7 +362,7 @@ c_init()
 
     printf "Building raylib-debug\n"
     mkdir -p "$name/build"
-    cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -B "$name/build" -S "$name/code/external/raylib-5.0"
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DBUILD_SHARED_LIBS=ON -B "$name/build" -S "$name/code/external/raylib-5.0"
     cmake --build "$name/build"
     sudo cmake --install "$name/build" 
   fi

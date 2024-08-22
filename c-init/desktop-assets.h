@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 #if !defined(DESKTOP_ASSETS_H)
+#define DESKTOP_ASSETS_H
 
 #include <raylib.h>
 

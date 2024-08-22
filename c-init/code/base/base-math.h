@@ -69,6 +69,13 @@
   INTERNAL u64 u64_endianness_swap(u64 val) { return 0; }
 #endif
 
+INTERNAL f32 
+f32z_power(f32z z)
+{
+  f32 mag = f32z_mag(z);
+  return power = SQUARE(mag);
+}
+
 INTERNAL f32
 f32_sin_in(f32 t) 
 {

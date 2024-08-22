@@ -5,7 +5,7 @@
 
 #include "desktop.h"
 
-GLOBAL State *g_state = NULL;
+State *g_state = NULL;
 
 #include "desktop-assets.cpp"
 
