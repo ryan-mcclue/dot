@@ -270,7 +270,7 @@ struct SourceLoc
 // COUNTED_POINTER(10) u32 *array
 
 // NOTE(Ryan): Designated initialisers allow repetition and ZII
-#define draw_rect(r, ...) \
+#define draw_rectdasdsadsad(r, ...) \
   draw_rect_((r), &(DrawRectParams){.color = {1,1,1,1}, __VA_ARGS__})
 
 // NOTE(Ryan): Memory mapped address hierarchy typically 'bus + peripheral + register' 

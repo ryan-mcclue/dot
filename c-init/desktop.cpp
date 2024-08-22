@@ -43,6 +43,8 @@ GLOBAL ReloadCode g_nil_code = {
 INTERNAL ReloadCode 
 code_reload(void)
 {
+  // IMPORTANT: will return handle to same shared object unless closed first. 
+  // so, can't readily hold a duplicate copy in the event of a failed load
   if (g_code_reload_handle != NULL) dlclose(g_code_reload_handle);
 
   g_code_reload_handle = dlopen("build/" BINARY_RELOAD_NAME, RTLD_NOW);
@@ -111,20 +113,14 @@ int main(int argc, char *argv[])
   f32 reload_timer = reload_time;
   for (b32 quit = false; !quit; state->frame_counter += 1)
   {  
-      u64 code_modify_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
-      if (code_modify_time > prev_code_reload_time)
-      {
-        // NOTE(Ryan): Prevent loading before object has been fully written
-        reload_timer += GetFrameTime();
-        if (reload_timer >= reload_time)
-        {
-          prev_code_reload_time = code_modify_time;
-          code.preload(state);
-          code = code_reload();
-          code.postload(state);
-          reload_timer = 0.f;
-        }
-      }
+    u64 code_modify_time = GetFileModTime("build/" BINARY_RELOAD_NAME);
+    if (code_modify_time > prev_code_reload_time)
+    {
+      code.preload(state);
+      code = code_reload();
+      code.postload(state);
+      if (code.update != g_nil_code.update) prev_code_reload_time = code_modify_time;
+    }
 
     code.update(state);
 
@@ -132,7 +128,7 @@ int main(int argc, char *argv[])
     #if ASAN_ENABLED
       if (GetTime() >= 5.0) quit = true;
     #endif
-    mem_arena_clear(state->frame_arena);
+    mem_arena_reset(state->frame_arena);
   }
   CloseWindow();
 

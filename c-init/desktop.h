@@ -54,4 +54,40 @@ struct ReloadCode
   code_profiler_end_and_print_t profiler_end_and_print;
 };
 
+GLOBAL f32 g_dbg_at_y;
+extern State *g_state; 
+INTERNAL void
+draw_debug_text(String8 s)
+{
+  char text[64] = ZERO_STRUCT;
+  str8_to_cstr(s, text, sizeof(text));
+  DrawText(text, 50.f, g_dbg_at_y, 48, RED);
+  g_dbg_at_y += 50.f;
+}
+#if DEBUG_BUILD
+#define DBG_U32(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %" PRIu32, var))
+#define DBG_S32(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %" PRId32, var))
+#define DBG_U64(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %" PRIu64, var))
+#define DBG_S64(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %" PRId64, var))
+#define DBG_F32(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %f", var))
+#define DBG_F64(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = %lf", var))
+#define DBG_V2(var) \
+  draw_debug_text(str8_fmt(g_state->frame_arena, STRINGIFY(var) " = (%f, %f)", var.x, var.y))
+#else
+#define DBG_U32(var)
+#define DBG_S32(var)
+#define DBG_U64(var)
+#define DBG_S64(var)
+#define DBG_F32(var)
+#define DBG_F64(var)
+#define DBG_V2(var)
+#endif
+
+
 #endif
