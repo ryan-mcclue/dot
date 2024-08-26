@@ -643,21 +643,12 @@ ring_read(u8 *ring_base, memory_index ring_size, memory_index pos, void *dst, me
   return read_size;
 }
 
-// djb2
+
 INTERNAL u64
 str8_hash(String8 string)
 {
-  u64 result = 5381;
-
-  for (u64 i = 0; i < string.size; i += 1)
-  {
-    result = ((result << 5) + result) + string.content[i];
-  }
-
-  return result;
+  return hash_data(HASH_INIT, string.content, string.size);
 }
-
-
 
 #if 0
 INTERNAL void

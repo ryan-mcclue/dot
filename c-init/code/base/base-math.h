@@ -73,7 +73,7 @@ INTERNAL f32
 f32z_power(f32z z)
 {
   f32 mag = f32z_mag(z);
-  return power = SQUARE(mag);
+  return SQUARE(mag);
 }
 
 INTERNAL f32

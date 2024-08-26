@@ -52,6 +52,7 @@ struct Assets
   MemArena *arena;
   FontMap fonts;
   TextureMap textures;
+  Texture default_texture;
 };
 
 #endif

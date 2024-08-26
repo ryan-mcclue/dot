@@ -172,9 +172,19 @@ struct Handle
   void *addr;
   u64 gen;
 };
+INTERNAL Handle
+handle_create(void *addr, u64 gen)
+{
+  return {addr, gen};
+}
+INTERNAL Handle
+zero_handle_create(void)
+{
+  return {NULL, 0};
+}
 
-#define GET_HANDLE(t) \
-  (((t) != NULL) ? CCOMPOUND(Handle){(t), (t)->gen} : ZERO_STRUCT)
+#define TO_HANDLE(t) \
+  ((t != NULL) ? handle_create(t, t->gen) : zero_handle_create())
 
 typedef struct SourceLoc SourceLoc;
 struct SourceLoc
@@ -459,6 +469,23 @@ concat_list(List *a, List *b)
 }
 #endif
 
+// djb2
+#define HASH_INIT 5381
+INTERNAL u64
+hash_data(u64 init, void *data, u32 data_size)
+{
+  u64 hash = init;
+  u8 *bytes = (u8 *)data;
+  for (u64 i = 0; i < data_size; i += 1)
+  {
+    hash = ((hash << 5) + hash) + bytes[i];
+  }
+  return hash;
+}
+// murmur hash on filename pointer for better collision?
+// perhaps just multiply to combine hashes?
+
+// murmur
 INTERNAL u64 
 hash_ptr(void *p)
 {
