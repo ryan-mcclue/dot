@@ -89,7 +89,7 @@ tester_init_new_wave(RepetitionTester *tester, u64 target_bytes_processed, u64 c
       tester_set_error(tester, "target_bytes_processed changed");
     }
 
-    if(tester->cpu_timer_freq != cpu_timer_freq)
+    if (tester->cpu_timer_freq != cpu_timer_freq)
     {
       tester_set_error(tester, "CPU frequency changed");
     }

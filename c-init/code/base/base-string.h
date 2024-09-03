@@ -344,8 +344,9 @@ str8_list_push(MemArena *arena, String8List *list, String8 string)
   list->total_size += string.size;
 }
 
+// TODO: currently segfaults
 INTERNAL void
-str8_list_push_fmt(MemArena *arena, String8List *list, char *fmt, ...)
+str8_list_push_fmt(MemArena *arena, String8List *list, const char *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);

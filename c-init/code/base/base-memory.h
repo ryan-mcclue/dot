@@ -24,10 +24,6 @@
 
 #define MEMORY_MATCH(a, b, n) (memcmp((a), (b), (n)) == 0)
 
-#define KB(x) ((x) << 10)
-#define MB(x) ((x) << 20)
-#define GB(x) (((u64)x) << 30)
-#define TB(x) (((u64)x) << 40)
 
 typedef struct MemArena MemArena;
 struct MemArena

@@ -20,7 +20,10 @@ str8_read_entire_file(MemArena *arena, String8 file_name)
     if (result.content != NULL)
     {
       result.size = file_size;
-      fread(result.content, 1, file_size, file);
+      PROFILE_BANDWIDTH("fread", file_size)
+      {
+        fread(result.content, 1, file_size, file);
+      }
       result.content[result.size] = '\0';
     }
     fclose(file);

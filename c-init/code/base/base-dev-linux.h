@@ -32,15 +32,6 @@ GLOBAL b32 global_debugger_present;
   #define BP()
 #endif
 
-// IMPORTANT(Ryan): x86intrin.h includes approx 46kLOC!
-INTERNAL u64
-read_cpu_timer(void)
-{
-  u32 a, d = 0;
-  asm volatile("rdtsc" : "=a" (a), "=d" (d));
-  return ((u64)d << 32) | a;
-}
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -205,55 +196,6 @@ linux_sleep(u64 ns)
   req.tv_nsec = ns - req.tv_sec * 1000000000ULL;
   while (nanosleep(&req, &rem))
       req = rem;
-}
-
-#define LINUX_WALLTIME_FREQ NANO_TO_SEC(1)
-INTERNAL u64
-linux_walltime(void)
-{
-  u64 result = 0;
-
-  struct timespec time_spec = ZERO_STRUCT;
-  // not actually time since epoch, 1 jan 1970
-  // rather time since some unspecified period in past
-
-  int clock_res = clock_gettime(CLOCK_MONOTONIC_RAW, &time_spec);
-  if (clock_res == -1)
-    WARN("clock_gettime failed\n\t%s", strerror(errno));
-
-  result = ((u64)time_spec.tv_sec * LINUX_WALLTIME_FREQ) + (u64)time_spec.tv_nsec;
-
-  return result;
-}
-
-INTERNAL u64
-linux_estimate_cpu_timer_freq(void)
-{
-  u64 cpu_start = read_cpu_timer();
-  u64 linux_start = linux_walltime();
-  u64 linux_end = 0;
-  u64 linux_elapsed = 0;
-
-  u64 ms_to_wait = 100;
-  // IMPORTANT(Ryan): Integer math, multiple numerator first
-  u64 linux_wait_time = LINUX_WALLTIME_FREQ * ms_to_wait / 1000;
-
-  while (linux_elapsed < linux_wait_time)
-  {
-    linux_end = linux_walltime();
-    linux_elapsed = linux_end - linux_start;
-  }
-
-  u64 cpu_end = read_cpu_timer();
-  u64 cpu_elapsed = cpu_end - cpu_start;
-
-  u64 cpu_freq = 0;
-  if (linux_elapsed > 0)
-  {
-    cpu_freq = LINUX_WALLTIME_FREQ * cpu_elapsed / linux_elapsed;
-  }
-
-  return cpu_freq;
 }
 
 INTERNAL u32

@@ -244,6 +244,10 @@ struct SourceLoc
 #define EACH_ENUM(type, it) type it = (type)0; it < type##_COUNT; it = (type)(it+1)
 #define EACH_NONZERO_ENUM(type, it) type it = (type)1; it < type##_COUNT; it = (type)(it+1)
 
+#define KB(x) ((x) << 10)
+#define MB(x) ((x) << 20)
+#define GB(x) (((u64)x) << 30)
+#define TB(x) (((u64)x) << 40)
 
 // TODO(Ryan): Date/time helpers?
 
@@ -254,6 +258,7 @@ struct SourceLoc
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define CLAMP(min,x,max) (((x)<(min))?(min):((max)<(x))?(max):(x))
+#define CLAMP01(x) CLAMP(0, x, 1) 
 #define CLAMP_TOP(a,b) MIN(a,b)
 #define CLAMP_BOTTOM(a,b) MAX(a,b)
 
@@ -280,6 +285,9 @@ struct SourceLoc
 // INTROSPECT(category:"something") typedef struct ParseThis
 #define COUNTED_POINTER(count)
 // COUNTED_POINTER(10) u32 *array
+
+#define QUICK_SORT(base, type, count, compare_function) \
+  qsort((base), (count), sizeof(type), (int(*)(const void *, const void *))(compare_function))
 
 // NOTE(Ryan): Designated initialisers allow repetition and ZII
 #define draw_rectdasdsadsad(r, ...) \
@@ -487,7 +495,7 @@ hash_data(u64 init, void *data, u32 data_size)
 
 // murmur
 INTERNAL u64 
-hash_ptr(void *p)
+hash_ptr(const void *p)
 {
   u64 h = (u64)p;
 
@@ -496,6 +504,15 @@ hash_ptr(void *p)
   h = h ^ (h >> 31);
 
   return h;
+}
+
+// IMPORTANT(Ryan): x86intrin.h includes approx 46kLOC!
+INTERNAL u64
+read_cpu_timer(void)
+{
+  u32 a, d = 0;
+  asm volatile("rdtsc" : "=a" (a), "=d" (d));
+  return ((u64)d << 32) | a;
 }
 
 #endif
