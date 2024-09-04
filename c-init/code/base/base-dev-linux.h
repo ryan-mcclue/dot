@@ -456,10 +456,10 @@ linux_read_entire_cmd(MemArena *arena, char *args[], b32 echo)
     }
 
     u32 buffer_cap = 4096;
-    String8 buffer = str8_allocate(arena, buffer_cap);
+    String8Buffer buffer = str8buffer_allocate(arena, buffer_cap);
 
     // TODO(Ryan): Read multiple times
-    s32 bytes_read = read(stdout_pair[0], buffer.content, buffer_cap);
+    s32 bytes_read = read(stdout_pair[0], buffer.string8.content, buffer_cap);
     close(stdout_pair[0]);
     close(stdout_pair[1]);
 
@@ -469,7 +469,7 @@ linux_read_entire_cmd(MemArena *arena, char *args[], b32 echo)
     }
     else
     {
-      result.content = buffer.content;
+      result.content = buffer.string8.content;
       result.size = bytes_read;
     }
 
@@ -536,8 +536,8 @@ linux_set_cwd_to_self(void)
 {
   MEM_ARENA_TEMP_BLOCK(temp, NULL, 0)
   {
-    String8 binary_path = str8_allocate(temp.arena, 128);
-    s32 binary_path_size = readlink("/proc/self/exe", (char *)binary_path.content, 128);
+    String8Buffer binary_path = str8buffer_allocate(temp.arena, 128);
+    s32 binary_path_size = readlink("/proc/self/exe", (char *)binary_path.string8.content, 128);
     if (binary_path_size == -1)
     {
       WARN("Failed to get binary path\n\t%s\n", strerror(errno));
@@ -545,13 +545,13 @@ linux_set_cwd_to_self(void)
     else
     {
       // IMPORTANT(Ryan): readlink() won't append NULL byte, so no need to subtract
-      binary_path.size = binary_path_size; 
+      binary_path.string8.size = binary_path_size; 
 
-      memory_index last_slash = str8_find_substring(binary_path, str8_lit("/"), 0, MATCH_FLAG_FIND_LAST);
-      binary_path.size = last_slash;
+      memory_index last_slash = str8_find_substring(binary_path.string8, str8_lit("/"), 0, MATCH_FLAG_FIND_LAST);
+      binary_path.string8.size = last_slash;
 
       char binary_folder[128] = ZERO_STRUCT;
-      str8_to_cstr(binary_path, binary_folder, sizeof(binary_folder));
+      str8_to_cstr(binary_path.string8, binary_folder, sizeof(binary_folder));
 
       if (chdir(binary_folder) == -1)
       {

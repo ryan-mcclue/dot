@@ -200,13 +200,11 @@ f32_rand_range(u32 *seed, f32 min, f32 max)
 INTERNAL f32
 f32_norm(f32 start, f32 a, f32 end)
 {
-  f32 result = 0.0f;
-
   a = CLAMP(start, a, end);
+  f32 range = (end - start);
+  if (range == 0.0f) range = 1.0f;
 
-  result = (end - a) / (end - start);
-
-  return result;
+  return (end - a) / range; 
 }
 
 INTERNAL f32

@@ -72,16 +72,6 @@ str8(u8 *str, memory_index size)
   return result;
 }
 
-INTERNAL String8
-str8_allocate(MemArena *arena, memory_index len)
-{
-  String8 result = ZERO_STRUCT;
-
-  result.content = MEM_ARENA_PUSH_ARRAY_ZERO(arena, u8, len);
-
-  return result;
-}
-
 INTERNAL void
 str8_to_cstr(String8 s, char *buffer, memory_index buffer_size)
 {
@@ -589,6 +579,45 @@ u32_to_str8(MemArena *arena, u32 x)
  MEMORY_COPY(result.content, buffer + it + 1, result.size);
  
  return result;
+}
+
+typedef struct String8Buffer String8Buffer;
+struct String8Buffer
+{
+  memory_index allocated_size;
+  String8 string8;
+};
+
+INTERNAL String8Buffer
+str8buffer_allocate(MemArena *arena, memory_index len)
+{
+  String8Buffer result = ZERO_STRUCT;
+
+  result.allocated_size = len;
+  result.string8.content = MEM_ARENA_PUSH_ARRAY_ZERO(arena, u8, len);
+
+  return result;
+}
+
+#define STR8BUFFER_APPEND(b, ptr) \
+  str8buffer_append((b), (ptr), sizeof(*(ptr)))
+INTERNAL void
+str8buffer_append(String8Buffer *b, void *data, memory_index data_size)
+{
+  if (b->string8.size + data_size <= b->allocated_size)
+  {
+    MEMORY_COPY(b->string8.content + b->string8.size, data, data_size);
+  }
+}
+
+INTERNAL String8
+str8_allocate(MemArena *arena, memory_index len)
+{
+  String8 result = ZERO_STRUCT;
+
+  result.content = MEM_ARENA_PUSH_ARRAY_ZERO(arena, u8, len);
+
+  return result;
 }
 
 // TODO(Ryan): Tree traversal: https://hero.handmade.network/episode/code/day202/#1985 

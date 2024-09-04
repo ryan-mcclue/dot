@@ -170,6 +170,7 @@
 
 // NOTE(Ryan): Extensions
 #if COMPILER_GCC || COMPILER_CLANG
+  #define PACKED_STRUCT __attribute__((packed, aligned(1)))
   #define LIKELY(x)   __builtin_expect(!!(x), 1) 
   #define UNLIKELY(x) __builtin_expect(!!(x), 0)
   #define ISO_EXTENSION __extension__
@@ -183,6 +184,7 @@
   #define IGNORE_WARNING_POP() \
     _Pragma("GCC diagnostic pop")
 #elif COMPILER_MSVC
+  #define PACKED_STRUCT
   #define LIKELY(x)
   #define UNLIKELY(x)
   #define ISO_EXTENSION
@@ -194,6 +196,7 @@
   #define IGNORE_WARNING_POP() \
     __pragma(warning(pop))
 #else
+  #define PACKED_STRUCT
   #define LIKELY(x)
   #define UNLIKELY(x)
   #define ISO_EXTENSION
