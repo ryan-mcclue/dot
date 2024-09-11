@@ -596,6 +596,8 @@ export PGDATA PGHOST
 alias p0="pg_ctl stop"
 alias p1="pg_ctl -l $PGDATA/log start"
 
+alias viv_src="source /tools/Xilinx/Vivado/2024.1/settings64.sh"
+
 # TODO: Remove after comp2511
 export DUNGEONS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/dungeons"
 export CONFIGS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/configs"
