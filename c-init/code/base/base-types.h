@@ -262,7 +262,7 @@ struct SourceLoc
 #define CLAMP_TOP(a,b) MIN(a,b)
 #define CLAMP_BOTTOM(a,b) MAX(a,b)
 
-#define IS_POW2_ALIGNED(x, p) (((x) & ((p) - 1)) == 0)
+#define IS_POW2_ALIGNED(x, p) ((((p) - 1) & (x)) == 0)
 #define IS_POW2(x) IS_POW2_ALIGNED(x, x) 
 #define ALIGN_POW2_DOWN(x, p)       ((x) & -(p))
 #define ALIGN_POW2_UP(x, p)       (-(-(x) & -(p)))
