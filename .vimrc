@@ -178,8 +178,12 @@ function! Make(script, type)
     compiler gcc
   endif
 
-  if &ft ==# "cpp"
+  if &ft ==# "python"
     compiler gcc
+  endif
+
+  if &ft ==# "cs"
+    compiler cs
   endif
   
   if &ft ==# "c"
