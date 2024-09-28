@@ -27,6 +27,7 @@
   // gcc -dM -E - > file.txt
 #elif PLATFORM_LINUX 
   #include "base/base-dev-linux.h"
+  #include "base-thread.h"
 #endif
 
 #if PLATFORM_LINUX || PLATFORM_MAC || PLATFORM_WINDOWS
@@ -35,7 +36,5 @@
 #endif
 
 
-// TODO(Ryan):
-// #include "base-thread.h"
 
 #endif

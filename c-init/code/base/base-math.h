@@ -202,7 +202,7 @@ f32_norm(f32 start, f32 a, f32 end)
 {
   a = CLAMP(start, a, end);
   f32 range = (end - start);
-  if (range == 0.0f) range = 1.0f;
+  if (f32_eq(range, 0.0f)) range = 1.0f;
 
   return (end - a) / range; 
 }

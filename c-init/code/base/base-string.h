@@ -607,6 +607,7 @@ str8buffer_append(String8Buffer *b, void *data, memory_index data_size)
   if (b->string8.size + data_size <= b->allocated_size)
   {
     MEMORY_COPY(b->string8.content + b->string8.size, data, data_size);
+    b->string8.size += data_size;
   }
 }
 
@@ -616,6 +617,7 @@ str8_allocate(MemArena *arena, memory_index len)
   String8 result = ZERO_STRUCT;
 
   result.content = MEM_ARENA_PUSH_ARRAY_ZERO(arena, u8, len);
+  result.size = len;
 
   return result;
 }

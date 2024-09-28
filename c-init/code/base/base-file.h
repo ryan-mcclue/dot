@@ -2,6 +2,24 @@
 #if !defined(BASE_FILE_H)
 #define BASE_FILE_H
 
+typedef struct AsyncFile AsyncFile;
+struct AsyncFile
+{
+  FILE *fp;
+  memory_index file_size;
+};
+
+INTERNAL AsyncFile
+open_async_file(const char *name)
+{
+  FILE *fp = fopen(name, "rb");
+  fseek(fp, 0, SEEK_END);
+  memory_index file_size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  return {fp, file_size};
+}
+
 INTERNAL String8 
 str8_read_entire_file(MemArena *arena, String8 file_name)
 {

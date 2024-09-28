@@ -8,6 +8,26 @@
 // TODO(Ryan): put in platform specific
 #define READ_BARRIER asm volatile("" ::: "memory")
 #define WRITE_BARRIER asm volatile("" ::: "memory")
+#define COMPILER_HARDWARE_BARRIER __sync_synchronize()
+
+/*
+void *
+io_thread_routine(void *params)
+{
+  ThreadContext tctx = thread_context_allocate(GB(8), MB(64));
+  tctx.is_main_thread = false;
+  thread_context_set(&tctx);
+  thread_context_set_name("IO Thread");
+
+  // IMPORTANT(Ryan): Do this to give thread access to temp arenas
+  // Do work here
+
+  thread_context_deallocate(&tctx);
+
+  // NOTE(Ryan): Value obtained with thread_join()
+  return NULL;
+}
+*/
 
 typedef pthread_t thread_handle;
 typedef void* thread_function(void *params);
@@ -143,21 +163,21 @@ thread_cv_destroy(thread_cv *cv)
 INTERNAL void
 thread_cv_wait(thread_cv *cv, thread_mutex *mutex)
 {
-  if (pthread_cond_wait(cv, mp) != 0)
+  if (pthread_cond_wait(cv, mutex) != 0)
     WARN("Failed to wait on cv.");
 }
 
 INTERNAL void
 thread_cv_signal(thread_cv *cv)
 {
-  if (pthread_cond_signal(&cv) != 0)
+  if (pthread_cond_signal(cv) != 0)
     WARN("Failed to signal cv");
 }
 
 INTERNAL void
 thread_cv_signal_all(thread_cv *cv)
 {
-  if (pthread_cond_broadcast(&cv) != 0)
+  if (pthread_cond_broadcast(cv) != 0)
     WARN("Failed to broadcast cv");
 }
 
