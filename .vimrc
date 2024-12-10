@@ -155,6 +155,9 @@ function! Make(script, type)
     if &ft ==# "asm"
       " NOTE(Ryan): This is for the avra assembler
       let &errorformat = "%f(%l)%m"
+    elseif &ft ==# "php"
+      " NOTE(Ryan): This is for php -l which only outputs line number 
+      let &errorformat = "PHP Parse Error: %m in %f on line %l"
     elseif &ft ==# "sql"
       " NOTE(Ryan): This is for sqlfluff parse 
 " L:   8 | P:   1 |  PRS | Line 8, Position 1: Found unparsable section: 'graham\n-- check
