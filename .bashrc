@@ -598,12 +598,6 @@ alias p1="pg_ctl -l $PGDATA/log start"
 
 alias viv_src="source /tools/Xilinx/Vivado/2024.1/settings64.sh"
 
-# TODO: Remove after comp2511
-export DUNGEONS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/dungeons"
-export CONFIGS="$HOME/Documents/java-projects/assignment-ii/app/src/test/resources/configs"
-export ASRC="$HOME/Documents/java-projects/ass2/app/src/main/java/dungeonmania"
-export ADST="$HOME/Documents/java-projects/assignment-ii/app/src/main/java/dungeonmania"
-
 __path_append \
   /bin \
   /sbin \
@@ -618,6 +612,7 @@ __path_append \
   ~/prog/personal/scripts \
   "$PGBIN" \
   "/opt/gradle/gradle-8.5/bin" \
+  /usr/local/go/bin
 
 __prefix='arm-none-eabi-'
 alias GCC="${__prefix}gcc"

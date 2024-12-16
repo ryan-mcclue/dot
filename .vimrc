@@ -344,7 +344,7 @@ nnoremap <C-[> :cs find c <C-R>=expand("<cword>")<CR><CR> <Space>
 augroup IndentSettings
   autocmd!
   
-  autocmd FileType c,cs,cpp,asm,cmake,ld,vhdl,html,javascript,css,vim,java,sh,prolog,python,yaml,markdown,sql setlocal shiftwidth=2 tabstop=2 softtabstop=2
+  autocmd FileType c,cs,cpp,asm,cmake,go,php,ld,vhdl,html,javascript,css,vim,java,sh,prolog,python,yaml,markdown,sql setlocal shiftwidth=2 tabstop=2 softtabstop=2
   autocmd FileType qf setlocal wrap
 augroup end
 
