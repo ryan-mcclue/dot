@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> Ryan's Homepage </title>
+    </head>
+    <body>
+        <label>
+            <button onclick="open_links('social')"> SOCIAL </button>
+            <button onclick="open_links('forum')"> FORUM </button>
+        </label>
+
+        <script>
+            const LINKS = {
+                social: [
+                    "https://mail.proton.me/u/1/inbox",
+                    "https://mail.google.com/mail/u/0/#inbox",
+                    "https://www.facebook.com/"
+                    ],
+                forum: [
+                    "https://github.com/hasenj/HandCraftedForum/tree/master",
+                    "https://x.com/Hasen_Judi/articles",
+                    ],
+            }
+
+            function open_links(type) {
+                LINKS[type].forEach(url => window.open(url, "_blank"))
+            }
+        </script>
+    </body>
+</html>

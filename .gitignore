@@ -8,6 +8,8 @@
 !README.md
 !LICENSE
 
+!homepage.html
+
 !git/.gitmessage
 !git/.git_templates/hooks/pre-commit
 !git/.git_templates/hooks/post-merge
