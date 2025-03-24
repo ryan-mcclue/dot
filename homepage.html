@@ -13,6 +13,8 @@
             <button onclick="open_links('ship')"> SHIP </button>
         </label>
 
+        <pre id="json_viewer"></pre>
+
         <script>
             const FAVICON_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA65JREFUeF7tmuuN3DAQg+8KSGkpJdWklJSWAhIscgYMxzJH8xK1YP76sRx+4oyly+eH/lE58EmlRmI+BIRsEQiIgJA5QCZHCREQMgfI5CghAkLmAJkcJURAyBwgk6OECAiZA2RylBAB8Tvw/cfvP56nf/38ts3CoxbqBYCgMQOiA1IFYQSJDQ4NkG4QV0AsYJYD8YJABla9F7XD6PWlQGZMQwCQEZ2/hbQ8XV8GxGJQFMKo8JW/jWC1A2Eyg0nLAaoVCDKgKhFoVTLpagPCVPQdIBZ9LUBYit0hKeVAnmCsalERMNWalwG5KwwlCRmJrs+YOdIy8w6k5+56KZDZopiAvMya1e8BcH2mDIinGDYgK6CUAPHOjZ2AvGBVtK9WIKgARiDdKUkH4mlVRx9lBdIJpQUISsYOQEZQrLVZB34qkEg6nlahtRh0X9S8aH1I3+t6OZAZE1DLmnlX1fHIncaorrNWATm5YTF2GyAZQndISPUsSUuIgOT8VyMBmWxZ2ybE0o+vg3eXlnUHxVNv2eFiRruyfPZGi84EnlVzyeFilrhMw6o+e582sdEFk7YP6QJi2Vg93ZNh2JZAvIWjhDABqZojKV9ZVyMFxL90BMTv3X9/UfQuxPSjEyXkn6UCMrm6Mww7/2TWQlRCJkGObheQoJFKyKSB6LMXGRp9flLuPkPdO+CihkafnwGStRl+66MTAfnCm7VaooZGn3+bhGQdI0QNjT4fAYLmm/XdKTv10dH5rMioodHnraZldYS73xMQK4XTfQLyZQZKnBJyWV3RlVNtaMb7ozWiQKa1rIw5kmHYU8EZ798eyMwmMcOwSiAjfaiVolSkHy4+nYC+O5BMGC+vUlvWqG1ZoTAnpCMdJUAiUFiBdMFoB4KSwgjkSVN2uyoD4k3JTkAqYJQC8UKZ+SKpvrezVR21pA/1q0krisoAtUr3MiBonmSY6n1H99wo3YfcmVA9G7zGW9N83Fc1N9qBPM2TzmIrd/FZi6K8ZaFd/Pl6xwpkT3ArEEtSOmcLaqWdWtq+skZRXmnGyt9Gra09ITMtLLOdWSAwzLOlQKwt7G5VoXkzAyATPEoAur4cyCHQayAq0HodAba+J3ofDZBVYFhALB/qlpVUlRo2CEs2hhYA6B4vIGYA15rpWhaC8u7XBYSMsIAICJkDZHKUEAEhc4BMjhIiIGQOkMlRQgSEzAEyOUqIgJA5QCZHCREQMgfI5CghAkLmAJkcJURAyBwgk6OECAiZA2Ry/gJBo/CD6hvp4AAAAABJRU5ErkJggg==" 
 
@@ -48,6 +50,12 @@
 
             function open_links(type) {
                 LINKS[type].forEach(url => window.open(url, "_blank"))
+            }
+
+            function j(link) {
+                fetch(link)
+                .then(resp => resp.json())
+                .then(data => document.getElementById("json_viewer").textContent = JSON.stringify(data, null, 2))
             }
         </script>
     </body>

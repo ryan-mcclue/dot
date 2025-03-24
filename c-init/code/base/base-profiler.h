@@ -1,15 +1,30 @@
 // SPDX-License-Identifier: zlib-acknowledgement
-#if !defined(BASE_PROFILER_H)
-#define BASE_PROFILER_H
+#if defined(_WIN32)
+#include <windows.h>
+INTERNAL u64 
+get_os_timer_freq(void)
+{
+	LARGE_INTEGER Freq;
+	QueryPerformanceFrequency(&Freq);
+	return Freq.QuadPart;
+}
 
-#include <time.h>
-#include <string.h>
-#define LINUX_WALLTIME_FREQ NANO_TO_SEC(1)
+#else
+
+#endif
+
+
+
 INTERNAL u64
-linux_walltime(void)
+walltime(void)
 {
   u64 result = 0;
 
+  #if defined(_WIN32)
+	LARGE_INTEGER Value;
+	QueryPerformanceCounter(&Value);
+	return result = Value.QuadPart;
+  #else
   struct timespec time_spec = ZERO_STRUCT;
   // not actually time since epoch, 1 jan 1970
   // rather time since some unspecified period in past
@@ -19,6 +34,8 @@ linux_walltime(void)
     fprintf(stderr, "clock_gettime failed\n\t%s", strerror(errno));
 
   result = ((u64)time_spec.tv_sec * LINUX_WALLTIME_FREQ) + (u64)time_spec.tv_nsec;
+  #endif
+
 
   return result;
 }
@@ -27,7 +44,7 @@ INTERNAL u64
 linux_estimate_cpu_timer_freq(void)
 {
   u64 cpu_start = read_cpu_timer();
-  u64 linux_start = linux_walltime();
+  u64 linux_start = walltime();
   u64 linux_end = 0;
   u64 linux_elapsed = 0;
 

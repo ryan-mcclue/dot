@@ -71,3 +71,38 @@ int main(void)
   }
 
 }
+
+enum PING_PONG_STATE {
+  UNUSED, READ_COMPLETED
+}
+struct PingPongBuffer {
+  volatile PING_PONG_STATE state;
+  String8 buf;
+  volatile u64 read_size; 
+}
+struct TemperatureState {
+  usart_typdef uart_base;
+  PingPongBuffer buffers[2];
+  b32 error;
+} 
+
+void temperature_interrupt() {
+    while (buf->state != ABS_UNUSED) { thread_yield(); }
+    buf->state = READ_COMPLETED;
+}
+
+init() {
+  TemperatureState ts = {};
+  ts.buffers[0] = str8_allocate();
+  ts.buffers[1] = str8_allocate();
+
+  start_interrupt();
+
+  u32 buf_i = 0;
+  while (true) {
+    PingPongBuffer *b = ts.buffers[buf_i++ & 1];
+    while (b->state != READ_COMPLETED); 
+    // process
+    b->state = UNUSED; 
+  }
+}
