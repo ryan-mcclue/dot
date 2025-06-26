@@ -33,3 +33,5 @@
 !Dockerfile
 !.python3-startup.py
 !.gnuplot
+
+!profile.ps1
